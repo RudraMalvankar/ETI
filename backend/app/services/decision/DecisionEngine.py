@@ -41,6 +41,20 @@ class DecisionEngine:
         parsed_json["supporting_citations"] = valid_citations
         
         # 9. Compute Confidence Score
-        parsed_json["confidence_score"] = self.confidence_engine.compute_confidence(context, len(valid_citations))
+        confidence = self.confidence_engine.compute_confidence(context, len(valid_citations))
+        parsed_json["confidence_score"] = confidence
+        
+        # 10. Populate Decision Trace
+        best_scenario_name = "Best Case"
+        scenarios = context.get('scenarios', [])
+        affected_count = len(parsed_json.get('affected_assets', []))
+        
+        parsed_json["decision_trace"] = {
+            "documents_used": len(retrieved_chunks),
+            "graph_nodes_traversed": affected_count,
+            "selected_scenario": best_scenario_name,
+            "citations_verified": len(valid_citations),
+            "confidence": confidence
+        }
         
         return DecisionResponse(**parsed_json)

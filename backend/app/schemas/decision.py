@@ -11,6 +11,13 @@ class Citation(BaseModel):
     chunk_id: str
     text_snippet: str
 
+class DecisionTrace(BaseModel):
+    documents_used: int
+    graph_nodes_traversed: int
+    selected_scenario: str
+    citations_verified: int
+    confidence: float
+
 class DecisionResponse(BaseModel):
     recommended_strategy: str
     alternative_strategies: List[str]
@@ -21,3 +28,4 @@ class DecisionResponse(BaseModel):
     estimated_risk_reduction: float
     estimated_cost: float
     estimated_downtime: float
+    decision_trace: DecisionTrace

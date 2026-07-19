@@ -11,6 +11,10 @@ class SimulationEngine:
         self.generator = ScenarioGenerator()
 
     def run_simulation(self, request: SimulationRequest) -> SimulationResponse:
+        from app.services.graph.GraphFactory import GraphFactory
+        if not GraphFactory.get_graph().has_node(request.failed_asset):
+            raise ValueError(f"Asset {request.failed_asset} not found.")
+            
         scenarios = []
         for s_type in ["Best Case", "Expected Case", "Worst Case"]:
             scenarios.append(self.generator.generate(request, s_type))

@@ -11,6 +11,8 @@ def run_simulation(request: SimulationRequest):
     try:
         return engine.run_simulation(request)
     except ValueError as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(status_code=404, detail=str(e))
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/{simulation_id}", response_model=SimulationResponse)
