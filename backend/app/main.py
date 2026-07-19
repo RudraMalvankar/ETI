@@ -18,6 +18,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/health")
+def root_health_check():
+    """
+    Root liveness probe for generic Load Balancers (ALB, Nginx) and Container Orchestrators (K8s).
+    """
+    return {"status": "ok", "service": "apex-backend", "orchestrator": "ready"}
+
 @app.get("/api/v1/health")
 def health_check():
     """
