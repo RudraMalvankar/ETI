@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.v1.router import api_router
 
 # This is the core entry point for the APEX Decision Intelligence Engine
 
@@ -31,3 +32,5 @@ def health_check():
     Core liveness probe for Docker and CI/CD pipelines.
     """
     return {"status": "ok", "service": "apex-backend", "orchestrator": "ready"}
+
+app.include_router(api_router, prefix="/api/v1")
