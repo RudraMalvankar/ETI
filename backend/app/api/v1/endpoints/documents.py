@@ -1,11 +1,16 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, status
 from typing import List, Dict
+from pydantic import BaseModel
 from app.schemas.document import IngestedDocument, DocumentResponse
 from app.services.ingestion.pipeline import IngestionPipeline
 from app.database.mock_store import DOCUMENTS_DB
+from app.services.rag.vector_store import global_vector_store
 
 router = APIRouter()
 pipeline = IngestionPipeline()
+
+class IndexRequest(BaseModel):
+    document_id: str
 
 @router.post("/upload", response_model=DocumentResponse, status_code=status.HTTP_201_CREATED)
 async def upload_document(file: UploadFile = File(...)):
@@ -41,6 +46,22 @@ def get_document(document_id: str):
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
     return doc
+
+@router.post("/index", status_code=status.HTTP_200_OK)
+def index_document(request: IndexRequest):
+    """
+    Index all chunks of a previously uploaded document into the Vector Store.
+    """
+    doc = DOCUMENTS_DB.get(request.document_id)
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+        
+    try:
+        global_vector_store.index_chunks(doc.chunks)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to index: {str(e)}")
+        
+    return {"message": "Successfully indexed chunks", "chunk_count": len(doc.chunks)}
 
 @router.get("/", response_model=List[DocumentResponse])
 def list_documents():
