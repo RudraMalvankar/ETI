@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - QDRANT_HOST=qdrant
+    depends_on:
+      - qdrant
+    volumes:
+      - ./backend:/app
+    networks:
+      - apex-net
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - apex-net
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000/api/v1
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    networks:
+      - apex-net
+
+volumes:
+  qdrant-data:
+
+networks:
+  apex-net:
+    driver: bridge
