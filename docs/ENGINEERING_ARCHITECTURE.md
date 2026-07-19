@@ -1,17 +1,18 @@
 # APEX Engineering Architecture & Foundation Blueprint
+*Status: FINALIZED & FROZEN*
 
-This document defines the enterprise-grade foundation for the APEX platform. It dictates the repository structure, frontend/backend architecture, API contracts, database schemas, and the development roadmap. 
+This document defines the enterprise-grade foundation for the APEX platform. It dictates the repository structure, frontend/backend architecture, API contracts, database schemas, and the development roadmap.
 
 ---
 
 ## 1. Complete Repository Structure (Monorepo)
 
-The repository uses a monorepo structure to keep the frontend, backend, and shared configurations tightly coupled during the rapid hackathon iteration cycle, while remaining cleanly separated for future microservice deployment.
+The repository uses a monorepo structure to keep the frontend, backend, and shared configurations tightly coupled during rapid development, while remaining cleanly separated for future microservice deployment.
 
 ```text
 apex/
 ├── frontend/         # React + Vite application (User Interface)
-├── backend/          # FastAPI application (Core Logic & AI)
+├── backend/          # FastAPI application (Core Logic, AI, & Orchestration)
 ├── shared/           # Shared TS/Pydantic schemas and types
 ├── docs/             # Product and Engineering Documentation
 ├── docker/           # Dockerfiles and compose configurations
@@ -27,7 +28,7 @@ apex/
 
 ## 2. Frontend Architecture (React + Vite)
 
-The frontend uses a **Feature-Based Architecture**. Instead of grouping files by type (all components together, all hooks together), files are grouped by the business feature they belong to, ensuring high modularity.
+The frontend uses a **Feature-Based Architecture**. Files are grouped by business domain, ensuring high modularity.
 
 ```text
 frontend/src/
@@ -38,7 +39,10 @@ frontend/src/
 │   ├── graph/        # React Flow graph, node components, graph hooks
 │   ├── runbook/      # Runbook panel, checklist items, dynamic routing logic
 │   ├── dashboard/    # Incident feeds, telemetry widgets
-│   └── compliance/   # Audit trails, PDF generator
+│   ├── compliance/   # Audit trails, PDF generator
+│   ├── telemetry/    # Live stream monitoring, anomaly overlays
+│   ├── documents/    # OEM manual upload UI, processing status
+│   └── settings/     # User preferences, mock configuration
 ├── hooks/            # Global custom hooks (e.g., useAuth, useWebSocket)
 ├── pages/            # Top-level route components (compose features here)
 ├── services/         # API client layer (Axios instances, REST wrappers)
@@ -52,166 +56,145 @@ frontend/src/
 
 ## 3. Backend Architecture (FastAPI)
 
-The backend follows a **Domain-Driven Design (DDD)** approach. Business logic is separated from the API routing layer.
+The backend follows **Domain-Driven Design (DDD)** with strict separation of concerns across ingestion, processing, AI reasoning, and orchestration.
 
 ```text
 backend/app/
 ├── api/              # FastAPI routers, endpoints, and dependency injection
-│   ├── v1/           # API Version 1
-├── core/             # App configuration, security, CORS, global exception handlers
-├── services/         # Business logic layer (The "Brain")
-│   ├── ai/           # LLM orchestration, PromptBuilder, JSON parsing
-│   ├── graph/        # NetworkX operations, traversal logic
+│   └── v1/
+│       ├── graph.py        # /api/v1/graph
+│       ├── simulation.py   # /api/v1/simulation
+│       ├── runbook.py      # /api/v1/runbook
+│       ├── documents.py    # /api/v1/documents
+│       ├── compliance.py   # /api/v1/compliance
+│       ├── telemetry.py    # /api/v1/telemetry
+│       └── health.py       # /api/v1/health
+├── connectors/       # Data source integrations
+│   ├── pdf/          # Local PDF file ingestion
+│   ├── csv/          # Tabular historical data
+│   ├── mqtt/         # Live sensor streams (IoT)
+│   ├── opcua/        # Industrial control system data
+│   └── mock/         # Synthetic event generators for demo purposes
+├── core/             # App configuration, lifecycle events, globals
+├── middleware/       # HTTP Request interception layer
+│   ├── logging.py       # Structured request/response logging
+│   ├── request_id.py    # Traceability for distributed logs
+│   ├── timing.py        # API latency monitoring
+│   ├── error_handler.py # Standardized error payloads (avoids stack trace leaks)
+│   └── cors.py          # Cross-Origin configuration
+├── orchestrator/     # The Heart of APEX (Coordinates all services)
+│   ├── workflow.py      # Main pipeline execution runner
+│   ├── pipeline.py      # Defines linear and branching execution DAGs
+│   ├── context_builder.py# Aggregates graph, RAG, and telemetry state
+│   └── state_manager.py # Tracks in-flight incidents and lock states
+├── services/         # Isolated Business Logic Modules
+│   ├── ai/           # Decision Intelligence logic
+│   │   ├── prompts/       # Version-controlled prompt templates
+│   │   ├── orchestrator/  # Multi-agent/chain definitions
+│   │   ├── validators/    # Output format enforcement (Pydantic validation)
+│   │   └── models/        # LLM client abstractions (OpenAI, Anthropic wrappers)
+│   ├── graph/        # NetworkX Operations
+│   │   ├── graph_builder.py     # Constructs graph from schematics
+│   │   ├── graph_traversal.py   # BFS/DFS search utilities
+│   │   ├── blast_radius.py      # Calculates downstream failure impacts
+│   │   ├── pathfinder.py        # Identifies alternative routing options
+│   │   ├── graph_serializer.py  # JSON export/import for UI and caching
+│   │   └── graph_validator.py   # Ensures graph logical integrity
+│   ├── ingestion/    # Document Processing Pipeline
+│   │   ├── parser.py            # Entry point for doc parsing
+│   │   ├── ocr.py               # Optical Character Recognition wrappers
+│   │   ├── layout.py            # Detects sections, headers, and images
+│   │   ├── table_extractor.py   # Tabular data parser
+│   │   ├── chunker.py           # Text splitting (recursive, semantic)
+│   │   └── metadata.py          # Tag extraction (Equipment IDs, standard codes)
+│   ├── rag/          # Retrieval-Augmented Generation
+│   │   ├── embeddings.py        # Text-to-vector embedding generation
+│   │   ├── retriever.py         # Vector DB querying (Qdrant)
+│   │   └── reranker.py          # Relevance scoring and sorting
+│   ├── telemetry/    # Sensor Data & Event Processing
+│   │   ├── mock_stream.py       # Generates synthetic IoT data for demo
+│   │   ├── event_bus.py         # Internal pub/sub for sensor updates
+│   │   ├── alert_generator.py   # Rule-based threshold anomaly detection
+│   │   └── normalizer.py        # Standardizes raw data to APEX schemas
 │   ├── simulation/   # Shadow Simulation logic and state forking
-│   ├── runbook/      # Runbook generation and validation rules
-│   ├── rag/          # Embeddings, retrieval, document chunking
-│   └── compliance/   # Standards mapping, evidence generation
+│   ├── runbook/      # Runbook generation and lifecycle rules
+│   └── compliance/   # Standards mapping, evidence/PDF generation
 ├── models/           # SQLAlchemy ORM models (Future PostgreSQL)
 ├── schemas/          # Pydantic models for request/response validation
-├── database/         # Qdrant client, DB sessions, migrations
-├── utils/            # Helper functions (logging, telemetry mocks)
-└── tests/            # Pytest suite (unit and integration)
+├── database/         # DB clients, sessions, migrations
+├── utils/            # Generic helper functions
+└── tests/            # Pytest suite
 ```
 
 ---
 
-## 4. Shared Types (Schemas)
+## 4. Orchestration Layer (The Heart of APEX)
 
-To maintain absolute type safety across the stack, the following domain models act as the contract between Python (Pydantic) and TypeScript (Interfaces).
+The `orchestrator/` module ensures absolute decoupling of services. Services do not call each other directly; they are coordinated by the `Workflow` engine.
+
+**Example Pipeline Flow:**
+1. **Incident Trigger**: `telemetry/event_bus` detects an anomaly and notifies the Orchestrator.
+2. **Shadow Simulation**: Orchestrator triggers `graph/blast_radius` to calculate physical impact.
+3. **Context Builder**: Aggregates the blast radius, invokes `rag/retriever` to find OEM manuals, and fetches current lock states via `state_manager`.
+4. **Decision Engine**: Passes context to `ai/models` to evaluate mitigation strategies.
+5. **Validator**: `ai/validators` ensures the LLM output strictly adheres to safety schema constraints.
+6. **Runbook Compiler**: Converts the validated decision into actionable `RunbookStep` objects.
+7. **Compliance Generator**: Maps chosen steps to PESO/OISD standards.
+8. **Operational Memory**: Writes the incident resolution to historical databases for future RAG retrieval.
+
+---
+
+## 5. API Skeleton (Contracts)
+
+* `GET /api/v1/health`: Liveness and dependency checks.
+* `POST /api/v1/telemetry/ingest`: Ingest simulated or real anomaly payloads.
+* `GET /api/v1/graph/state`: Returns `GraphNode[]`, `GraphEdge[]`.
+* `POST /api/v1/simulation/shadow-run`: Forks state and calculates `ShadowSimulationResult`.
+* `POST /api/v1/runbook/generate`: Compiles LLM outputs to `RunbookSchema`.
+* `PUT /api/v1/runbook/{id}/step/{step_id}`: Updates state (e.g., mark failed, recalculate).
+* `POST /api/v1/documents/upload`: Passes binary payload to the Ingestion pipeline.
+* `GET /api/v1/compliance/export/{incident_id}`: Generates audit-ready PDF.
+
+---
+
+## 6. Shared Types (Schemas)
 
 * **`IncidentPayload`**: `{ incident_id, asset_id, timestamp, severity, sensor_data }`
 * **`GraphNode`**: `{ node_id, type, label, status, telemetry_snapshot }`
 * **`ShadowSimulationResult`**: `{ simulation_id, blast_radius_nodes, mitigation_paths[] }`
 * **`MitigationPath`**: `{ path_id, safety_score, financial_impact, description }`
 * **`RunbookSchema`**: `{ runbook_id, incident_id, steps: RunbookStep[], status }`
-* **`RunbookStep`**: `{ step_id, action, target_asset, requires_loto, citation, status }`
 
 ---
 
-## 5. Environment Configuration
+## 7. Database & Environment Configuration
 
-### `.env.example`
+* **Vector DB (Qdrant)**: Stores chunked manuals and incident history embeddings.
+* **Graph Storage (Hackathon)**: NetworkX state persisted to `graph_state.json`.
+* **Future Migration**: PostgreSQL for structured logs; Neo4j for massive distributed graph processing.
+
+**`.env.example`**
 ```env
-# --- BACKEND ---
 ENVIRONMENT=development
 API_V1_STR=/api/v1
 OPENAI_API_KEY=sk-xxxx
 QDRANT_HOST=localhost
 QDRANT_PORT=6333
 CORS_ORIGINS=http://localhost:3000
-
-# --- FRONTEND ---
 VITE_API_BASE_URL=http://localhost:8000/api/v1
-VITE_WS_BASE_URL=ws://localhost:8000/ws
 ```
 
 ---
 
-## 6. Docker & Infrastructure
-
-**`docker-compose.yml` Structure:**
-* **`apex-frontend`**: Node/Vite container serving the React app (Port 3000).
-* **`apex-backend`**: Uvicorn/FastAPI container (Port 8000).
-* **`apex-qdrant`**: Official Qdrant image (Port 6333).
-* **Networking**: Internal bridge network `apex-net`.
-* **Volumes**: 
-  * `qdrant-data`: Persist vector embeddings.
-  * `backend-cache`: Persist NetworkX serialized JSON state.
-
----
-
-## 7. Development Workflow
-
-* **Git Strategy**: Trunk-based development for speed, but enforced via Pull Requests.
-* **Branching**: `feat/runbook-engine`, `fix/graph-rendering`, `chore/setup-docker`.
-* **Commits**: Conventional Commits (e.g., `feat(graph): add blast radius animation`).
-* **CI/CD**: GitHub Actions runs `pytest` and `eslint` on every PR.
-
----
-
-## 8. Coding Standards
-
-* **Naming Conventions**: 
-  * Frontend: PascalCase for components (`GraphView.tsx`), camelCase for hooks (`useRunbook.ts`).
-  * Backend: snake_case for Python variables and files (`shadow_simulator.py`), PascalCase for Classes.
-* **Import Conventions**: Absolute imports configured via `tsconfig.json` (`@/features/graph`) and Python `PYTHONPATH`.
-* **Error Handling**: 
-  * Backend: Raise custom `HTTPException` subclasses. Never leak stack traces to the client.
-  * Frontend: Global Error Boundaries and toast notification interceptors in Axios.
-* **Logging**: Python `structlog` for JSON-formatted logs.
-
----
-
-## 9. API Skeleton (Contracts)
-
-* **`POST /api/v1/incidents/trigger`**: Ingest simulated anomaly. Returns `IncidentPayload`.
-* **`GET /api/v1/graph/state`**: Returns current plant graph. Response: `GraphNode[]`, `GraphEdge[]`.
-* **`POST /api/v1/simulation/run`**: Triggers shadow twin. Body: `IncidentPayload`. Returns `ShadowSimulationResult`.
-* **`POST /api/v1/runbook/generate`**: LLM generation. Body: `MitigationPath`. Returns `RunbookSchema`.
-* **`PUT /api/v1/runbook/{id}/step/{step_id}`**: Update step (e.g., mark failed). Returns updated `RunbookSchema`.
-* **`GET /api/v1/compliance/export/{incident_id}`**: Returns a binary PDF Blob.
-
----
-
-## 10. Backend Services (Class Skeletons)
-
-* **`GraphService`**: Manages `NetworkX` graph. `calculate_blast_radius(node_id)`
-* **`SimulationService`**: Forks graph state. `run_forward_simulation(graph, anomaly)`
-* **`RAGService`**: Interfaces with Qdrant. `query_context(asset_ids)`
-* **`ReasoningEngine`**: LLM Orchestrator. `evaluate_mitigation_paths(blast_radius, context)`
-* **`RunbookCompiler`**: Deterministic JSON generation. `compile_action_steps(llm_decision)`
-* **`DocumentProcessor`**: PDF OCR and chunking. `ingest_oem_manual(file)`
-
----
-
-## 11. Frontend Component Hierarchy
-
-```text
-<App>
-  <Sidebar> (Navigation: Dashboard, History, Compliance)
-  <TopHeader> (Global alerts, system health)
-  <WorkspaceLayout>
-    <LeftPanel: CausalGraphView>
-      <ReactFlowCanvas>
-        <CustomAssetNode>
-        <AnimatedFailureEdge>
-    <RightPanel: ControlCenter>
-      <IncidentFeed> (List of active anomalies)
-      <ShadowSimulationModal> (Displays 3 mitigation paths)
-      <RunbookPanel> (Active execution)
-        <RunbookHeader>
-        <StepList>
-          <ActionCard> (Interactive checklist item)
-            <CitationTooltip>
-```
-
----
-
-## 12. Database Design
-
-* **Vector DB (Qdrant)**:
-  * Collection: `industrial_knowledge`. 
-  * Payload schema: `{"asset_id": "P-101", "doc_type": "OEM_MANUAL", "page": 42}`
-* **Graph Storage (Hackathon)**: 
-  * NetworkX state saved as serialized JSON to local disk (`graph_state.json`) for persistence across hot-reloads.
-* **Future Migration**:
-  * PostgreSQL (Incident logs, Runbook history).
-  * Neo4j (Persistent Cypher-queryable causal graph).
-
----
-
-## 13. Development Order (Implementation Roadmap)
+## 8. Development Order (Implementation Roadmap)
 
 * **Milestone 1**: Project Setup (Docker, Vite, FastAPI, CI/CD).
-* **Milestone 2**: Static Causal Graph (NetworkX JSON -> React Flow UI).
-* **Milestone 3**: Qdrant Vector Setup & Manual Ingestion pipeline.
-* **Milestone 4**: The Shadow Simulation Engine (Calculate blast radius in Python).
-* **Milestone 5**: LLM Reasoning Pipeline (Connecting RAG to Graph output).
-* **Milestone 6**: Runbook Generator (Deterministic JSON parsing).
-* **Milestone 7**: Frontend Runbook Execution UI (Checklists & state management).
-* **Milestone 8**: Dynamic Feedback Loop (Mark step failed -> trigger recalculation).
-* **Milestone 9**: Incident Telemetry Feed (Mock event emitter).
+* **Milestone 2**: Ingestion & Connectors (Mock IoT stream, PDF processing hooks).
+* **Milestone 3**: Graph Engine (NetworkX building, traversal, serialization).
+* **Milestone 4**: Shadow Simulation Engine (Calculate blast radius in Python).
+* **Milestone 5**: Vector DB & RAG Setup (Qdrant embeddings).
+* **Milestone 6**: AI Decision Engine (Connecting Orchestrator to LLM).
+* **Milestone 7**: Runbook Generator (Deterministic JSON compiling).
+* **Milestone 8**: Frontend Graph UI & Telemetry Overlay.
+* **Milestone 9**: Frontend Runbook Execution UI (Dynamic failure handling).
 * **Milestone 10**: Compliance PDF Generator & Polish.
-
----
-*Status: Engineering Foundation Finalized. Awaiting approval to proceed to Milestone 1.*
