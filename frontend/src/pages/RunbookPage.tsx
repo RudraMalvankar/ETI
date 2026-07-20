@@ -246,6 +246,24 @@ export const RunbookPage: React.FC = () => {
           <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">Simulation ID</span>
           <span className="text-sm font-mono text-brand-500 block mt-0.5">{runbook.simulation_id}</span>
         </div>
+        
+        {/* Progress Tracker added here */}
+        <div className="flex-1 min-w-[200px] max-w-md mx-auto hidden md:block">
+          <div className="flex justify-between items-end mb-2">
+            <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">Workflow Progress</span>
+            <span className="text-xs font-bold text-[var(--text-primary)]">
+              {runbook.steps.filter(s => s.status === 'completed').length} / {runbook.steps.length} Steps
+            </span>
+          </div>
+          <div className="w-full h-2 bg-[var(--bg-secondary)] rounded-full overflow-hidden border border-[var(--glass-border)]">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${(runbook.steps.filter(s => s.status === 'completed').length / runbook.steps.length) * 100}%` }}
+              className="h-full bg-gradient-to-r from-brand-500 to-accent-emerald transition-all duration-500"
+            />
+          </div>
+        </div>
+
         <div>
           <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">Status</span>
           <div className="mt-1">

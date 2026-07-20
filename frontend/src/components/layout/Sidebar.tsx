@@ -52,8 +52,8 @@ export const Sidebar: React.FC = () => {
               <span className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-brand-400 via-accent-purple to-accent-emerald text-transparent bg-clip-text">
                 APEX
               </span>
-              <span className="block text-[10px] font-mono text-[var(--text-secondary)] tracking-wider">
-                ENTERPRISE AI
+              <span className="block text-[10px] font-mono text-[var(--text-secondary)] tracking-wider mt-0.5">
+                INDUSTRIAL AI OS
               </span>
             </motion.div>
           )}
