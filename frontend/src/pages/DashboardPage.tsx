@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Activity,
   AlertOctagon,
@@ -10,8 +10,7 @@ import {
   CheckCircle2,
   Zap,
   ArrowRight,
-  BrainCircuit,
-  Network
+  BrainCircuit
 } from 'lucide-react';
 import { StatCard } from '../components/common/StatCard';
 import { SectionCard } from '../components/common/SectionCard';
@@ -140,7 +139,6 @@ export const DashboardPage: React.FC = () => {
         <SectionCard 
           title="Live Blast Radius Topology" 
           subtitle="Real-time propagation map based on current telemetry"
-          icon={Network}
           action={<button onClick={() => setActiveTab('graph')} className="text-brand-500 text-xs font-bold hover:underline flex items-center gap-1">Open Workspace <ArrowRight className="w-3 h-3" /></button>}
           className="h-[400px] flex flex-col"
         >
