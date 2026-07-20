@@ -1,19 +1,54 @@
+import { lazy, Suspense } from 'react';
+import { Layout } from './components/layout/Layout';
+import { useApexStore } from './store/useApexStore';
+import { LoadingSkeleton } from './components/common/LoadingSkeleton';
 
+const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
+const DocumentsPage = lazy(() => import('./pages/DocumentsPage').then(m => ({ default: m.DocumentsPage })));
+const KnowledgeGraphPage = lazy(() => import('./pages/KnowledgeGraphPage').then(m => ({ default: m.KnowledgeGraphPage })));
+const SimulationPage = lazy(() => import('./pages/SimulationPage').then(m => ({ default: m.SimulationPage })));
+const DecisionPage = lazy(() => import('./pages/DecisionPage').then(m => ({ default: m.DecisionPage })));
+const RunbookPage = lazy(() => import('./pages/RunbookPage').then(m => ({ default: m.RunbookPage })));
+const MemoryPage = lazy(() => import('./pages/MemoryPage').then(m => ({ default: m.MemoryPage })));
+const CompliancePage = lazy(() => import('./pages/CompliancePage').then(m => ({ default: m.CompliancePage })));
+const IncidentHistoryPage = lazy(() => import('./pages/IncidentHistoryPage').then(m => ({ default: m.IncidentHistoryPage })));
+const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 
 export function App() {
+  const { activeTab } = useApexStore();
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return <DashboardPage />;
+      case 'documents':
+        return <DocumentsPage />;
+      case 'graph':
+        return <KnowledgeGraphPage />;
+      case 'simulation':
+        return <SimulationPage />;
+      case 'decision':
+        return <DecisionPage />;
+      case 'runbook':
+        return <RunbookPage />;
+      case 'memory':
+        return <MemoryPage />;
+      case 'compliance':
+        return <CompliancePage />;
+      case 'history':
+        return <IncidentHistoryPage />;
+      case 'settings':
+        return <SettingsPage />;
+      default:
+        return <DashboardPage />;
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0B0F17] text-white">
-      <h1 className="text-5xl font-outfit font-bold mb-4 bg-gradient-to-r from-blue-400 to-emerald-400 text-transparent bg-clip-text">
-        APEX
-      </h1>
-      <p className="text-slate-400 font-inter text-lg">
-        Decision Intelligence & Shadow Simulation Engine
-      </p>
-      <div className="mt-8 flex gap-4">
-        <span className="px-3 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-md text-sm font-mono">
-          System Nominal
-        </span>
-      </div>
-    </div>
+    <Layout>
+      <Suspense fallback={<LoadingSkeleton count={4} height="h-24" />}>
+        {renderContent()}
+      </Suspense>
+    </Layout>
   );
 }
