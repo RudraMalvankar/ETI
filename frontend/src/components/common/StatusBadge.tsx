@@ -9,7 +9,8 @@ interface StatusBadgeProps {
 }
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label, size = 'md' }) => {
-  const s = status.toLowerCase();
+  const safeStatus = status || 'unknown';
+  const s = String(safeStatus).toLowerCase();
   
   let styles = 'bg-slate-800 text-slate-300 border-slate-700';
   let dotColor = 'bg-slate-400';
@@ -28,7 +29,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label, size = 
     dotColor = 'bg-red-400';
   }
 
-  const displayText = label || status.replace('_', ' ');
+  const displayText = label || String(safeStatus).replace('_', ' ');
 
   const py = size === 'sm' ? 'py-0.5 px-2 text-[10px]' : 'py-1 px-2.5 text-xs';
 

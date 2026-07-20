@@ -317,21 +317,21 @@ export const RunbookPage: React.FC = () => {
                 <span className="text-[var(--text-secondary)] text-[10px] uppercase tracking-wider font-semibold flex items-center gap-1.5 mb-2">
                   <Wrench className="w-3.5 h-3.5 text-brand-500" /> Required Tools
                 </span>
-                <span className="text-[var(--text-primary)] text-xs font-medium">{step.required_tools.join(', ')}</span>
+                <span className="text-[var(--text-primary)] text-xs font-medium">{(step.required_tools || []).join(', ') || 'Standard Tools'}</span>
               </div>
 
               <div className="p-3.5 rounded-xl bg-[var(--bg-secondary)]/50 border border-[var(--glass-border)] transition-colors hover:border-accent-amber/30">
                 <span className="text-[var(--text-secondary)] text-[10px] uppercase tracking-wider font-semibold flex items-center gap-1.5 mb-2">
                   <ShieldCheck className="w-3.5 h-3.5 text-accent-amber" /> Safety Requirements
                 </span>
-                <span className="text-[var(--text-primary)] text-xs font-medium">{step.safety_requirements.join(', ')}</span>
+                <span className="text-[var(--text-primary)] text-xs font-medium">{(step.safety_requirements || []).join(', ') || 'Standard PPE'}</span>
               </div>
 
               <div className="p-3.5 rounded-xl bg-[var(--bg-secondary)]/50 border border-[var(--glass-border)] transition-colors hover:border-accent-emerald/30">
                 <span className="text-[var(--text-secondary)] text-[10px] uppercase tracking-wider font-semibold flex items-center gap-1.5 mb-2">
                   <FileText className="w-3.5 h-3.5 text-accent-emerald" /> Grounded Citations
                 </span>
-                <span className="text-[var(--text-primary)] font-mono text-[10px] bg-[var(--bg-secondary)] px-1.5 py-0.5 rounded">{step.citations.join(', ')}</span>
+                <span className="text-[var(--text-primary)] font-mono text-[10px] bg-[var(--bg-secondary)] px-1.5 py-0.5 rounded">{(step.citations || []).join(', ') || 'N/A'}</span>
               </div>
             </div>
 
