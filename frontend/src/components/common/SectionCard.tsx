@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 interface SectionCardProps {
   title: string;
@@ -10,15 +11,20 @@ interface SectionCardProps {
 
 export const SectionCard: React.FC<SectionCardProps> = ({ title, subtitle, action, children, className = '' }) => {
   return (
-    <div className={`p-6 rounded-2xl bg-slate-900/50 border border-slate-800/80 backdrop-blur-xl shadow-2xl ${className}`}>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-slate-800/60 gap-2">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`p-6 rounded-2xl glass-panel ${className}`}
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-[var(--glass-border)] gap-2">
         <div>
-          <h2 className="text-lg font-bold text-white tracking-wide">{title}</h2>
-          {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
+          <h2 className="heading-2 text-lg md:text-xl">{title}</h2>
+          {subtitle && <p className="subtitle mt-0.5">{subtitle}</p>}
         </div>
         {action && <div>{action}</div>}
       </div>
       <div>{children}</div>
-    </div>
+    </motion.div>
   );
 };

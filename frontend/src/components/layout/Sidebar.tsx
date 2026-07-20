@@ -16,6 +16,7 @@ import {
   Zap
 } from 'lucide-react';
 import { useApexStore } from '../../store/useApexStore';
+import { motion } from 'framer-motion';
 
 export const Sidebar: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -36,37 +37,37 @@ export const Sidebar: React.FC = () => {
 
   return (
     <aside
-      className={`relative flex flex-col h-screen bg-slate-950 border-r border-slate-800/80 transition-all duration-300 z-30 select-none ${
+      className={`relative flex flex-col h-screen glass-panel rounded-none border-t-0 border-b-0 border-l-0 transition-all duration-300 z-30 select-none ${
         isCollapsed ? 'w-20' : 'w-64'
       }`}
     >
       {/* Brand Header */}
-      <div className="flex items-center justify-between p-5 border-b border-slate-800/80">
+      <div className="flex items-center justify-between p-5 border-b border-[var(--glass-border)]">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-blue-600 to-emerald-500 text-white shadow-lg shadow-blue-500/20">
+          <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-emerald text-white shadow-[0_0_15px_rgba(14,165,233,0.4)]">
             <Zap className="w-5 h-5" />
           </div>
           {!isCollapsed && (
-            <div>
-              <span className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 text-transparent bg-clip-text">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+              <span className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-brand-400 via-accent-purple to-accent-emerald text-transparent bg-clip-text">
                 APEX
               </span>
-              <span className="block text-[10px] font-mono text-slate-400 tracking-wider">
+              <span className="block text-[10px] font-mono text-[var(--text-secondary)] tracking-wider">
                 ENTERPRISE AI
               </span>
-            </div>
+            </motion.div>
           )}
         </div>
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1.5 rounded-xl bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800 transition"
+          className="p-1.5 rounded-xl bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--glass-border)] transition"
         >
           {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
       </div>
 
       {/* Nav List */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto scroll-smooth">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -74,25 +75,33 @@ export const Sidebar: React.FC = () => {
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-xs font-semibold transition-all duration-200 group ${
+              className={`w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-xs font-semibold transition-all duration-200 group relative ${
                 isActive
-                  ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/10 text-blue-400 border border-blue-500/30 shadow-lg shadow-blue-500/10'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                  ? 'text-brand-500'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-border)]'
               }`}
               title={isCollapsed ? item.label : undefined}
             >
-              <Icon className={`w-4 h-4 transition-transform group-hover:scale-110 ${isActive ? 'text-blue-400' : 'text-slate-400'}`} />
-              {!isCollapsed && <span className="truncate">{item.label}</span>}
+              {isActive && (
+                <motion.div
+                  layoutId="sidebar-active"
+                  className="absolute inset-0 bg-brand-500/10 border border-brand-500/20 rounded-xl"
+                  initial={false}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
+              )}
+              <Icon className={`relative z-10 w-4 h-4 transition-transform group-hover:scale-110 ${isActive ? 'text-brand-500' : 'text-[var(--text-secondary)]'}`} />
+              {!isCollapsed && <span className="relative z-10 truncate">{item.label}</span>}
             </button>
           );
         })}
       </nav>
 
       {/* Footer / Logout */}
-      <div className="p-3 border-t border-slate-800/80">
+      <div className="p-3 border-t border-[var(--glass-border)]">
         <button
           onClick={() => setActiveTab('settings')}
-          className="w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-all"
+          className="w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-xs font-semibold text-[var(--text-secondary)] hover:text-accent-red hover:bg-accent-red/10 border border-transparent hover:border-accent-red/20 transition-all"
           title={isCollapsed ? 'Logout' : undefined}
         >
           <LogOut className="w-4 h-4" />

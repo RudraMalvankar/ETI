@@ -3,7 +3,59 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-[#0B0F17] text-[#F3F4F6] font-inter antialiased;
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --border-color: rgba(0, 0, 0, 0.05);
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.2);
   }
+
+  .dark {
+    --bg-primary: #020617; /* navy-950 */
+    --bg-secondary: #0f172a; /* navy-900 */
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: rgba(255, 255, 255, 0.05);
+    --glass-bg: rgba(15, 23, 42, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.08);
+  }
+
+  body {
+    @apply bg-[var(--bg-primary)] text-[var(--text-primary)] font-inter antialiased transition-colors duration-300;
+  }
+  
+  ::selection {
+    background-color: rgba(14, 165, 233, 0.3); /* brand-500/30 */
+    color: #0ea5e9; /* brand-500 */
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-[var(--glass-bg)] backdrop-blur-xl border border-[var(--glass-border)];
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .glass-panel {
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  }
+  
+  .heading-1 {
+    @apply text-4xl md:text-5xl font-outfit font-light tracking-tight text-[var(--text-primary)];
+  }
+
+  .heading-2 {
+    @apply text-2xl md:text-3xl font-outfit font-medium tracking-tight text-[var(--text-primary)];
+  }
+
+  .subtitle {
+    @apply text-sm md:text-base text-[var(--text-secondary)] font-medium;
+  }
+}
+
+.bg-gradient-radial {
+  background-image: radial-gradient(var(--tw-gradient-stops));
 }
