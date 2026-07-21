@@ -89,6 +89,49 @@ export const LandingPage: React.FC = () => {
               Read the Docs
             </button>
           </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.5, type: 'spring', stiffness: 100 }}
+            className="mt-16 mx-auto max-w-4xl relative"
+          >
+            <div className="w-full aspect-video rounded-xl border border-[var(--border-strong)] bg-[var(--bg-surface)] shadow-2xl overflow-hidden flex flex-col relative z-20">
+              <div className="w-full h-8 border-b border-[var(--border-strong)] bg-[var(--bg-elevated)] flex items-center px-4 gap-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-accent-red/80"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-accent-amber/80"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-accent-emerald/80"></div>
+                <div className="mx-auto text-[10px] font-mono text-[var(--text-muted)] flex items-center gap-1">
+                  <Lock className="w-3 h-3" /> apex.enterprise/dashboard
+                </div>
+              </div>
+              <div className="flex-1 p-6 flex flex-col gap-4 bg-[var(--bg-base)]">
+                 <div className="grid grid-cols-4 gap-4 h-1/4">
+                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)]"></div>
+                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)]"></div>
+                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)]"></div>
+                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)]"></div>
+                 </div>
+                 <div className="flex gap-4 h-3/4">
+                   <div className="w-2/3 bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] flex items-center justify-center relative overflow-hidden">
+                      {/* Fake Topology */}
+                      <svg className="w-full h-full opacity-50" viewBox="0 0 100 100" preserveAspectRatio="none">
+                         <path d="M20 50 Q 50 20 80 50" stroke="currentColor" fill="none" />
+                         <circle cx="20" cy="50" r="2" fill="currentColor" />
+                         <circle cx="80" cy="50" r="2" fill="currentColor" />
+                      </svg>
+                   </div>
+                   <div className="w-1/3 bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] flex flex-col gap-2 p-3">
+                      <div className="h-4 w-1/2 bg-[var(--border-strong)] rounded"></div>
+                      <div className="h-20 w-full bg-[var(--bg-elevated)] border border-[var(--border-strong)] rounded mt-auto"></div>
+                   </div>
+                 </div>
+              </div>
+            </div>
+            
+            {/* Ambient Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary-500/10 blur-[100px] pointer-events-none z-10 rounded-full" />
+          </motion.div>
         </div>
       </section>
 
@@ -202,15 +245,41 @@ export const LandingPage: React.FC = () => {
               <h2 className="heading-lg mb-4">Knowledge Graph Topology</h2>
               <p className="text-body mb-6">Instantly map industrial dependencies. When an asset fails, see the exact blast radius and downstream effects in real-time.</p>
             </div>
-            <div className="aspect-video bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg shadow-sm flex items-center justify-center p-8">
-               <div className="w-full h-full border border-[var(--border-muted)] rounded flex items-center justify-center relative">
-                 {/* Abstract graph */}
-                 <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-primary-500 rounded-full" />
-                 <div className="absolute top-1/2 right-1/4 w-4 h-4 bg-accent-amber rounded-full" />
-                 <div className="absolute bottom-1/4 left-1/2 w-4 h-4 bg-accent-red rounded-full" />
-                 <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }}>
-                   <line x1="25%" y1="25%" x2="75%" y2="50%" stroke="var(--border-strong)" strokeWidth="2" />
-                   <line x1="75%" y1="50%" x2="50%" y2="75%" stroke="var(--border-strong)" strokeWidth="2" />
+            <div className="aspect-video bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg shadow-sm flex items-center justify-center p-6 relative overflow-hidden group">
+               <div className="w-full h-full border border-[var(--border-muted)] rounded flex items-center justify-center relative bg-[var(--bg-base)]">
+                 <svg className="w-full h-full" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                   {/* Background Grid */}
+                   <g opacity="0.1">
+                     {Array.from({length: 20}).map((_, i) => <line key={`v${i}`} x1={i*20} y1="0" x2={i*20} y2="200" stroke="currentColor" strokeWidth="0.5" />)}
+                     {Array.from({length: 10}).map((_, i) => <line key={`h${i}`} x1="0" y1={i*20} x2="400" y2={i*20} stroke="currentColor" strokeWidth="0.5" />)}
+                   </g>
+                   {/* Edges */}
+                   <motion.path d="M100 100 Q 150 50 200 80 T 300 120" stroke="var(--border-strong)" strokeWidth="2" fill="none" />
+                   <motion.path d="M100 100 Q 150 150 250 160 T 300 120" stroke="var(--border-strong)" strokeWidth="2" fill="none" />
+                   <motion.path d="M200 80 Q 220 120 250 160" stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="4 4" fill="none" />
+                   {/* Active Data Flow (Pulsing) */}
+                   <motion.path 
+                     d="M100 100 Q 150 50 200 80 T 300 120" 
+                     stroke="#3b82f6" 
+                     strokeWidth="2" 
+                     fill="none" 
+                     initial={{ pathLength: 0, opacity: 0 }}
+                     animate={{ pathLength: 1, opacity: [0, 1, 0] }}
+                     transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                   />
+                   {/* Nodes */}
+                   <circle cx="100" cy="100" r="6" fill="#3b82f6" />
+                   <text x="100" y="120" fill="currentColor" fontSize="10" fontFamily="monospace" textAnchor="middle" opacity="0.7">Sensor-A4</text>
+                   
+                   <circle cx="200" cy="80" r="8" fill="#f59e0b" className="animate-pulse" />
+                   <text x="200" y="60" fill="currentColor" fontSize="10" fontFamily="monospace" textAnchor="middle" opacity="0.7">PLC-X12</text>
+                   
+                   <circle cx="250" cy="160" r="6" fill="currentColor" opacity="0.5" />
+                   <text x="250" y="180" fill="currentColor" fontSize="10" fontFamily="monospace" textAnchor="middle" opacity="0.7">Valv-09</text>
+                   
+                   <circle cx="300" cy="120" r="10" fill="#ef4444" />
+                   <circle cx="300" cy="120" r="14" fill="none" stroke="#ef4444" strokeWidth="1" className="animate-ping" style={{ transformOrigin: '300px 120px' }} />
+                   <text x="300" y="145" fill="currentColor" fontSize="10" fontFamily="monospace" textAnchor="middle" opacity="0.7">Turbine-4 (FAIL)</text>
                  </svg>
                </div>
             </div>
@@ -218,11 +287,30 @@ export const LandingPage: React.FC = () => {
 
           {/* AI Copilot */}
           <div className="grid md:grid-cols-2 gap-12 items-center md:flex-row-reverse">
-            <div className="order-2 md:order-1 aspect-video bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg shadow-sm flex items-center justify-center p-8">
-               <div className="w-full h-full border border-[var(--border-muted)] rounded bg-[var(--bg-base)] p-4 flex flex-col gap-2">
-                 <div className="w-3/4 h-4 bg-[var(--bg-surface)] rounded" />
-                 <div className="w-1/2 h-4 bg-[var(--bg-surface)] rounded" />
-                 <div className="mt-auto self-end w-2/3 h-10 bg-primary-500/10 border border-primary-500/20 rounded-md" />
+            <div className="order-2 md:order-1 aspect-video bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg shadow-sm p-4 relative overflow-hidden group">
+               <div className="w-full h-full border border-[var(--border-strong)] rounded bg-[var(--bg-base)] shadow-inner flex flex-col font-mono text-[10px] overflow-hidden">
+                 {/* Fake Terminal Header */}
+                 <div className="w-full px-3 py-2 border-b border-[var(--border-strong)] flex items-center gap-2 bg-[var(--bg-surface)]">
+                    <div className="flex gap-1.5"><div className="w-2 h-2 rounded-full bg-accent-red" /><div className="w-2 h-2 rounded-full bg-accent-amber" /><div className="w-2 h-2 rounded-full bg-accent-emerald" /></div>
+                    <span className="text-[var(--text-muted)] ml-2">apex-copilot-sh</span>
+                 </div>
+                 {/* Terminal Content */}
+                 <div className="p-4 flex flex-col gap-3 text-[var(--text-secondary)]">
+                    <div className="flex items-start gap-2">
+                      <span className="text-primary-500">{">"}</span>
+                      <motion.p initial={{ width: 0 }} animate={{ width: "100%" }} className="overflow-hidden whitespace-nowrap">Analyze failure in Turbine-4</motion.p>
+                    </div>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}>
+                      <p className="text-[var(--text-muted)]">Searching OEM manuals...</p>
+                      <p className="text-[var(--text-muted)]">Correlating telemetry data (PLC-X12 overheat)...</p>
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.5 }} className="mt-2 p-3 rounded bg-accent-emerald/10 border border-accent-emerald/20 text-accent-emerald">
+                      <p className="font-bold mb-1">Recommended Runbook: RB-1042</p>
+                      <p>1. Isolate intake valve Valv-09.</p>
+                      <p>2. Vent pressure via secondary loop.</p>
+                      <p>3. Restart PLC-X12 logic controller.</p>
+                    </motion.div>
+                 </div>
                </div>
             </div>
             <div className="order-1 md:order-2">
@@ -243,11 +331,46 @@ export const LandingPage: React.FC = () => {
               <h2 className="heading-lg mb-4">Maintenance Intelligence</h2>
               <p className="text-body mb-6">Run thousands of Monte Carlo shadow simulations to predict remaining useful life and forecast catastrophic failures before they cascade.</p>
             </div>
-            <div className="aspect-video bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg shadow-sm flex items-end p-8 gap-2">
-               <div className="flex-1 bg-[var(--border-strong)] rounded-t h-1/4" />
-               <div className="flex-1 bg-[var(--border-strong)] rounded-t h-2/4" />
-               <div className="flex-1 bg-accent-amber rounded-t h-3/4" />
-               <div className="flex-1 bg-accent-red rounded-t h-full" />
+            <div className="aspect-video bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg shadow-sm flex items-center justify-center p-6 relative overflow-hidden group">
+               <div className="w-full h-full bg-[var(--bg-base)] border border-[var(--border-muted)] rounded p-4 relative">
+                  <svg className="w-full h-full" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Grid */}
+                    <g opacity="0.1">
+                      {Array.from({length: 8}).map((_, i) => <line key={`h${i}`} x1="0" y1={i*25} x2="400" y2={i*25} stroke="currentColor" strokeWidth="0.5" />)}
+                      {Array.from({length: 10}).map((_, i) => <line key={`v${i}`} x1={i*40} y1="0" x2={i*40} y2="200" stroke="currentColor" strokeWidth="0.5" />)}
+                    </g>
+                    {/* Confidence Interval Fill */}
+                    <path d="M0 150 Q 100 140 200 120 T 400 40 L 400 200 L 0 200 Z" fill="url(#grad)" opacity="0.2" />
+                    <defs>
+                      <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#ef4444" />
+                        <stop offset="100%" stopColor="transparent" />
+                      </linearGradient>
+                    </defs>
+                    {/* Trend Lines */}
+                    <motion.path 
+                      d="M0 150 Q 100 140 200 120 T 400 40" 
+                      stroke="#ef4444" strokeWidth="2" fill="none"
+                      initial={{ pathLength: 0 }}
+                      whileInView={{ pathLength: 1 }}
+                      transition={{ duration: 1.5, ease: "easeInOut" }}
+                    />
+                    <motion.path 
+                      d="M0 160 Q 100 150 200 140 T 400 100" 
+                      stroke="#3b82f6" strokeWidth="1" strokeDasharray="4 4" fill="none"
+                      initial={{ pathLength: 0 }}
+                      whileInView={{ pathLength: 1 }}
+                      transition={{ duration: 2, ease: "easeInOut" }}
+                    />
+                    
+                    {/* Markers */}
+                    <line x1="200" y1="0" x2="200" y2="200" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" opacity="0.3" />
+                    <text x="195" y="15" fill="currentColor" fontSize="10" fontFamily="monospace" textAnchor="end" opacity="0.6">TODAY</text>
+                    
+                    <line x1="320" y1="0" x2="320" y2="200" stroke="#ef4444" strokeWidth="1" strokeDasharray="2 2" opacity="0.5" />
+                    <text x="325" y="15" fill="#ef4444" fontSize="10" fontFamily="monospace" textAnchor="start" opacity="0.9">FAILURE (EST. 14 DAYS)</text>
+                  </svg>
+               </div>
             </div>
           </div>
 
@@ -312,10 +435,12 @@ export const LandingPage: React.FC = () => {
                 The Decision Intelligence Platform for Industry. Designed for mission-critical infrastructure.
               </p>
               <div className="flex gap-4">
-                {/* Social placeholders */}
-                <div className="w-6 h-6 bg-[var(--border-strong)] rounded-full" />
-                <div className="w-6 h-6 bg-[var(--border-strong)] rounded-full" />
-                <div className="w-6 h-6 bg-[var(--border-strong)] rounded-full" />
+                <a href="#" className="w-8 h-8 flex items-center justify-center rounded-md border border-[var(--border-strong)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] hover:text-primary-500 transition-colors text-[var(--text-secondary)]">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                </a>
+                <a href="#" className="w-8 h-8 flex items-center justify-center rounded-md border border-[var(--border-strong)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] hover:text-primary-500 transition-colors text-[var(--text-secondary)]">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                </a>
               </div>
             </div>
             
@@ -350,8 +475,20 @@ export const LandingPage: React.FC = () => {
             </div>
           </div>
           
-          <div className="pt-8 border-t border-[var(--border-muted)] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
-            <p>© {new Date().getFullYear()} APEX Enterprise. All rights reserved.</p>
+          <div className="pt-8 border-t border-[var(--border-muted)] flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-[var(--text-muted)]">
+            <div className="flex items-center gap-6">
+              <p>© {new Date().getFullYear()} APEX Enterprise. All rights reserved.</p>
+              <div className="hidden md:flex items-center gap-2 px-2 py-1 rounded-full bg-[var(--bg-surface)] border border-[var(--border-strong)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse" />
+                <span className="font-medium text-[var(--text-secondary)]">All systems operational</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <span className="px-2 py-1 rounded bg-[var(--bg-surface)] border border-[var(--border-strong)] font-mono text-[10px] text-[var(--text-secondary)]">SOC2 Type II</span>
+              <span className="px-2 py-1 rounded bg-[var(--bg-surface)] border border-[var(--border-strong)] font-mono text-[10px] text-[var(--text-secondary)]">99.99% Uptime SLA</span>
+            </div>
+            
             <div className="flex gap-6">
               <span className="hover:text-[var(--text-primary)] cursor-pointer">Terms of Service</span>
               <span className="hover:text-[var(--text-primary)] cursor-pointer">Privacy Policy</span>

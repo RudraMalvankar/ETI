@@ -66,10 +66,10 @@ export const DashboardPage: React.FC = () => {
         
         {/* Top Telemetry Row - Dense and technical */}
         <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard title="Overall System Health" value="82.4%" icon={ShieldCheck} change="-1.2% (1h)" changeType="negative" />
-          <StatCard title="Active Incidents" value="1 Critical" icon={AlertOctagon} change="P-101 anomaly" changeType="negative" />
-          <StatCard title="Active Shadow Sims" value="1,402" icon={Activity} change="Running" changeType="neutral" />
-          <StatCard title="Compliance Posture" value="Ready" icon={FileText} change="100% Audit" changeType="positive" />
+          <StatCard title="Overall System Health" value="82.4%" icon={ShieldCheck} change="-1.2% (1h)" changeType="negative" isLive sparklineData={[90, 89, 91, 88, 86, 85, 83, 82.4]} />
+          <StatCard title="Active Incidents" value="1 Critical" icon={AlertOctagon} change="P-101 anomaly" changeType="negative" isLive sparklineData={[0, 0, 0, 0, 0, 1, 1, 1]} />
+          <StatCard title="Active Shadow Sims" value="1,402" icon={Activity} change="Running" changeType="neutral" isLive sparklineData={[1100, 1150, 1200, 1300, 1350, 1380, 1400, 1402]} />
+          <StatCard title="Compliance Posture" value="Ready" icon={FileText} change="100% Audit" changeType="positive" sparklineData={[100, 100, 100, 100, 100, 100]} />
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

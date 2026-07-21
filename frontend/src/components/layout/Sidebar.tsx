@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   LayoutDashboard,
   FileText,
@@ -103,19 +104,21 @@ export const Sidebar: React.FC = () => {
                 const Icon = item.icon;
                 const isActive = location.pathname.includes(item.id) || (item.id === 'dashboard' && location.pathname === '/dashboard');
                 return (
-                  <button
+                  <motion.button
+                    whileHover={{ x: 2 }}
+                    whileTap={{ scale: 0.98 }}
                     key={item.id}
                     onClick={() => navigate(`/dashboard/${item.id === 'dashboard' ? '' : item.id}`)}
                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                       isActive
                         ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border-strong)] shadow-sm'
-                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] border border-transparent'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]/50 border border-transparent'
                     }`}
                     title={isCollapsed ? item.label : undefined}
                   >
-                    <Icon className={`shrink-0 w-4 h-4 ${isActive ? 'text-primary-500' : 'text-[var(--text-muted)]'}`} />
+                    <Icon className={`shrink-0 w-4 h-4 transition-colors ${isActive ? 'text-primary-500' : 'text-[var(--text-muted)] group-hover:text-primary-400'}`} />
                     {!isCollapsed && <span className="truncate">{item.label}</span>}
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>

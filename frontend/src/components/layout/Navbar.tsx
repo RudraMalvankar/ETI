@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Bell, CheckCircle2, User, Search, Slash } from 'lucide-react';
 import { useApexStore } from '../../store/useApexStore';
 import { ThemeSwitcher } from '../common/ThemeSwitcher';
@@ -43,18 +44,18 @@ export const Navbar: React.FC = () => {
           <span>Connected</span>
         </div>
 
-        <button className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition relative">
+        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition relative">
           <Bell className="w-4 h-4" />
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary-500" />
-        </button>
+        </motion.button>
 
         <ThemeSwitcher />
 
-        <div className="flex items-center gap-2 pl-4 border-l border-[var(--border-muted)] cursor-pointer hover:opacity-80 transition-opacity">
-          <div className="w-7 h-7 rounded bg-primary-600 flex items-center justify-center text-white">
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex items-center gap-2 pl-4 border-l border-[var(--border-muted)] cursor-pointer hover:opacity-80 transition-opacity">
+          <div className="w-7 h-7 rounded bg-primary-600 flex items-center justify-center text-white shadow-sm">
             <User className="w-4 h-4" />
           </div>
-        </div>
+        </motion.div>
       </div>
     </header>
   );

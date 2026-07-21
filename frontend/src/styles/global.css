@@ -40,13 +40,18 @@
 }
 
 @layer components {
-  /* Minimal Enterprise Cards */
+  /* Minimal Enterprise Cards with Micro-interactions */
   .enterprise-card {
-    @apply bg-[var(--bg-surface)] border border-[var(--border-muted)] rounded-lg shadow-sm;
+    @apply bg-[var(--bg-surface)] border border-[var(--border-muted)] rounded-lg shadow-sm transition-all duration-200 hover:shadow-md hover:border-[var(--border-strong)];
   }
   
   .enterprise-card-elevated {
-    @apply bg-[var(--bg-elevated)] border border-[var(--border-strong)] rounded-lg shadow-md;
+    @apply bg-[var(--bg-elevated)] border border-[var(--border-strong)] rounded-lg shadow-md transition-all duration-200 hover:shadow-lg hover:border-primary-500/30;
+  }
+  
+  /* Skeleton Loaders */
+  .skeleton {
+    @apply bg-gradient-to-r from-[var(--border-muted)] via-[var(--border-strong)] to-[var(--border-muted)] bg-[length:400%_100%] animate-[skeleton-pulse_2s_ease-in-out_infinite] rounded;
   }
 
   /* Typography */
