@@ -16,6 +16,7 @@ import { PageHeader } from '../components/common/PageHeader';
 import { SectionCard } from '../components/common/SectionCard';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { useApexStore } from '../store/useApexStore';
+import { getGraph } from '../services/apexServices';
 
 const initialNodes: Node[] = [
   {
@@ -68,6 +69,71 @@ export const KnowledgeGraphPage: React.FC = () => {
   const [selectedNode, setSelectedNode] = useState<Node | null>(initialNodes[0]);
   const [searchQuery, setSearchQuery] = useState('');
   const { setActiveAssetId } = useApexStore();
+
+  const fetchGraphData = async () => {
+    try {
+      const data = await getGraph();
+      if (data && data.nodes && data.nodes.length > 0) {
+        const rfNodes: Node[] = data.nodes.map((n, idx) => {
+          let background = '#0f172a';
+          let border = '1px solid #475569';
+          let color = '#cbd5e1';
+          let shadow = 'none';
+
+          if (n.status === 'critical') {
+            background = '#1e1b4b';
+            color = '#f87171';
+            border = '2px solid #ef4444';
+            shadow = '0 0 15px rgba(239, 68, 68, 0.4)';
+          } else if (n.status === 'warning') {
+            background = '#1e293b';
+            color = '#fbbf24';
+            border = '2px solid #f59e0b';
+          } else if (n.status === 'nominal') {
+            background = '#0f172a';
+            color = '#34d399';
+            border = '1px solid #059669';
+          }
+
+          const x = (idx % 3) * 280 + 100;
+          const y = Math.floor(idx / 3) * 180 + 100;
+
+          return {
+            id: n.id,
+            type: 'default',
+            data: {
+              label: `${n.id} (${n.label})`,
+              assetType: n.type,
+              status: n.status,
+              metadata: n.metadata ? Object.entries(n.metadata).map(([k, v]) => `${k}: ${v}`).join(', ') : 'No Metadata'
+            },
+            position: { x, y },
+            style: { background, color, border, borderRadius: '12px', padding: '12px', fontWeight: 'bold', boxShadow: shadow }
+          };
+        });
+
+        const rfEdges: Edge[] = data.edges.map((e, idx) => ({
+          id: `e-${e.source}-${e.target}-${idx}`,
+          source: e.source,
+          target: e.target,
+          label: e.relationship,
+          animated: true,
+          style: { stroke: '#3b82f6', strokeWidth: 2 },
+          markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6' }
+        }));
+
+        setNodes(rfNodes);
+        setEdges(rfEdges);
+        setSelectedNode(rfNodes[0] || null);
+      }
+    } catch (e) {
+      // Keep demo structure
+    }
+  };
+
+  React.useEffect(() => {
+    fetchGraphData();
+  }, []);
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)),

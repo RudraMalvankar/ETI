@@ -1,4 +1,5 @@
 import json
+from io import BytesIO
 from app.schemas.compliance import ComplianceReport
 
 class AuditTrail:
@@ -6,28 +7,100 @@ class AuditTrail:
     Handles formatting and binary byte export for PDF, DOCX, and JSON compliance reports.
     """
     def export_pdf(self, report: ComplianceReport) -> bytes:
-        report_dict = report.model_dump() if hasattr(report, 'model_dump') else dict(report)
-        pdf_content = (
-            f"%PDF-1.4\n"
-            f"1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n"
-            f"2 0 obj\n<< /Type /Pages /Kinds [3 0 R] /Count 1 >>\nendobj\n"
-            f"3 0 obj\n<< /Type /Page /Parent 2 0 R /Contents 4 0 R >>\nendobj\n"
-            f"4 0 obj\n<< /Length 200 >>\nstream\n"
-            f"APEX ENTERPRISE COMPLIANCE REPORT\n"
-            f"Report ID: {report.report_id}\n"
-            f"Summary: {report.incident_summary}\n"
-            f"Root Cause: {report.root_cause}\n"
-            f"Final Resolution: {report.final_resolution}\n"
-            f"endstream\nendobj\n"
-            f"xref\n0 5\n0000000000 65535 f \n"
-            f"trailer\n<< /Root 1 0 R /Size 5 >>\n"
-            f"startxref\n350\n%%EOF"
+        from reportlab.lib.pagesizes import letter
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.colors import HexColor
+
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(
+            buffer,
+            pagesize=letter,
+            rightMargin=40,
+            leftMargin=40,
+            topMargin=40,
+            bottomMargin=40
         )
-        return pdf_content.encode('utf-8')
+        
+        styles = getSampleStyleSheet()
+        
+        # Premium dark navy title style
+        title_style = ParagraphStyle(
+            'ReportTitle',
+            parent=styles['Heading1'],
+            fontSize=22,
+            leading=26,
+            textColor=HexColor('#0F172A'),
+            spaceAfter=15
+        )
+        
+        section_heading = ParagraphStyle(
+            'SectionHeading',
+            parent=styles['Heading2'],
+            fontSize=14,
+            leading=18,
+            textColor=HexColor('#0EA5E9'),
+            spaceBefore=12,
+            spaceAfter=6
+        )
+
+        body_style = ParagraphStyle(
+            'BodyText',
+            parent=styles['Normal'],
+            fontSize=10,
+            leading=14,
+            textColor=HexColor('#334155'),
+            spaceAfter=8
+        )
+
+        story = []
+        
+        story.append(Paragraph("APEX INDUSTRIAL COMPLIANCE REPORT", title_style))
+        story.append(Paragraph(f"<b>Report ID:</b> {report.report_id}", body_style))
+        story.append(Spacer(1, 10))
+        
+        story.append(Paragraph("Incident Summary", section_heading))
+        story.append(Paragraph(report.incident_summary, body_style))
+        
+        story.append(Paragraph("Root Cause Analysis", section_heading))
+        story.append(Paragraph(report.root_cause, body_style))
+
+        story.append(Paragraph("Final Resolution Outcome", section_heading))
+        story.append(Paragraph(report.final_resolution, body_style))
+        
+        story.append(Paragraph("Technician Actions", section_heading))
+        for act in report.technician_actions:
+            story.append(Paragraph(f"• {act}", body_style))
+            
+        doc.build(story)
+        pdf_bytes = buffer.getvalue()
+        buffer.close()
+        return pdf_bytes
 
     def export_docx(self, report: ComplianceReport) -> bytes:
-        report_dict = report.model_dump() if hasattr(report, 'model_dump') else dict(report)
-        # Standard ZIP magic byte header for DOCX container with report JSON content inside
-        zip_header = b"PK\x03\x04\x14\x00\x08\x00\x08\x00"
-        json_payload = json.dumps(report_dict, indent=2).encode('utf-8')
-        return zip_header + b"\x00\x00\x00\x00" + json_payload
+        from docx import Document
+        
+        doc = Document()
+        doc.add_heading("APEX INDUSTRIAL COMPLIANCE REPORT", level=0)
+        
+        doc.add_paragraph(f"Report ID: {report.report_id}")
+        
+        doc.add_heading("Incident Summary", level=1)
+        doc.add_paragraph(report.incident_summary)
+        
+        doc.add_heading("Root Cause Analysis", level=1)
+        doc.add_paragraph(report.root_cause)
+
+        doc.add_heading("Final Resolution Outcome", level=1)
+        doc.add_paragraph(report.final_resolution)
+        
+        doc.add_heading("Technician Actions", level=1)
+        for act in report.technician_actions:
+            doc.add_paragraph(act, style='List Bullet')
+            
+        buffer = BytesIO()
+        doc.save(buffer)
+        docx_bytes = buffer.getvalue()
+        buffer.close()
+        return docx_bytes
+

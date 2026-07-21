@@ -10,7 +10,7 @@ import { IncidentMemory, TrendAnalysis } from '../types/apex';
 import { useApexStore } from '../store/useApexStore';
 
 export const MemoryPage: React.FC = () => {
-  const { currentSimulation, currentRunbook, currentDecision, setCurrentMemory, setActiveTab } = useApexStore();
+  const { activeAssetId, activeFailureType, currentSimulation, currentRunbook, currentDecision, setCurrentMemory, setActiveTab } = useApexStore();
   const [incidents, setIncidents] = useState<IncidentMemory[]>([
     {
       incident_id: '73700122-6f01-4ce0-838f-44fcc9b398dc',
@@ -57,8 +57,8 @@ export const MemoryPage: React.FC = () => {
     setIsStoring(true);
     try {
       const saved = await storeMemory({
-        failed_asset: 'P-101',
-        failure_type: 'bearing_overheat',
+        failed_asset: activeAssetId,
+        failure_type: activeFailureType,
         simulation_id: currentSimulation?.simulation_id,
         runbook_id: currentRunbook?.runbook_id,
         decision_data: currentDecision,

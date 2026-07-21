@@ -109,7 +109,7 @@ export const RunbookPage: React.FC = () => {
     await new Promise(r => setTimeout(r, 1500));
     
     // Perform actual regeneration
-    handleRegenerate();
+    await handleRegenerate();
     
     setRegenStage('done');
     setTimeout(() => setRegenStage('none'), 2000);

@@ -3,14 +3,14 @@ from qdrant_client.http import models
 from app.schemas.document import DocumentChunk
 from app.schemas.search import SearchResultChunk
 from app.services.rag.embeddings.base import EmbeddingProvider
-from app.services.rag.embeddings.mock import MockEmbeddingProvider
+from app.services.rag.embeddings.gemini_embedding import AdaptiveEmbeddingProvider
 import os
 from typing import List, Optional
 
 class VectorStoreService:
     def __init__(self, collection_name: str = "apex_documents", embedding_provider: EmbeddingProvider = None):
         self.collection_name = collection_name
-        self.embedding_provider = embedding_provider or MockEmbeddingProvider()
+        self.embedding_provider = embedding_provider or AdaptiveEmbeddingProvider()
         
         # Use memory mode if QDRANT_HOST is not set for seamless dev experience
         qdrant_host = os.environ.get("QDRANT_HOST")

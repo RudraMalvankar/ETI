@@ -76,13 +76,10 @@ export const CompliancePage: React.FC = () => {
       a.href = url;
       a.download = `compliance_report_${report.report_id}.pdf`;
       a.click();
+      window.URL.revokeObjectURL(url);
     } catch (e) {
-      const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `compliance_report_${report.report_id}.pdf`;
-      a.click();
+      console.error(e);
+      alert('Failed to generate PDF compliance report. Please verify the backend connection and try again.');
     } finally {
       setIsDownloadingPdf(false);
     }
@@ -97,13 +94,10 @@ export const CompliancePage: React.FC = () => {
       a.href = url;
       a.download = `compliance_report_${report.report_id}.docx`;
       a.click();
+      window.URL.revokeObjectURL(url);
     } catch (e) {
-      const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/msword' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `compliance_report_${report.report_id}.docx`;
-      a.click();
+      console.error(e);
+      alert('Failed to generate DOCX compliance report. Please verify the backend connection and try again.');
     } finally {
       setIsDownloadingDocx(false);
     }

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { API_BASE_URL } from '../services/apiClient';
 import {
   DocumentResponse,
   SimulationResponse,
@@ -24,6 +25,8 @@ interface ApexState {
   connectionState: BackendConnectionState;
   setConnectionState: (state: BackendConnectionState) => void;
   apiBaseUrl: string;
+  confidenceThreshold: number;
+  setConfidenceThreshold: (value: number) => void;
 
   // Search
   globalQuery: string;
@@ -71,7 +74,9 @@ export const useApexStore = create<ApexState>((set) => ({
 
   connectionState: 'connected',
   setConnectionState: (connectionState) => set({ connectionState }),
-  apiBaseUrl: 'http://localhost:8000/api/v1',
+  apiBaseUrl: API_BASE_URL,
+  confidenceThreshold: 85,
+  setConfidenceThreshold: (confidenceThreshold) => set({ confidenceThreshold }),
 
   globalQuery: '',
   setGlobalQuery: (globalQuery) => set({ globalQuery }),
