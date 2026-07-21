@@ -33,6 +33,8 @@ def test_user_lockout_after_failed_logins():
         assert res.status_code in [401, 403]
 
     # 3. 6th attempt must be forbidden lockout
+    from app.core.rate_limiter import limiter
+    limiter._storage.reset()
     res_lockout = client.post("/api/v1/auth/login", json=login_payload)
     assert res_lockout.status_code == 403
     assert "temporarily locked" in res_lockout.json()["detail"] or "attempts" in res_lockout.json()["detail"]

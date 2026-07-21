@@ -14,6 +14,7 @@ from app.database.session import Base
 from app.models.models import UserModel, DocumentModel, IncidentModel
 from app.models.blacklist import BlacklistedToken
 from app.models.simulation_runbook import RunbookModel, SimulationModel
+from app.models.audit import AuditLogModel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
