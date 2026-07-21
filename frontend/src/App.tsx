@@ -17,10 +17,10 @@ const CompliancePage = lazy(() => import('./pages/CompliancePage').then(m => ({ 
 const IncidentHistoryPage = lazy(() => import('./pages/IncidentHistoryPage').then(m => ({ default: m.IncidentHistoryPage })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 
-// Public Pages (Will create these next)
-const LandingPage = lazy(() => import('./pages/LandingPage').then(m => ({ default: m.LandingPage })).catch(() => ({ default: () => <div>Landing Page (Coming Soon)</div> })));
-const LoginPage = lazy(() => import('./pages/LoginPage').then(m => ({ default: m.LoginPage })).catch(() => ({ default: () => <div>Login Page (Coming Soon)</div> })));
-const RegisterPage = lazy(() => import('./pages/RegisterPage').then(m => ({ default: m.RegisterPage })).catch(() => ({ default: () => <div>Register Page (Coming Soon)</div> })));
+// Public Pages
+const LandingPage = lazy(() => import('./pages/LandingPage').then(m => ({ default: m.LandingPage })).catch(() => ({ default: () => <div>Landing Page</div> })));
+const LoginPage = lazy(() => import('./pages/LoginPage').then(m => ({ default: m.LoginPage })).catch(() => ({ default: () => <div>Login Page</div> })));
+const RegisterPage = lazy(() => import('./pages/RegisterPage').then(m => ({ default: m.RegisterPage })).catch(() => ({ default: () => <div>Register Page</div> })));
 
 export function App() {
   const { isDarkMode } = useApexStore();
@@ -53,13 +53,14 @@ export function App() {
           <Route path="/dashboard/runbook" element={<Layout><RunbookPage /></Layout>} />
           <Route path="/dashboard/memory" element={<Layout><MemoryPage /></Layout>} />
           <Route path="/dashboard/compliance" element={<Layout><CompliancePage /></Layout>} />
-            <Route path="/dashboard/history" element={<Layout><IncidentHistoryPage /></Layout>} />
-            <Route path="/dashboard/settings" element={<Layout><SettingsPage /></Layout>} />
-            
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
-        <Toaster theme={isDarkMode ? 'dark' : 'light'} position="top-right" />
-      </BrowserRouter>
-    );
-  }
+          <Route path="/dashboard/history" element={<Layout><IncidentHistoryPage /></Layout>} />
+          <Route path="/dashboard/settings" element={<Layout><SettingsPage /></Layout>} />
+          
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Suspense>
+      <Toaster theme={isDarkMode ? 'dark' : 'light'} position="top-right" />
+    </BrowserRouter>
+  );
+}
+

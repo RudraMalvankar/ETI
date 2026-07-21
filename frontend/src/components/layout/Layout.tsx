@@ -5,6 +5,9 @@ import { MobileNav } from './MobileNav';
 import { BackendStatusBanner } from '../system/BackendStatusBanner';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TagEntityInspector } from '../../features/documents/TagEntityInspector';
+import { ExpertCopilotDrawer } from '../../features/copilot/ExpertCopilotDrawer';
+import { ComplianceHubModal } from '../../features/compliance/ComplianceHubModal';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -37,8 +40,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </AnimatePresence>
         </main>
       </div>
-      
+
       <MobileNav />
+
+      {/* Global Modals & Drawers */}
+      <TagEntityInspector />
+      <ExpertCopilotDrawer />
+      <ComplianceHubModal />
     </div>
   );
 };
