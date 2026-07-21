@@ -6,8 +6,11 @@ Logs every incoming HTTP request and outgoing response with:
 - Structured JSON output via structlog
 """
 import time
+# pyrefly: ignore [missing-import]
 import structlog
+# pyrefly: ignore [missing-import]
 from fastapi import Request, Response
+# pyrefly: ignore [missing-import]
 from starlette.middleware.base import BaseHTTPMiddleware
 
 logger = structlog.get_logger("apex.http")
