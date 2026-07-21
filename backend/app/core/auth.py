@@ -1,4 +1,5 @@
 import os
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List
 from jose import JWTError, jwt
@@ -6,6 +7,9 @@ from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.core.config import settings
+from app.database.session import SessionLocal
+from app.models.models import UserModel
+from app.models.blacklist import BlacklistedToken
 
 # Crypt Context for hashing passwords securely
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -14,6 +18,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 JWT_SECRET = os.environ.get("JWT_SECRET", "super-secret-apex-key-for-jwt-signing-production-ready")
 JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
+REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 security = HTTPBearer()
 
@@ -36,10 +41,64 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
     return encoded_jwt
 
+def create_refresh_token(data: dict) -> str:
+    """Generate sign-secured JWT refresh token with unique jti identifier for rotation."""
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    to_encode.update({
+        "exp": expire,
+        "jti": str(uuid.uuid4()),
+        "refresh": True
+    })
+    encoded_jwt = jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    return encoded_jwt
+
+def blacklist_token(token: str):
+    """Add a token to the blacklist."""
+    db = SessionLocal()
+    try:
+        blacklisted = BlacklistedToken(token=token)
+        db.merge(blacklisted)
+        db.commit()
+    finally:
+        db.close()
+
+def is_token_blacklisted(token: str) -> bool:
+    """Check if token is blacklisted."""
+    db = SessionLocal()
+    try:
+        exists = db.query(BlacklistedToken).filter(BlacklistedToken.token == token).first()
+        return exists is not None
+    finally:
+        db.close()
+
 def decode_access_token(token: str) -> dict:
-    """Decode and validate a JWT access token."""
+    """Decode, validate, and check expiration / blacklist for access tokens."""
+    if is_token_blacklisted(token):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has been blacklisted / logged out",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        
+        # Verify Session ID matches database (if present in payload)
+        sid = payload.get("sid")
+        sub = payload.get("sub")
+        if sid and sub:
+            db = SessionLocal()
+            try:
+                user = db.query(UserModel).filter(UserModel.username == sub).first()
+                if user and user.current_session_id != sid:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Session has been revoked",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
+            finally:
+                db.close()
+                
         return payload
     except JWTError:
         raise HTTPException(
@@ -51,7 +110,9 @@ def decode_access_token(token: str) -> dict:
 def get_current_user_payload(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
     """FastAPI Dependency to enforce active authorized bearer token."""
     token = credentials.credentials
-    return decode_access_token(token)
+    payload = decode_access_token(token)
+    payload["token_str"] = token # Attach raw token to request context for logout capability
+    return payload
 
 class RoleChecker:
     """FastAPI dependency to verify user authorization level (RBAC)."""
@@ -66,3 +127,4 @@ class RoleChecker:
                 detail="Operation not permitted for current user level"
             )
         return payload
+

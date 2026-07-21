@@ -9,7 +9,11 @@ class UserModel(Base):
     username = Column(String(100), unique=True, index=True, nullable=False)
     hashed_password = Column(String(200), nullable=False)
     role = Column(String(50), default="Operator") # Operator, Engineer, Auditor
+    failed_login_attempts = Column(Integer, default=0, nullable=False)
+    locked_until = Column(DateTime, nullable=True)
+    current_session_id = Column(String(100), nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
 
 class DocumentModel(Base):
     __tablename__ = "documents"
