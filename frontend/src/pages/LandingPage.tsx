@@ -14,7 +14,9 @@ import {
   Lock,
   Server,
   Layers,
-  Cpu
+  Cpu,
+  Play,
+  CheckCircle2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -107,23 +109,86 @@ export const LandingPage: React.FC = () => {
               </div>
               <div className="flex-1 p-6 flex flex-col gap-4 bg-[var(--bg-base)]">
                  <div className="grid grid-cols-4 gap-4 h-1/4">
-                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)]"></div>
-                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)]"></div>
-                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)]"></div>
-                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)]"></div>
+                   {/* Mock KPI 1 */}
+                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] p-3 flex flex-col justify-between">
+                     <span className="text-[10px] text-[var(--text-secondary)] font-medium">System Health</span>
+                     <span className="text-lg font-bold text-[var(--text-primary)]">82.4%</span>
+                     <div className="w-full h-4 mt-1 bg-gradient-to-r from-accent-emerald/20 to-accent-emerald/50 rounded flex items-center justify-end px-1"><span className="text-[8px] text-accent-emerald font-bold">+1.2%</span></div>
+                   </div>
+                   {/* Mock KPI 2 */}
+                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] p-3 flex flex-col justify-between">
+                     <span className="text-[10px] text-[var(--text-secondary)] font-medium">Active Incidents</span>
+                     <span className="text-lg font-bold text-accent-red">1 Critical</span>
+                     <div className="w-full h-4 mt-1 bg-accent-red/10 border border-accent-red/20 rounded flex items-center justify-center"><span className="text-[8px] text-accent-red font-bold">P-101 anomaly</span></div>
+                   </div>
+                   {/* Mock KPI 3 */}
+                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] p-3 flex flex-col justify-between">
+                     <span className="text-[10px] text-[var(--text-secondary)] font-medium">Shadow Sims</span>
+                     <span className="text-lg font-bold text-[var(--text-primary)]">1,402</span>
+                     <div className="w-full h-4 mt-1">
+                        <svg viewBox="0 0 100 20" className="w-full h-full opacity-70"><path d="M0 20 L20 15 L40 18 L60 10 L80 12 L100 5" stroke="#3b82f6" strokeWidth="2" fill="none"/></svg>
+                     </div>
+                   </div>
+                   {/* Mock KPI 4 */}
+                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] p-3 flex flex-col justify-between">
+                     <span className="text-[10px] text-[var(--text-secondary)] font-medium">Compliance</span>
+                     <span className="text-lg font-bold text-accent-emerald">Ready</span>
+                     <div className="w-full h-4 mt-1 bg-accent-emerald/10 rounded flex items-center px-1 gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
+                        <span className="text-[8px] text-accent-emerald font-bold">100% Audit</span>
+                     </div>
+                   </div>
                  </div>
-                 <div className="flex gap-4 h-3/4">
-                   <div className="w-2/3 bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] flex items-center justify-center relative overflow-hidden">
-                      {/* Fake Topology */}
-                      <svg className="w-full h-full opacity-50" viewBox="0 0 100 100" preserveAspectRatio="none">
-                         <path d="M20 50 Q 50 20 80 50" stroke="currentColor" fill="none" />
-                         <circle cx="20" cy="50" r="2" fill="currentColor" />
-                         <circle cx="80" cy="50" r="2" fill="currentColor" />
+                 <div className="flex gap-4 flex-1">
+                   {/* Realistic Alert Panel */}
+                   <div className="w-2/3 bg-[var(--bg-elevated)] border border-accent-red/50 rounded-lg p-5 flex flex-col justify-between shadow-sm relative overflow-hidden">
+                      <div>
+                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-accent-red/10 border border-accent-red/20 text-accent-red text-[8px] uppercase font-bold tracking-widest mb-3">
+                          <AlertTriangle className="w-2.5 h-2.5" /> Priority 1 Alert
+                        </div>
+                        <h1 className="text-lg font-bold mb-1 text-[var(--text-primary)]">P-101 Bearing Overheat</h1>
+                        <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed max-w-sm">
+                          Telemetry indicates bearing friction exceeding nominal thresholds. Knowledge graph analysis projects a high probability of cascading failure to V-202 within <span className="text-accent-red font-bold">45 minutes</span>.
+                        </p>
+                      </div>
+                      <div className="flex gap-2 mt-4">
+                        <div className="px-3 py-1.5 rounded bg-accent-red/90 text-white font-medium text-[9px] flex items-center gap-1 cursor-pointer hover:bg-accent-red transition-colors">
+                          Execute Recovery Runbook <ArrowRight className="w-3 h-3" />
+                        </div>
+                        <div className="px-3 py-1.5 rounded bg-[var(--bg-surface)] border border-[var(--border-strong)] text-[var(--text-primary)] font-medium text-[9px] flex items-center gap-1 cursor-pointer hover:bg-[var(--bg-base)] transition-colors">
+                          <Play className="w-3 h-3 text-primary-500" /> Run Shadow Simulation
+                        </div>
+                      </div>
+                      
+                      {/* Faint Topology Graphic in background */}
+                      <svg className="absolute bottom-0 right-0 w-1/2 h-full opacity-20 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                         <path d="M0 80 Q 40 20 100 50" stroke="#ef4444" strokeWidth="2" fill="none" />
+                         <circle cx="0" cy="80" r="4" fill="#ef4444" />
+                         <circle cx="100" cy="50" r="4" fill="#f59e0b" />
                       </svg>
                    </div>
-                   <div className="w-1/3 bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] flex flex-col gap-2 p-3">
-                      <div className="h-4 w-1/2 bg-[var(--border-strong)] rounded"></div>
-                      <div className="h-20 w-full bg-[var(--bg-elevated)] border border-[var(--border-strong)] rounded mt-auto"></div>
+                   
+                   {/* Realistic Copilot Panel */}
+                   <div className="w-1/3 bg-[var(--bg-elevated)] border border-primary-500/30 rounded-lg p-4 flex flex-col relative">
+                      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-[var(--border-muted)]">
+                        <div className="p-1 rounded bg-primary-500/10 text-primary-500"><BrainCircuit className="w-3 h-3" /></div>
+                        <h2 className="text-[9px] font-semibold tracking-tight text-[var(--text-primary)] uppercase">AI Copilot Recommendation</h2>
+                      </div>
+                      <div className="flex-1 space-y-2">
+                        <div className="p-2.5 rounded bg-accent-emerald/5 border border-accent-emerald/20">
+                          <span className="text-[8px] uppercase font-bold text-accent-emerald tracking-wider mb-1 flex items-center gap-1">
+                            <CheckCircle2 className="w-2.5 h-2.5" /> Safest Strategy (94.5%)
+                          </span>
+                          <p className="text-[9px] font-medium text-[var(--text-primary)] leading-relaxed">
+                            Immediately isolate inlet valve V-202 via LOTO and depressurize housing.
+                          </p>
+                        </div>
+                        <div className="p-2.5 rounded bg-[var(--bg-surface)] border border-[var(--border-strong)]">
+                           <p className="text-[8px] text-[var(--text-secondary)] font-medium leading-relaxed">
+                             <span className="text-primary-500 font-bold">Citation:</span> OEM Manual Sec 4.2 recommends this procedure for high-friction anomalies on P-class centrifugal pumps.
+                           </p>
+                        </div>
+                      </div>
                    </div>
                  </div>
               </div>
