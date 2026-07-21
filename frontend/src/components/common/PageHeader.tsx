@@ -18,7 +18,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ title, description, icon
     >
       <div className="flex items-center gap-3.5">
         {Icon && (
-          <div className="p-3 rounded-2xl glass-panel text-brand-500 bg-brand-500/10 shadow-[0_0_15px_rgba(14,165,233,0.3)]">
+          <div className="p-2 rounded bg-primary-500/10 text-primary-500 border border-primary-500/20">
             <Icon className="w-6 h-6" />
           </div>
         )}

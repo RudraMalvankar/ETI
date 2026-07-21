@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Search, RefreshCw, Zap, UploadCloud, Database, Network } from 'lucide-react';
+import { FileText, Search, RefreshCw, UploadCloud, Database, Network } from 'lucide-react';
 import { PageHeader } from '../components/common/PageHeader';
 import { SectionCard } from '../components/common/SectionCard';
 import { FileUploader } from '../components/common/FileUploader';
@@ -140,7 +140,7 @@ export const DocumentsPage: React.FC = () => {
           disabled={doc.status === 'indexed'}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 border border-brand-500/20 text-xs font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Zap className="w-3.5 h-3.5" />
+          <FileText className="w-3.5 h-3.5" />
           <span>{doc.status === 'indexed' ? 'Fully Indexed' : 'Extract & Index'}</span>
         </button>
       )
@@ -198,7 +198,7 @@ export const DocumentsPage: React.FC = () => {
             <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Top Contextual Matches</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {searchResults.map((res, idx) => (
-                <div key={idx} className="glass-panel p-5 rounded-2xl hover:border-brand-500/40 transition-colors group">
+                <div key={idx} className="bg-[var(--bg-elevated)] border border-[var(--border-strong)] p-4 rounded-md hover:border-primary-500/40 transition-colors group shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs font-mono text-brand-400 bg-brand-500/10 px-2 py-1 rounded">Doc ID: {res.document_id}</span>
                     <span className="text-xs font-extrabold px-2 py-1 rounded bg-accent-emerald/20 text-accent-emerald border border-accent-emerald/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">

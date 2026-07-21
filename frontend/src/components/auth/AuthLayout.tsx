@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Zap } from 'lucide-react';
+import { Hexagon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface AuthLayoutProps {
@@ -24,13 +24,13 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
       >
         <div className="text-center mb-8 flex flex-col items-center">
           <Link to="/" className="inline-flex items-center justify-center p-3 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-emerald text-white shadow-[0_0_20px_rgba(14,165,233,0.3)] mb-6 hover:scale-105 transition-transform">
-            <Zap className="w-8 h-8" />
+            <Hexagon className="w-8 h-8" />
           </Link>
           <h1 className="text-3xl font-extrabold text-white mb-2">{title}</h1>
           <p className="text-[var(--text-secondary)]">{subtitle}</p>
         </div>
 
-        <div className="glass-panel p-8 shadow-2xl border border-[var(--glass-border)]">
+        <div className="bg-[var(--bg-elevated)] p-8 shadow-soft border border-[var(--border-strong)] rounded-lg">
           {children}
         </div>
       </motion.div>

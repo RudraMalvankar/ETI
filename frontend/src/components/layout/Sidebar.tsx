@@ -13,99 +13,132 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Zap
+  Hexagon,
+  ChevronsUpDown
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 
 export const Sidebar: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
-  const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'documents', label: 'Documents', icon: FileText },
-    { id: 'graph', label: 'Knowledge Graph', icon: Network },
-    { id: 'simulation', label: 'Simulation', icon: Activity },
-    { id: 'decision', label: 'AI Decisions', icon: BrainCircuit },
-    { id: 'runbook', label: 'Runbooks', icon: BookOpen },
-    { id: 'memory', label: 'Operational Memory', icon: Database },
-    { id: 'compliance', label: 'Compliance', icon: ShieldCheck },
-    { id: 'history', label: 'Incident History', icon: History },
-    { id: 'settings', label: 'Settings', icon: Settings },
+  const navGroups = [
+    {
+      title: 'Platform',
+      items: [
+        { id: 'dashboard', label: 'Command Center', icon: LayoutDashboard },
+        { id: 'documents', label: 'Data Sources', icon: FileText },
+        { id: 'graph', label: 'Knowledge Graph', icon: Network },
+      ]
+    },
+    {
+      title: 'Intelligence',
+      items: [
+        { id: 'simulation', label: 'Shadow Simulation', icon: Activity },
+        { id: 'decision', label: 'AI Copilot', icon: BrainCircuit },
+        { id: 'runbook', label: 'Runbooks', icon: BookOpen },
+      ]
+    },
+    {
+      title: 'Audit & Memory',
+      items: [
+        { id: 'memory', label: 'Op Memory', icon: Database },
+        { id: 'compliance', label: 'Compliance', icon: ShieldCheck },
+        { id: 'history', label: 'Incidents', icon: History },
+      ]
+    }
   ];
 
   return (
     <aside
-      className={`hidden md:flex relative flex-col h-screen glass-panel rounded-none border-t-0 border-b-0 border-l-0 transition-all duration-300 z-30 select-none ${
-        isCollapsed ? 'w-20' : 'w-64'
+      className={`hidden md:flex relative flex-col h-screen bg-[var(--bg-surface)] border-r border-[var(--border-muted)] transition-all duration-300 z-30 select-none ${
+        isCollapsed ? 'w-16' : 'w-64'
       }`}
     >
-      {/* Brand Header */}
-      <div className="flex items-center justify-between p-5 border-b border-[var(--glass-border)]">
-        <div className="flex items-center gap-3 overflow-hidden">
-          <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-emerald text-white shadow-[0_0_15px_rgba(14,165,233,0.4)]">
-            <Zap className="w-5 h-5" />
+      {/* Brand Header & Workspace Switcher */}
+      <div className="flex flex-col border-b border-[var(--border-muted)]">
+        <div className="flex items-center justify-between p-4 h-16">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="flex items-center justify-center w-8 h-8 rounded bg-primary-600 text-white shadow-sm">
+              <Hexagon className="w-5 h-5" />
+            </div>
+            {!isCollapsed && (
+              <div className="flex flex-col">
+                <span className="text-sm font-display font-semibold tracking-tight text-[var(--text-primary)]">
+                  APEX
+                </span>
+              </div>
+            )}
           </div>
-          {!isCollapsed && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-              <span className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-brand-400 via-accent-purple to-accent-emerald text-transparent bg-clip-text">
-                APEX
-              </span>
-              <span className="block text-[10px] font-mono text-[var(--text-secondary)] tracking-wider mt-0.5">
-                INDUSTRIAL AI OS
-              </span>
-            </motion.div>
-          )}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition"
+          >
+            {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </button>
         </div>
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1.5 rounded-xl bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--glass-border)] transition"
-        >
-          {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-        </button>
+        
+        {!isCollapsed && (
+          <div className="px-4 pb-4">
+            <button className="w-full flex items-center justify-between px-3 py-2 text-xs rounded border border-[var(--border-strong)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
+              <span className="font-medium truncate">Texas Refinery Alpha</span>
+              <ChevronsUpDown className="w-3 h-3 text-[var(--text-muted)]" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Nav List */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto scroll-smooth">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = location.pathname.includes(item.id) || (item.id === 'dashboard' && location.pathname === '/dashboard');
-          return (
-            <button
-              key={item.id}
-              onClick={() => navigate(`/dashboard/${item.id === 'dashboard' ? '' : item.id}`)}
-              className={`w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-xs font-semibold transition-all duration-200 group relative ${
-                isActive
-                  ? 'text-brand-500'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-border)]'
-              }`}
-              title={isCollapsed ? item.label : undefined}
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="sidebar-active"
-                  className="absolute inset-0 bg-brand-500/10 border border-brand-500/20 rounded-xl"
-                  initial={false}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                />
-              )}
-              <Icon className={`relative z-10 w-4 h-4 transition-transform group-hover:scale-110 ${isActive ? 'text-brand-500' : 'text-[var(--text-secondary)]'}`} />
-              {!isCollapsed && <span className="relative z-10 truncate">{item.label}</span>}
-            </button>
-          );
-        })}
+      <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto custom-scrollbar">
+        {navGroups.map((group, idx) => (
+          <div key={idx}>
+            {!isCollapsed && (
+              <h3 className="px-3 text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">
+                {group.title}
+              </h3>
+            )}
+            <div className="space-y-0.5">
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname.includes(item.id) || (item.id === 'dashboard' && location.pathname === '/dashboard');
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => navigate(`/dashboard/${item.id === 'dashboard' ? '' : item.id}`)}
+                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border-strong)] shadow-sm'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] border border-transparent'
+                    }`}
+                    title={isCollapsed ? item.label : undefined}
+                  >
+                    <Icon className={`shrink-0 w-4 h-4 ${isActive ? 'text-primary-500' : 'text-[var(--text-muted)]'}`} />
+                    {!isCollapsed && <span className="truncate">{item.label}</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
-      {/* Footer / Logout */}
-      <div className="p-3 border-t border-[var(--glass-border)]">
+      {/* Footer Settings & Logout */}
+      <div className="p-3 border-t border-[var(--border-muted)] space-y-1">
+        <button
+          onClick={() => navigate('/dashboard/settings')}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition"
+          title={isCollapsed ? 'Settings' : undefined}
+        >
+          <Settings className="shrink-0 w-4 h-4 text-[var(--text-muted)]" />
+          {!isCollapsed && <span>Settings</span>}
+        </button>
         <button
           onClick={() => navigate('/login')}
-          className="w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-xs font-semibold text-[var(--text-secondary)] hover:text-accent-red hover:bg-accent-red/10 border border-transparent hover:border-accent-red/20 transition-all"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-[var(--text-secondary)] hover:text-accent-red hover:bg-accent-red/10 transition"
           title={isCollapsed ? 'Logout' : undefined}
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="shrink-0 w-4 h-4 text-accent-red/70" />
           {!isCollapsed && <span>Logout</span>}
         </button>
       </div>

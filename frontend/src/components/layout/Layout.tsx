@@ -10,11 +10,7 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[var(--bg-primary)] transition-colors duration-300 relative text-[var(--text-primary)]">
-      {/* Decorative Background Elements */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent-purple/10 rounded-full blur-[120px] pointer-events-none" />
-
+    <div className="flex h-screen w-screen overflow-hidden bg-[var(--bg-base)] relative text-[var(--text-primary)]">
       {/* Sidebar */}
       <Sidebar />
 
@@ -22,7 +18,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <div className="flex flex-col flex-1 h-screen overflow-hidden relative z-10 pb-16 md:pb-0">
         <BackendStatusBanner />
         <Navbar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 md:space-y-8 scroll-smooth">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 md:space-y-8">
           {children}
         </main>
       </div>

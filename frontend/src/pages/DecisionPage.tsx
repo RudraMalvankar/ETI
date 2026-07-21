@@ -113,7 +113,7 @@ export const DecisionPage: React.FC = () => {
               
               {/* Complex Decision Context Render */}
               {msg.decisionContext && (
-                <div className="w-full glass-panel p-5 rounded-2xl border-brand-500/30">
+                <div className="w-full bg-[var(--bg-elevated)] border border-[var(--border-strong)] p-5 rounded-lg shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs font-bold text-accent-emerald bg-accent-emerald/10 px-2 py-1 rounded">
                       Confidence: {msg.decisionContext.confidence_score}%

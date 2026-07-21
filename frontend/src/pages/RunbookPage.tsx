@@ -201,7 +201,7 @@ export const RunbookPage: React.FC = () => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg-primary)]/80 backdrop-blur-md"
           >
-            <div className="glass-panel p-10 rounded-3xl flex flex-col items-center max-w-sm text-center shadow-2xl border-brand-500/50">
+            <div className="bg-[var(--bg-elevated)] border border-[var(--border-strong)] p-8 rounded-lg flex flex-col items-center max-w-sm text-center shadow-sm">
               {regenStage === 'detecting' && <XCircle className="w-16 h-16 text-accent-red animate-pulse mb-6" />}
               {regenStage === 'analyzing' && <BrainCircuit className="w-16 h-16 text-accent-purple animate-pulse mb-6" />}
               {regenStage === 'generating' && <Settings className="w-16 h-16 text-brand-500 animate-spin mb-6" />}
@@ -237,7 +237,7 @@ export const RunbookPage: React.FC = () => {
         }
       />
 
-      <div className="p-4 rounded-2xl glass-panel flex flex-wrap items-center justify-between gap-4 shadow-sm border border-[var(--glass-border)]">
+      <div className="p-3 rounded bg-[var(--bg-elevated)] border border-[var(--border-strong)] flex flex-wrap items-center justify-between gap-4 shadow-sm">
         <div>
           <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">Runbook ID</span>
           <span className="text-sm font-extrabold text-[var(--text-primary)] block mt-0.5">{runbook.runbook_id}</span>
@@ -283,7 +283,7 @@ export const RunbookPage: React.FC = () => {
                 ? 'bg-accent-emerald/5 border-accent-emerald/30'
                 : step.status === 'failed'
                 ? 'bg-accent-red/5 border-accent-red/30'
-                : 'glass-panel hover:border-[var(--text-secondary)]/30'
+                : 'bg-[var(--bg-surface)] border-[var(--border-muted)] hover:border-[var(--border-strong)]'
             }`}
           >
             <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 mb-4 border-b border-[var(--glass-border)] gap-2">
