@@ -25,6 +25,9 @@ app = FastAPI(
     redoc_url="/redoc" if not settings.is_production else None,
 )
 
+from app.middleware.logging import RequestLoggingMiddleware
+from app.middleware.audit import EnterpriseAuditMiddleware
+
 # CORS — uses configured origins from settings (never wildcard in production)
 app.add_middleware(
     CORSMiddleware,
@@ -34,8 +37,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Request / response structured logging
+# Request / response structured logging and mutation auditing
 app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(EnterpriseAuditMiddleware)
+
 
 
 @app.on_event("startup")
