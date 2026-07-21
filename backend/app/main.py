@@ -94,5 +94,17 @@ async def ws_simulation_endpoint(websocket: WebSocket):
         global_connection_manager.disconnect(websocket)
 
 
+@app.get("/metrics")
+def metrics():
+    """Endpoint exposing Prometheus metrics collected from registry."""
+    from fastapi.responses import Response
+    from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+    from app.core.metrics import metrics_registry
+    return Response(
+        content=generate_latest(metrics_registry),
+        media_type=CONTENT_TYPE_LATEST
+    )
+
 app.include_router(api_router, prefix="/api/v1")
+
 

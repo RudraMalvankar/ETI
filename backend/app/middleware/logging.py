@@ -12,6 +12,7 @@ import structlog
 from fastapi import Request, Response
 # pyrefly: ignore [missing-import]
 from starlette.middleware.base import BaseHTTPMiddleware
+from app.core.metrics import HTTP_REQUESTS_TOTAL, HTTP_REQUEST_DURATION
 
 logger = structlog.get_logger("apex.http")
 
@@ -22,7 +23,8 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         
         response = await call_next(request)
         
-        duration_ms = (time.perf_counter() - start) * 1000
+        duration_sec = time.perf_counter() - start
+        duration_ms = duration_sec * 1000
         
         logger.info(
             "http_request",
@@ -32,5 +34,19 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             duration_ms=round(duration_ms, 2),
             client=request.client.host if request.client else "unknown",
         )
+
+        # Record metrics (ignoring system telemetry endpoints metrics noise)
+        path = request.url.path
+        if not path.startswith("/ws") and not path.endswith("/metrics"):
+            HTTP_REQUESTS_TOTAL.labels(
+                method=request.method,
+                path=path,
+                status=str(response.status_code)
+            ).inc()
+            HTTP_REQUEST_DURATION.labels(
+                method=request.method,
+                path=path
+            ).observe(duration_sec)
         
         return response
+
