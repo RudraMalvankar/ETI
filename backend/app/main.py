@@ -4,6 +4,9 @@ from app.api.v1.router import api_router
 from app.core.config import settings
 from app.middleware.logging import RequestLoggingMiddleware
 from app.core.websockets import global_connection_manager
+from app.core.rate_limiter import limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi import _rate_limit_exceeded_handler
 import structlog
 
 # Configure structured logging
@@ -24,6 +27,11 @@ app = FastAPI(
     docs_url="/docs" if not settings.is_production else None,
     redoc_url="/redoc" if not settings.is_production else None,
 )
+
+# SlowAPI limiters integration
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 
 from app.middleware.logging import RequestLoggingMiddleware
 from app.middleware.audit import EnterpriseAuditMiddleware

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, status, Depends
+from fastapi import APIRouter, UploadFile, File, HTTPException, status, Depends, Request
 from typing import List, Dict
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -7,6 +7,7 @@ from app.services.ingestion.pipeline import IngestionPipeline
 from app.database.session import get_db
 from app.models.models import DocumentModel
 from app.services.rag.vector_store import global_vector_store
+from app.core.rate_limiter import limiter
 
 router = APIRouter()
 pipeline = IngestionPipeline()
@@ -15,7 +16,9 @@ class IndexRequest(BaseModel):
     document_id: str
 
 @router.post("/upload", response_model=DocumentResponse, status_code=status.HTTP_201_CREATED)
-async def upload_document(file: UploadFile = File(...), db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+async def upload_document(request: Request, file: UploadFile = File(...), db: Session = Depends(get_db)):
+
     """
     Upload and ingest an industrial document.
     Triggers Validation -> Parser -> OCR (if needed) -> Chunking.

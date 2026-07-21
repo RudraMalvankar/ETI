@@ -15,6 +15,8 @@ from app.core.auth import (
     is_token_blacklisted,
     decode_access_token
 )
+from app.core.rate_limiter import limiter
+
 
 router = APIRouter()
 
@@ -69,13 +71,15 @@ def register(request: UserRegister, db: Session = Depends(get_db)):
     return UserProfile(username=user.username, role=user.role)
 
 @router.post("/login", response_model=Token)
-def login(request: UserLogin, response: Response, db: Session = Depends(get_db)):
-    user = db.query(UserModel).filter(UserModel.username == request.username).first()
+@limiter.limit("5/minute")
+def login(request: Request, response: Response, request_body: UserLogin, db: Session = Depends(get_db)):
+    user = db.query(UserModel).filter(UserModel.username == request_body.username).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password"
         )
+
 
     # Check for Account Lockout
     now = datetime.now(timezone.utc)
@@ -91,7 +95,7 @@ def login(request: UserLogin, response: Response, db: Session = Depends(get_db))
                 detail=f"Account is temporarily locked. Try again in {minutes_left} minutes."
             )
 
-    if not verify_password(request.password, user.hashed_password):
+    if not verify_password(request_body.password, user.hashed_password):
         # Tracking Failed Login
         user.failed_login_attempts += 1
         if user.failed_login_attempts >= MAX_FAILED_ATTEMPTS:
@@ -113,6 +117,7 @@ def login(request: UserLogin, response: Response, db: Session = Depends(get_db))
     session_id = str(uuid.uuid4())
     user.current_session_id = session_id
     db.commit()
+
 
     # Generate Access + Refresh Token
     access_token = create_access_token(data={"sub": user.username, "role": user.role, "sid": session_id})
