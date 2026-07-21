@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Database, ArrowRight, Save } from 'lucide-react';
+import { Database, Lightbulb, TrendingUp, AlertOctagon, Clock, Search, ArrowRight } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { PageHeader } from '../components/common/PageHeader';
 import { SectionCard } from '../components/common/SectionCard';
-import { SearchBar } from '../components/common/SearchBar';
 import { StatusBadge } from '../components/common/StatusBadge';
-import { storeMemory, getIncidents, searchMemory, getMemoryTrends } from '../services/apexServices';
+import { getIncidents, searchMemory, getMemoryTrends } from '../services/apexServices';
 import { IncidentMemory, TrendAnalysis } from '../types/apex';
 import { useApexStore } from '../store/useApexStore';
+import { useNavigate } from 'react-router-dom';
 
 export const MemoryPage: React.FC = () => {
-  const { activeAssetId, activeFailureType, currentSimulation, currentRunbook, currentDecision, setCurrentMemory, setActiveTab } = useApexStore();
+  const { setCurrentMemory } = useApexStore();
+  const navigate = useNavigate();
+  
   const [incidents, setIncidents] = useState<IncidentMemory[]>([
     {
       incident_id: '73700122-6f01-4ce0-838f-44fcc9b398dc',
@@ -23,20 +25,32 @@ export const MemoryPage: React.FC = () => {
       technician_feedback: ['Valve V-202 handwheel stuck'],
       outcome: 'Resolved with Pneumatic Bypass',
       timestamp: new Date().toISOString()
+    },
+    {
+      incident_id: '955d8046-60a1-49fd-ab55-698e769a9306',
+      failed_asset: 'COMP-301',
+      failure_type: 'seal_leak',
+      graph_snapshot: { nodes_count: 4 },
+      simulation_data: { scenarios_count: 3 },
+      decision_data: { strategy: 'Contain Gas Line' },
+      runbook_history: [{ title: 'Seal Leak Containment' }],
+      technician_feedback: ['Nominal seal replaced'],
+      outcome: 'Resolved',
+      timestamp: new Date(Date.now() - 86400000).toISOString()
     }
   ]);
 
   const [trends, setTrends] = useState<TrendAnalysis>({
-    total_incidents: 4,
+    total_incidents: 128,
     most_common_failure_type: 'bearing_overheat',
     most_vulnerable_asset: 'P-101',
-    failure_distribution: { bearing_overheat: 2, seal_leak: 1, mechanical_failure: 1 },
-    asset_vulnerability_ranking: { 'P-101': 2, 'V-202': 1, 'COMP-301': 1 },
-    resolution_rate: 100.0
+    failure_distribution: { bearing_overheat: 42, seal_leak: 28, mechanical_failure: 35, electrical_short: 23 },
+    asset_vulnerability_ranking: { 'P-101': 14, 'V-202': 9, 'HE-303': 6, 'COMP-301': 5 },
+    resolution_rate: 98.4
   });
 
-  const [searchQuery, setSearchQuery] = useState('P-101 bearing overheat');
-  const [isStoring, setIsStoring] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
 
   const fetchMemory = async () => {
     try {
@@ -53,42 +67,29 @@ export const MemoryPage: React.FC = () => {
     fetchMemory();
   }, []);
 
-  const handleStore = async () => {
-    setIsStoring(true);
+  const handleSearch = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!searchQuery) return;
+    setIsSearching(true);
     try {
-      const saved = await storeMemory({
-        failed_asset: activeAssetId,
-        failure_type: activeFailureType,
-        simulation_id: currentSimulation?.simulation_id,
-        runbook_id: currentRunbook?.runbook_id,
-        decision_data: currentDecision,
-        outcome: 'Resolved with Pneumatic Bypass'
-      });
-      if (saved) {
-        setIncidents((prev) => [saved, ...prev]);
-        setCurrentMemory(saved);
+      const res = await searchMemory(searchQuery);
+      if (res && res.length > 0) {
+        setIncidents(res);
+      } else {
+        // mock filter for demo
+        setIncidents(prev => prev.filter(i => i.failed_asset.toLowerCase().includes(searchQuery.toLowerCase()) || i.failure_type.toLowerCase().includes(searchQuery.toLowerCase())));
       }
     } catch (e) {
       // Fallback
     } finally {
-      setIsStoring(false);
+      setIsSearching(false);
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery) return;
-    try {
-      const res = await searchMemory(searchQuery);
-      if (res && res.length > 0) setIncidents(res);
-    } catch (e) {
-      // Fallback
-    }
-  };
-
-  const pieColors = ['#3b82f6', '#f59e0b', '#ef4444', '#10b981'];
+  const pieColors = ['#0EA5E9', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444'];
 
   const failurePieData = Object.entries(trends.failure_distribution || {}).map(([name, value]) => ({
-    name: name.replace('_', ' '),
+    name: name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
     value
   }));
 
@@ -98,68 +99,72 @@ export const MemoryPage: React.FC = () => {
   }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
       <PageHeader
-        title="Operational Memory Engine"
-        description="Enterprise memory persistence storing incident histories, graph topology snapshots, simulation logs, and organizational trends."
+        title="Failure Intelligence & Lessons Learned"
+        description="Enterprise memory persistence storing incident histories, AI pattern detection, and organizational failure trends."
         icon={Database}
-        actions={
-          <button
-            onClick={handleStore}
-            disabled={isStoring}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-lg shadow-blue-600/20 disabled:opacity-50"
-          >
-            <Save className="w-3.5 h-3.5" />
-            <span>Store Current Incident</span>
-          </button>
-        }
       />
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800">
-          <span className="text-xs text-slate-400 block mb-1">Total Stored Memories</span>
-          <span className="text-2xl font-bold text-white">{trends.total_incidents} Incidents</span>
+      {/* AI Pattern Detection Highlights */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-5 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-brand-500/10 rounded-full blur-[40px] group-hover:bg-brand-500/20 transition-all" />
+          <span className="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-wider mb-1 block">Analyzed Incidents</span>
+          <div className="flex items-end gap-3">
+            <span className="text-3xl font-extrabold text-white">{trends.total_incidents}</span>
+            <TrendingUp className="w-4 h-4 text-accent-emerald mb-2" />
+          </div>
         </div>
-        <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800">
-          <span className="text-xs text-slate-400 block mb-1">Most Common Failure</span>
-          <span className="text-xl font-bold text-amber-400 capitalize">{trends.most_common_failure_type.replace('_', ' ')}</span>
+
+        <div className="p-5 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-accent-red/10 rounded-full blur-[40px] group-hover:bg-accent-red/20 transition-all" />
+          <span className="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-wider mb-1 block">Primary Root Cause</span>
+          <div className="flex items-center gap-2 mt-1">
+            <AlertOctagon className="w-5 h-5 text-accent-red" />
+            <span className="text-lg font-bold text-white capitalize truncate">{trends.most_common_failure_type.replace('_', ' ')}</span>
+          </div>
         </div>
-        <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800">
-          <span className="text-xs text-slate-400 block mb-1">Most Vulnerable Asset</span>
-          <span className="text-xl font-bold text-red-400">{trends.most_vulnerable_asset}</span>
-        </div>
-        <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800">
-          <span className="text-xs text-slate-400 block mb-1">Resolution Rate</span>
-          <span className="text-2xl font-bold text-emerald-400">{trends.resolution_rate}%</span>
+
+        <div className="p-5 rounded-2xl bg-accent-amber/5 border border-accent-amber/20 relative overflow-hidden group col-span-1 lg:col-span-2 flex flex-col justify-center">
+          <div className="flex items-center gap-2 mb-2">
+            <Lightbulb className="w-4 h-4 text-accent-amber" />
+            <span className="text-[10px] text-accent-amber font-bold uppercase tracking-wider">AI Preventive Recommendation</span>
+          </div>
+          <p className="text-xs text-white leading-relaxed">
+            Pattern detected: <strong className="text-brand-400">P-101 bearing overheat</strong> accounts for 32% of total failures. Recommend increasing vibration sensor polling frequency by 2x and scheduling preventative bearing replacement every 4,000 operational hours.
+          </p>
         </div>
       </div>
 
       {/* Analytics Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SectionCard title="Failure Mode Distribution">
-          <div className="h-60 w-full">
+        <SectionCard title="Historical Failure Distribution" subtitle="AI classification of root causes">
+          <div className="h-[250px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={failurePieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                <Pie data={failurePieData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5}>
                   {failurePieData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', fontSize: '12px' }} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#0B0F17', borderColor: '#1E293B', borderRadius: '12px', fontSize: '12px', color: '#fff' }} 
+                  itemStyle={{ color: '#fff' }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </SectionCard>
 
-        <SectionCard title="Asset Vulnerability Ranking">
-          <div className="h-60 w-full pt-4">
+        <SectionCard title="Asset Vulnerability Heatmap" subtitle="Highest frequency failure targets">
+          <div className="h-[250px] w-full pt-4">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={assetBarData}>
-                <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
-                <YAxis stroke="#64748b" fontSize={11} />
-                <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', fontSize: '12px' }} />
-                <Bar dataKey="count" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
+              <BarChart data={assetBarData} layout="vertical" margin={{ top: 0, right: 30, left: 20, bottom: 0 }}>
+                <XAxis type="number" stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis dataKey="name" type="category" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
+                <Tooltip cursor={{fill: '#1e293b'}} contentStyle={{ backgroundColor: '#0B0F17', borderColor: '#1E293B', borderRadius: '12px', fontSize: '12px', color: '#fff' }} />
+                <Bar dataKey="count" fill="#8B5CF6" radius={[0, 6, 6, 0]} barSize={20} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -167,57 +172,55 @@ export const MemoryPage: React.FC = () => {
       </div>
 
       {/* Historical Incident Search & List */}
-      <SectionCard title="Historical Memory Search & Lookup" subtitle="Find similar past incidents (<100ms)">
-        <div className="flex flex-col sm:flex-row items-center gap-3 mb-4">
-          <SearchBar value={searchQuery} onChange={setSearchQuery} onSearch={handleSearch} placeholder="Search memory by asset, failure type, or outcome..." />
+      <SectionCard title="Failure Memory Database" subtitle="Search historical incidents, resolutions, and audit traces">
+        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-center gap-3 mb-6">
+          <div className="relative w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)]" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by asset ID, failure type, or outcome..."
+              className="w-full pl-11 pr-4 py-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)] text-sm text-white placeholder-[var(--text-secondary)] focus:outline-none focus:ring-1 focus:ring-brand-500 transition-colors"
+            />
+          </div>
           <button
-            onClick={handleSearch}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-600/20 transition"
+            type="submit"
+            disabled={isSearching}
+            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[var(--bg-secondary)] hover:bg-[var(--glass-bg)] border border-[var(--glass-border)] text-white font-bold text-xs transition-colors whitespace-nowrap"
           >
-            Search Memory
+            {isSearching ? 'Searching...' : 'Search Database'}
           </button>
-        </div>
+        </form>
 
-        <div className="space-y-3">
+        <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
           {incidents.map((inc) => (
             <div
               key={inc.incident_id}
               onClick={() => {
                 setCurrentMemory(inc);
-                setActiveTab('compliance');
+                navigate('/dashboard/compliance');
               }}
-              className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-blue-500/30 cursor-pointer transition flex flex-col md:flex-row md:items-center justify-between gap-3"
+              className="p-4 rounded-2xl bg-[var(--bg-primary)] border border-[var(--glass-border)] hover:border-brand-500/40 cursor-pointer transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 group"
             >
               <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-bold text-white text-sm">{inc.failed_asset}</span>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="font-extrabold text-white text-sm bg-[var(--bg-secondary)] px-2 py-0.5 rounded">{inc.failed_asset}</span>
                   <StatusBadge status={inc.failure_type} size="sm" />
-                  <span className="text-xs text-slate-500 font-mono">ID: {inc.incident_id.slice(0, 8)}</span>
                 </div>
-                <p className="text-xs text-slate-400">Outcome: <span className="text-emerald-400 font-semibold">{inc.outcome}</span></p>
+                <p className="text-xs text-[var(--text-secondary)]">Resolution: <span className="text-accent-emerald font-semibold">{inc.outcome}</span></p>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] font-mono text-slate-500">{new Date(inc.timestamp).toLocaleString()}</span>
-                <button className="p-2 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 text-xs font-semibold">
-                  Open Audit Report &rarr;
+              <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-3">
+                <span className="text-[10px] font-mono text-[var(--text-secondary)] flex items-center gap-1.5"><Clock className="w-3 h-3" /> {new Date(inc.timestamp).toLocaleDateString()}</span>
+                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] group-hover:bg-brand-500/10 text-[var(--text-secondary)] group-hover:text-brand-400 text-[10px] font-bold transition-colors">
+                  View Audit Report <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                 </button>
               </div>
             </div>
           ))}
         </div>
       </SectionCard>
-
-      {/* Action to proceed to Compliance */}
-      <div className="flex justify-end">
-        <button
-          onClick={() => setActiveTab('compliance')}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-600/20 transition"
-        >
-          <span>Generate Enterprise Compliance Report</span>
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </div>
     </div>
   );
 };

@@ -15,12 +15,13 @@ import {
   ChevronRight,
   Zap
 } from 'lucide-react';
-import { useApexStore } from '../../store/useApexStore';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 export const Sidebar: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { activeTab, setActiveTab } = useApexStore();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -37,7 +38,7 @@ export const Sidebar: React.FC = () => {
 
   return (
     <aside
-      className={`relative flex flex-col h-screen glass-panel rounded-none border-t-0 border-b-0 border-l-0 transition-all duration-300 z-30 select-none ${
+      className={`hidden md:flex relative flex-col h-screen glass-panel rounded-none border-t-0 border-b-0 border-l-0 transition-all duration-300 z-30 select-none ${
         isCollapsed ? 'w-20' : 'w-64'
       }`}
     >
@@ -70,11 +71,11 @@ export const Sidebar: React.FC = () => {
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto scroll-smooth">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = activeTab === item.id;
+          const isActive = location.pathname.includes(item.id) || (item.id === 'dashboard' && location.pathname === '/dashboard');
           return (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => navigate(`/dashboard/${item.id === 'dashboard' ? '' : item.id}`)}
               className={`w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-xs font-semibold transition-all duration-200 group relative ${
                 isActive
                   ? 'text-brand-500'
@@ -100,7 +101,7 @@ export const Sidebar: React.FC = () => {
       {/* Footer / Logout */}
       <div className="p-3 border-t border-[var(--glass-border)]">
         <button
-          onClick={() => setActiveTab('settings')}
+          onClick={() => navigate('/login')}
           className="w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-xs font-semibold text-[var(--text-secondary)] hover:text-accent-red hover:bg-accent-red/10 border border-transparent hover:border-accent-red/20 transition-all"
           title={isCollapsed ? 'Logout' : undefined}
         >

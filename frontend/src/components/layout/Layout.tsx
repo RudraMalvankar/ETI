@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
+import { MobileNav } from './MobileNav';
 import { BackendStatusBanner } from '../system/BackendStatusBanner';
 
 interface LayoutProps {
@@ -18,13 +19,15 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="flex flex-col flex-1 h-screen overflow-hidden relative z-10">
+      <div className="flex flex-col flex-1 h-screen overflow-hidden relative z-10 pb-16 md:pb-0">
         <BackendStatusBanner />
         <Navbar />
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 scroll-smooth">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 md:space-y-8 scroll-smooth">
           {children}
         </main>
       </div>
+      
+      <MobileNav />
     </div>
   );
 };

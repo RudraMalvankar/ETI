@@ -15,12 +15,12 @@ import {
 import { StatCard } from '../components/common/StatCard';
 import { SectionCard } from '../components/common/SectionCard';
 import { Timeline } from '../components/common/Timeline';
-import { useApexStore } from '../store/useApexStore';
+import { useNavigate } from 'react-router-dom';
 import ReactFlow, { Background, Controls } from 'reactflow';
 import 'reactflow/dist/style.css';
 
 export const DashboardPage: React.FC = () => {
-  const { setActiveTab } = useApexStore();
+  const navigate = useNavigate();
   const [isSimulating, setIsSimulating] = useState(false);
 
   const incidentTimeline = [
@@ -54,7 +54,7 @@ export const DashboardPage: React.FC = () => {
     setIsSimulating(true);
     setTimeout(() => {
       setIsSimulating(false);
-      setActiveTab('simulation');
+      navigate('/dashboard/simulation');
     }, 1500);
   };
 
@@ -80,7 +80,7 @@ export const DashboardPage: React.FC = () => {
 
             <div className="flex flex-wrap items-center gap-4 mt-8">
               <button
-                onClick={() => setActiveTab('runbook')}
+                onClick={() => navigate('/dashboard/runbook')}
                 className="px-6 py-3.5 rounded-xl bg-accent-red text-white font-bold shadow-[0_4px_20px_rgba(239,68,68,0.3)] hover:shadow-[0_4px_30px_rgba(239,68,68,0.5)] hover:-translate-y-0.5 transition-all flex items-center gap-2"
               >
                 Execute Recovery Runbook <ArrowRight className="w-4 h-4" />
@@ -125,7 +125,7 @@ export const DashboardPage: React.FC = () => {
             </div>
             
             <button
-              onClick={() => setActiveTab('compliance')}
+              onClick={() => navigate('/dashboard/compliance')}
               className="w-full py-2.5 rounded-xl border border-[var(--glass-border)] bg-[var(--bg-secondary)] hover:bg-[var(--glass-bg)] text-xs font-bold text-[var(--text-primary)] transition-all flex items-center justify-center gap-2"
             >
               <FileText className="w-3.5 h-3.5" /> Generate Compliance Report
@@ -139,7 +139,7 @@ export const DashboardPage: React.FC = () => {
         <SectionCard 
           title="Live Blast Radius Topology" 
           subtitle="Real-time propagation map based on current telemetry"
-          action={<button onClick={() => setActiveTab('graph')} className="text-brand-500 text-xs font-bold hover:underline flex items-center gap-1">Open Workspace <ArrowRight className="w-3 h-3" /></button>}
+          action={<button onClick={() => navigate('/dashboard/graph')} className="text-brand-500 text-xs font-bold hover:underline flex items-center gap-1">Open Workspace <ArrowRight className="w-3 h-3" /></button>}
           className="h-[400px] flex flex-col"
         >
           <div className="flex-1 rounded-xl overflow-hidden border border-[var(--glass-border)] relative bg-[var(--bg-secondary)]">
