@@ -3,6 +3,7 @@ import httpx
 from typing import List
 from .base import AIProvider
 from app.core.config import settings
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 class NIMProvider(AIProvider):
     """
@@ -20,6 +21,7 @@ class NIMProvider(AIProvider):
             timeout=30.0
         )
 
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
     def complete(self, prompt: str, system_prompt: str = "") -> str:
         url = f"{self.base_url}/chat/completions"
         messages = []
@@ -40,6 +42,7 @@ class NIMProvider(AIProvider):
         res_data = response.json()
         return res_data["choices"][0]["message"]["content"]
 
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
     def embed(self, text: str) -> List[float]:
         # NVIDIA NIM embedding endpoint
         url = f"{self.base_url}/embeddings"
@@ -58,6 +61,7 @@ class NIMProvider(AIProvider):
             from .mock_provider import MockAIProvider
             return MockAIProvider().embed(text)
 
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
     def embed_batch(self, texts: List[str]) -> List[List[float]]:
         url = f"{self.base_url}/embeddings"
         payload = {
@@ -73,3 +77,4 @@ class NIMProvider(AIProvider):
         except Exception:
             from .mock_provider import MockAIProvider
             return MockAIProvider().embed_batch(texts)
+

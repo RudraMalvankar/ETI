@@ -3,6 +3,7 @@ from typing import List
 import google.generativeai as genai
 from .base import AIProvider
 from app.core.config import settings
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 class GeminiProvider(AIProvider):
     """
@@ -17,6 +18,7 @@ class GeminiProvider(AIProvider):
         self.model_name = settings.GEMINI_MODEL
         self.embedding_model_name = settings.GEMINI_EMBEDDING_MODEL
 
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
     def complete(self, prompt: str, system_prompt: str = "") -> str:
         # Configure model
         model = genai.GenerativeModel(
@@ -26,6 +28,7 @@ class GeminiProvider(AIProvider):
         response = model.generate_content(prompt)
         return response.text
 
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
     def embed(self, text: str) -> List[float]:
         result = genai.embed_content(
             model=self.embedding_model_name,
@@ -34,6 +37,7 @@ class GeminiProvider(AIProvider):
         )
         return result["embedding"]
 
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
     def embed_batch(self, texts: List[str]) -> List[List[float]]:
         result = genai.embed_content(
             model=self.embedding_model_name,
@@ -41,3 +45,4 @@ class GeminiProvider(AIProvider):
             task_type="retrieval_document"
         )
         return result["embedding"]
+
