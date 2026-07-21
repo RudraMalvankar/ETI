@@ -7,10 +7,10 @@ export const HeroSection: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative overflow-hidden bg-[var(--bg-primary)] pt-[120px] pb-[80px] min-h-[90vh] flex items-center justify-center">
+    <div className="relative overflow-hidden bg-[var(--bg-primary)] pt-[140px] pb-[100px] min-h-screen flex items-center justify-center premium-grid-bg border-b border-[var(--glass-border)]">
       {/* Background gradients */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[500px] bg-brand-500/20 rounded-full blur-[150px] opacity-70 pointer-events-none" />
-      <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-accent-purple/20 rounded-full blur-[150px] opacity-60 pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1200px] h-[600px] bg-brand-500/15 rounded-full blur-[150px] opacity-70 pointer-events-none" />
+      <div className="absolute bottom-0 right-[-10%] w-[600px] h-[600px] bg-accent-purple/10 rounded-full blur-[150px] opacity-60 pointer-events-none" />
       
       <div className="container mx-auto px-6 relative z-10 text-center max-w-4xl">
         <motion.div
@@ -37,9 +37,9 @@ export const HeroSection: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-lg md:text-xl text-[var(--text-secondary)] mb-10 max-w-2xl mx-auto"
+          className="text-lg md:text-xl text-[var(--text-secondary)] mb-10 max-w-2xl mx-auto font-medium"
         >
-          APEX combines causal shadow simulation, live knowledge graphs, and executable runbooks to keep mission-critical assets running.
+          APEX combines causal shadow simulation, live knowledge graphs, and executable runbooks to keep mission-critical assets running. Predict failures before they happen.
         </motion.p>
 
         <motion.div 

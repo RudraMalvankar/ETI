@@ -1,6 +1,8 @@
 import React from 'react';
 import { HeroSection } from '../components/landing/HeroSection';
 import { FeatureSection } from '../components/landing/FeatureSection';
+import { ProblemSection } from '../components/landing/ProblemSection';
+import { ProductShowcase } from '../components/landing/ProductShowcase';
 import { Zap } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
@@ -24,7 +26,9 @@ export const LandingPage: React.FC = () => {
       </nav>
 
       <HeroSection />
+      <ProblemSection />
       <FeatureSection />
+      <ProductShowcase />
       
       {/* Simple Footer */}
       <footer className="py-12 border-t border-[var(--glass-border)] text-center text-[var(--text-secondary)]">

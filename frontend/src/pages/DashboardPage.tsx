@@ -5,7 +5,6 @@ import {
   AlertOctagon,
   FileText,
   ShieldCheck,
-  TrendingUp,
   Play,
   CheckCircle2,
   Zap,
@@ -59,135 +58,121 @@ export const DashboardPage: React.FC = () => {
   };
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-10">
-      
-      {/* 1. AI Copilot Hero & Recommended Action */}
-      <motion.div variants={itemVariants} className="relative overflow-hidden rounded-[2rem] p-8 md:p-12 glass-panel border border-[var(--glass-border)] group">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-brand-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 group-hover:bg-brand-500/15 transition-all duration-1000" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent-purple/10 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3 group-hover:bg-accent-purple/15 transition-all duration-1000" />
+    <div className="relative min-h-[calc(100vh-80px)] -mt-8 -mx-8 p-8 overflow-hidden">
+      {/* Operations Center Background Grid */}
+      <div className="absolute inset-0 premium-grid-bg opacity-30 pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-brand-500/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-accent-red/5 rounded-full blur-[120px] pointer-events-none" />
+
+      <motion.div variants={containerVariants} initial="hidden" animate="show" className="relative z-10 space-y-8">
         
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-          <div className="flex flex-col h-full justify-between">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-red/10 border border-accent-red/20 text-accent-red text-xs font-bold mb-6">
-                <Zap className="w-3.5 h-3.5" /> Critical Incident Detected
-              </div>
-              <h1 className="heading-1 mb-4 leading-tight">P-101 Bearing Overheat</h1>
-              <p className="text-[var(--text-secondary)] text-sm md:text-base leading-relaxed mb-6">
-                Sensor telemetry indicates bearing friction exceeding nominal thresholds. Knowledge graph analysis projects a high probability of cascading failure to V-202 isolation valve within 45 minutes.
-              </p>
-            </div>
+        {/* Top Telemetry Row */}
+        <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          <StatCard title="Overall System Health" value="82.4%" icon={ShieldCheck} change="-1.2% (1h)" changeType="negative" accentColor="amber" />
+          <StatCard title="Active Incidents" value="1 Critical" icon={AlertOctagon} change="P-101 anomaly" changeType="negative" accentColor="red" />
+          <StatCard title="Active Shadow Sims" value="1,402" icon={Activity} change="Running" changeType="neutral" accentColor="blue" />
+          <StatCard title="Compliance Posture" value="Ready" icon={FileText} change="100% Audit" changeType="positive" accentColor="emerald" />
+        </motion.div>
 
-            <div className="flex flex-wrap items-center gap-4 mt-8">
-              <button
-                onClick={() => navigate('/dashboard/runbook')}
-                className="px-6 py-3.5 rounded-xl bg-accent-red text-white font-bold shadow-[0_4px_20px_rgba(239,68,68,0.3)] hover:shadow-[0_4px_30px_rgba(239,68,68,0.5)] hover:-translate-y-0.5 transition-all flex items-center gap-2"
-              >
-                Execute Recovery Runbook <ArrowRight className="w-4 h-4" />
-              </button>
-              <button
-                onClick={handleRunSimulation}
-                disabled={isSimulating}
-                className="px-6 py-3.5 rounded-xl glass-panel text-[var(--text-primary)] hover:border-brand-500/40 font-semibold transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-wait"
-              >
-                {isSimulating ? <Zap className="w-4 h-4 animate-pulse text-brand-500" /> : <Play className="w-4 h-4 text-brand-500" />}
-                {isSimulating ? 'Simulating...' : 'Run Shadow Simulation'}
-              </button>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          
+          {/* Main Action Panel - The Copilot & Critical Alert */}
+          <motion.div variants={itemVariants} className="lg:col-span-2 space-y-6">
+            <div className="relative overflow-hidden rounded-[2rem] p-8 glass-panel border border-accent-red/20 group bg-gradient-to-br from-[var(--bg-secondary)] to-accent-red/5 shadow-[0_0_40px_rgba(239,68,68,0.05)]">
+              <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-accent-red/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3" />
+              
+              <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-red/10 border border-accent-red/20 text-accent-red text-xs font-bold mb-6 animate-pulse">
+                  <Zap className="w-3.5 h-3.5" /> PRIORITY 1 ALERT
+                </div>
+                
+                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">P-101 Bearing Overheat</h1>
+                <p className="text-[var(--text-secondary)] text-lg mb-8 max-w-xl font-medium">
+                  Telemetry indicates bearing friction exceeding nominal thresholds. Knowledge graph analysis projects a high probability of cascading failure to V-202 isolation valve within <span className="text-accent-red font-bold">45 minutes</span>.
+                </p>
 
-          {/* Dedicated AI Copilot Panel */}
-          <div className="glass-panel p-6 rounded-2xl border-brand-500/30 bg-[var(--bg-primary)]/40 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 blur-[50px] rounded-full" />
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 rounded-xl bg-brand-500/10 text-brand-500 border border-brand-500/20">
-                <BrainCircuit className="w-5 h-5" />
-              </div>
-              <h2 className="heading-2 text-lg">AI Recommendation</h2>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="p-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--glass-border)]">
-                <span className="block text-[10px] uppercase font-semibold text-[var(--text-secondary)] tracking-wider mb-1">Confidence</span>
-                <span className="text-2xl font-extrabold text-accent-emerald">94.5%</span>
-              </div>
-              <div className="p-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--glass-border)]">
-                <span className="block text-[10px] uppercase font-semibold text-[var(--text-secondary)] tracking-wider mb-1">Est. Downtime</span>
-                <span className="text-2xl font-extrabold text-[var(--text-primary)]">45m</span>
+                <div className="flex flex-wrap items-center gap-4">
+                  <button
+                    onClick={() => navigate('/dashboard/runbook')}
+                    className="px-6 py-4 rounded-xl bg-accent-red text-white font-bold shadow-[0_4px_20px_rgba(239,68,68,0.3)] hover:shadow-[0_4px_30px_rgba(239,68,68,0.5)] hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                  >
+                    Execute Recovery Runbook <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleRunSimulation}
+                    disabled={isSimulating}
+                    className="px-6 py-4 rounded-xl glass-panel text-white hover:bg-brand-500/10 hover:border-brand-500/40 font-semibold transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-wait"
+                  >
+                    {isSimulating ? <Zap className="w-4 h-4 animate-pulse text-brand-500" /> : <Play className="w-4 h-4 text-brand-500" />}
+                    {isSimulating ? 'Simulating...' : 'Run Shadow Simulation'}
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-accent-amber/5 border border-accent-amber/20 mb-6">
-              <span className="block text-[10px] uppercase font-semibold text-accent-amber tracking-wider mb-2">Primary Recovery Strategy</span>
-              <p className="text-sm font-medium text-[var(--text-primary)] leading-relaxed">
-                Immediately isolate inlet valve V-202 via LOTO and depressurize housing to prevent mechanical shearing.
-              </p>
-            </div>
-            
-            <button
-              onClick={() => navigate('/dashboard/compliance')}
-              className="w-full py-2.5 rounded-xl border border-[var(--glass-border)] bg-[var(--bg-secondary)] hover:bg-[var(--glass-bg)] text-xs font-bold text-[var(--text-primary)] transition-all flex items-center justify-center gap-2"
+            {/* Knowledge Graph Snapshot */}
+            <SectionCard 
+              title="Live Topology & Blast Radius" 
+              subtitle="Real-time propagation mapping"
+              action={<button onClick={() => navigate('/dashboard/graph')} className="text-brand-500 text-xs font-bold hover:underline flex items-center gap-1">Open Full Map <ArrowRight className="w-3 h-3" /></button>}
+              className="h-[350px] flex flex-col"
             >
-              <FileText className="w-3.5 h-3.5" /> Generate Compliance Report
-            </button>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* 2. Knowledge Graph Live Visualization */}
-      <motion.div variants={itemVariants}>
-        <SectionCard 
-          title="Live Blast Radius Topology" 
-          subtitle="Real-time propagation map based on current telemetry"
-          action={<button onClick={() => navigate('/dashboard/graph')} className="text-brand-500 text-xs font-bold hover:underline flex items-center gap-1">Open Workspace <ArrowRight className="w-3 h-3" /></button>}
-          className="h-[400px] flex flex-col"
-        >
-          <div className="flex-1 rounded-xl overflow-hidden border border-[var(--glass-border)] relative bg-[var(--bg-secondary)]">
-            <ReactFlow nodes={graphNodes} edges={graphEdges} fitView attributionPosition="bottom-right">
-              <Background color="#475569" gap={20} size={1} />
-              <Controls />
-            </ReactFlow>
-            <div className="absolute top-4 left-4 glass-panel px-3 py-2 rounded-xl flex items-center gap-3 shadow-lg">
-              <span className="flex items-center gap-2 text-xs font-semibold text-accent-red">
-                <span className="w-2.5 h-2.5 rounded-full bg-accent-red animate-pulse" /> Critical
-              </span>
-              <span className="w-px h-3 bg-[var(--glass-border)]" />
-              <span className="flex items-center gap-2 text-xs font-semibold text-accent-amber">
-                <span className="w-2.5 h-2.5 rounded-full bg-accent-amber" /> At Risk
-              </span>
-            </div>
-          </div>
-        </SectionCard>
-      </motion.div>
-
-      {/* 3. Shadow Simulation & Live Telemetry Intelligence */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <StatCard title="Active Incident Risk" value="Critical" icon={AlertOctagon} change="Propagation Active" changeType="negative" accentColor="red" />
-        <StatCard title="Simulation Cycles" value="1,402" icon={Activity} change="Last 60 mins" changeType="neutral" accentColor="blue" />
-        <StatCard title="System Health" value="82%" icon={ShieldCheck} change="-18% from nominal" changeType="negative" accentColor="amber" />
-        <StatCard title="Resolution Progress" value="Pending" icon={TrendingUp} change="Awaiting execution" changeType="neutral" accentColor="purple" />
-      </motion.div>
-
-      {/* 4. Incident Timeline & Recent Activity */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SectionCard title="Live Operational Timeline" subtitle="Chronological incident events">
-          <Timeline items={incidentTimeline} />
-        </SectionCard>
-
-        <SectionCard title="System Sub-Services" subtitle="Engine liveness checks">
-          <div className="space-y-4">
-            {['FastAPI Backend', 'Qdrant Vector DB', 'Shadow Simulation Engine', 'Knowledge Graph Store'].map((service, i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] group hover:border-brand-500/30 transition-all">
-                <span className="text-[var(--text-primary)] font-medium text-sm">{service}</span>
-                <span className="inline-flex items-center gap-2 text-accent-emerald font-bold text-xs">
-                  <CheckCircle2 className="w-4 h-4" /> Operational
-                </span>
+              <div className="flex-1 rounded-2xl overflow-hidden border border-[var(--glass-border)] relative bg-[#0B0F17]">
+                <ReactFlow nodes={graphNodes} edges={graphEdges} fitView attributionPosition="bottom-right">
+                  <Background color="rgba(255,255,255,0.05)" gap={24} size={1} />
+                  <Controls className="!bg-[var(--bg-secondary)] !border-[var(--glass-border)] !fill-[var(--text-secondary)]" />
+                </ReactFlow>
+                <div className="absolute top-4 left-4 glass-panel px-3 py-2 rounded-xl flex items-center gap-3 shadow-lg">
+                  <span className="flex items-center gap-2 text-xs font-semibold text-accent-red">
+                    <span className="w-2 h-2 rounded-full bg-accent-red animate-pulse" /> Critical Path
+                  </span>
+                </div>
               </div>
-            ))}
-          </div>
-        </SectionCard>
-      </motion.div>
+            </SectionCard>
 
-    </motion.div>
+          </motion.div>
+
+          {/* Right Sidebar - AI Copilot & Live Feed */}
+          <motion.div variants={itemVariants} className="space-y-6">
+            
+            {/* AI Copilot Panel */}
+            <div className="glass-panel p-6 rounded-[2rem] border-brand-500/30 bg-gradient-to-b from-brand-500/5 to-transparent relative overflow-hidden h-[300px] flex flex-col">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/20">
+                  <BrainCircuit className="w-5 h-5" />
+                </div>
+                <h2 className="text-xl font-bold text-white tracking-tight">AI Copilot Recommendation</h2>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-4">
+                <div className="p-4 rounded-xl bg-accent-emerald/5 border border-accent-emerald/20">
+                  <span className="block text-[10px] uppercase font-bold text-accent-emerald tracking-wider mb-2 flex items-center gap-2">
+                    <CheckCircle2 className="w-3 h-3" /> Safest Strategy (94.5% Confidence)
+                  </span>
+                  <p className="text-sm font-medium text-white/90 leading-relaxed">
+                    Immediately isolate inlet valve V-202 via LOTO and depressurize housing. Proceed to runbook execution to avoid mechanical shearing.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                   <p className="text-xs text-[var(--text-secondary)] font-medium leading-relaxed">
+                     <span className="text-brand-400 font-bold">Citation:</span> OEM Manual Sec 4.2 recommends this procedure for high-friction anomalies on P-class centrifugal pumps.
+                   </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Live Operational Feed */}
+            <SectionCard title="Command Center Feed" subtitle="Live chronolog">
+              <div className="relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[var(--glass-border)] before:to-transparent">
+                <Timeline items={incidentTimeline} />
+              </div>
+            </SectionCard>
+
+          </motion.div>
+        </div>
+
+      </motion.div>
+    </div>
   );
 };
