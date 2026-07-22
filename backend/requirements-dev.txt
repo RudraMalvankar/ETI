@@ -26,4 +26,4 @@ safety~=3.2.0
 
 # Diagnostic & Integration Script Tools
 requests~=2.32.3
-psutil~=6.0.0
+psutil~=7.2.2
