@@ -97,7 +97,7 @@ jobs:
             -x
 
       - name: Upload Coverage Report to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v7
         if: always()
         with:
           file: ./backend/coverage.xml
