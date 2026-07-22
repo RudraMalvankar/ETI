@@ -74,6 +74,7 @@ def reset_rate_limit():
 # Helper: create a user and return a token
 # ──────────────────────────────────────────────────────────────
 
+
 def get_token_for_role(client: TestClient, username: str, password: str, role: str) -> str:
     """Register a user with given credentials then inject the role directly, return JWT."""
     from sqlalchemy.orm import Session
@@ -99,7 +100,9 @@ def get_token_for_role(client: TestClient, username: str, password: str, role: s
             db.refresh(existing)
             user = existing
 
-        token = create_access_token(data={"sub": user.username, "role": user.role, "sid": "test-sid"})
+        token = create_access_token(
+            data={"sub": user.username, "role": user.role, "sid": "test-sid"}
+        )
         # Patch session id so decode validates
         user.current_session_id = "test-sid"
         db.commit()
@@ -112,6 +115,7 @@ def get_token_for_role(client: TestClient, username: str, password: str, role: s
 # Base TestClient
 # ──────────────────────────────────────────────────────────────
 
+
 @pytest.fixture(scope="session")
 def client():
     """Unauthenticated test client."""
@@ -122,6 +126,7 @@ def client():
 # ──────────────────────────────────────────────────────────────
 # Role-scoped authenticated clients
 # ──────────────────────────────────────────────────────────────
+
 
 @pytest.fixture(scope="session")
 def operator_token(client):
@@ -223,6 +228,7 @@ def built_graph(client, engineer_headers):
 # ──────────────────────────────────────────────────────────────
 # Simulation fixture
 # ──────────────────────────────────────────────────────────────
+
 
 @pytest.fixture(scope="session")
 def simulation_result(client, built_graph, operator_headers):

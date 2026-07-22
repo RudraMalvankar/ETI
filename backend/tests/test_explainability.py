@@ -6,7 +6,6 @@ Covers explain endpoint with RBAC.
 
 import pytest
 
-
 EXPLAIN_CONTEXT = {
     "failed_asset": "pump_A",
     "failure_type": "bearing_failure",

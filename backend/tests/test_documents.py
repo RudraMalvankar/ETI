@@ -5,8 +5,8 @@ Covers upload, list, get, delete, index operations with RBAC checks.
 """
 
 import io
-import pytest
 
+import pytest
 
 MINIMAL_PDF = b"%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\nxref\n0 1\n0000000000 65535 f \ntrailer\n<< /Size 1 /Root 1 0 R >>\nstartxref\n9\n%%EOF"
 MINIMAL_CSV = b"asset_id,status,temperature\npump_A,operational,85.0\nvalve_B,operational,40.0"

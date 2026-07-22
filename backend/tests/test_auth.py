@@ -284,6 +284,7 @@ class TestRBAC:
     def test_operator_cannot_upload_documents(self, client, operator_headers):
         """Operators must not upload documents — Engineer/Admin only."""
         import io
+
         file_content = b"%PDF-1.4 test content"
         resp = client.post(
             "/api/v1/documents/upload",
@@ -294,6 +295,7 @@ class TestRBAC:
 
     def test_engineer_can_upload_documents(self, client, engineer_headers):
         import io
+
         file_content = b"%PDF-1.4 minimal test pdf content"
         resp = client.post(
             "/api/v1/documents/upload",

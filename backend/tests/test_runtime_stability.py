@@ -23,6 +23,7 @@ client = TestClient(app)
 @pytest.fixture
 def admin_headers():
     from app.core.auth import create_access_token
+
     db = SessionLocal()
     user = db.query(UserModel).filter(UserModel.username == "st_admin").first()
     if not user:

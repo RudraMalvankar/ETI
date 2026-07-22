@@ -1,12 +1,16 @@
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import json
 import time
-from reportlab.pdfgen import canvas
+
 from fastapi.testclient import TestClient
+from reportlab.pdfgen import canvas
+
 from app.main import app
+
 
 def run_e2e_demo():
     print("=======================================================")
@@ -23,13 +27,21 @@ def run_e2e_demo():
     c = canvas.Canvas(sample_pdf_path)
     c.drawString(100, 750, "APEX INDUSTRIAL MAINTENANCE MANUAL")
     c.drawString(100, 700, "Asset ID: P-101 (Centrifugal Pump)")
-    c.drawString(100, 650, "Procedure: In case of bearing overheat on P-101, isolate inlet valve V-202 immediately.")
-    c.drawString(100, 600, "Safety Check: Verify electrical lock-out tag-out before opening housing.")
+    c.drawString(
+        100,
+        650,
+        "Procedure: In case of bearing overheat on P-101, isolate inlet valve V-202 immediately.",
+    )
+    c.drawString(
+        100, 600, "Safety Check: Verify electrical lock-out tag-out before opening housing."
+    )
     c.save()
 
     with open(sample_pdf_path, "rb") as f:
-        res_doc = client.post("/api/v1/documents/upload", files={"file": ("sample_manual.pdf", f, "application/pdf")})
-    
+        res_doc = client.post(
+            "/api/v1/documents/upload", files={"file": ("sample_manual.pdf", f, "application/pdf")}
+        )
+
     assert res_doc.status_code == 201
     doc_id = res_doc.json()["document_id"]
     print(f"  -> Document Ingested Successfully! ID: {doc_id}")
@@ -39,21 +51,27 @@ def run_e2e_demo():
 
     # STEP 2: Vector Search / Embedding Verification
     print("\n[2/13] RAG Vector Search Retrieval")
-    res_search = client.post("/api/v1/search/", json={"query": "P-101 bearing overheat safety isolation", "top_k": 2})
-    print(f"  -> Search Status: HTTP {res_search.status_code} (Found {len(res_search.json().get('results', []))} matches)")
+    res_search = client.post(
+        "/api/v1/search/", json={"query": "P-101 bearing overheat safety isolation", "top_k": 2}
+    )
+    print(
+        f"  -> Search Status: HTTP {res_search.status_code} (Found {len(res_search.json().get('results', []))} matches)"
+    )
 
     # STEP 3: Knowledge Graph Construction
     print("\n[3/13] Knowledge Graph Build & Blast Radius Topology")
     sample_graph = "tests/samples/industrial_plant.json"
     if os.path.exists(sample_graph):
-        with open(sample_graph, 'r') as f:
+        with open(sample_graph, "r") as f:
             graph_data = json.load(f)
         res_graph = client.post("/api/v1/graph/build", json=graph_data)
         print(f"  -> Graph Build Status: HTTP {res_graph.status_code}")
 
     # STEP 4: Shadow Simulation Execution
     print("\n[4/13] Shadow Simulation Engine Execution")
-    res_sim = client.post("/api/v1/simulation/run", json={"failed_asset": "P-101", "failure_type": "bearing_overheat"}).json()
+    res_sim = client.post(
+        "/api/v1/simulation/run", json={"failed_asset": "P-101", "failure_type": "bearing_overheat"}
+    ).json()
     sim_id = res_sim.get("simulation_id", "sim-demo-01")
     print(f"  -> Simulation ID: {sim_id}")
 
@@ -63,7 +81,13 @@ def run_e2e_demo():
         "recommended_strategy": "Isolate P-101 and Close V-202",
         "alternative_strategies": ["Throttle P-101 input"],
         "reasoning": "Highest risk reduction via physical isolation.",
-        "supporting_citations": [{"document_id": doc_id, "chunk_id": "chk1", "text_snippet": "Isolate inlet valve V-202 immediately"}],
+        "supporting_citations": [
+            {
+                "document_id": doc_id,
+                "chunk_id": "chk1",
+                "text_snippet": "Isolate inlet valve V-202 immediately",
+            }
+        ],
         "confidence_score": 94.5,
         "affected_assets": ["P-101", "V-202"],
         "estimated_risk_reduction": 95.0,
@@ -74,27 +98,30 @@ def run_e2e_demo():
             "graph_nodes_traversed": 2,
             "selected_scenario": "Optimal Physical Isolation",
             "citations_verified": 1,
-            "confidence": 94.5
-        }
+            "confidence": 94.5,
+        },
     }
     print("  -> Decision Strategy: Isolate P-101 and Close V-202 (Confidence: 94.5%)")
 
     # STEP 6: Dynamic Runbook Generation
     print("\n[6/13] Dynamic Runbook Generation & Safety Protocol Injection")
-    res_rb = client.post("/api/v1/runbook/generate", json={
-        "decision_payload": decision_payload,
-        "simulation_id": sim_id
-    }).json()
+    res_rb = client.post(
+        "/api/v1/runbook/generate",
+        json={"decision_payload": decision_payload, "simulation_id": sim_id},
+    ).json()
     rb_id = res_rb.get("runbook_id")
     print(f"  -> Generated Runbook ID: {rb_id}")
 
     # STEP 7: Technician Feedback Logging
     print("\n[7/13] Technician Action & Feedback Logging")
-    step_id = res_rb['steps'][0]['step_id']
-    res_fb = client.put(f"/api/v1/runbook/{rb_id}/step/{step_id}", json={
-        "status": "failed",
-        "feedback_notes": "Valve V-202 handwheel stuck, require pneumatic bypass."
-    })
+    step_id = res_rb["steps"][0]["step_id"]
+    res_fb = client.put(
+        f"/api/v1/runbook/{rb_id}/step/{step_id}",
+        json={
+            "status": "failed",
+            "feedback_notes": "Valve V-202 handwheel stuck, require pneumatic bypass.",
+        },
+    )
     print(f"  -> Feedback Logged for Step {step_id}: HTTP {res_fb.status_code}")
 
     # STEP 8: Runbook Regeneration
@@ -104,36 +131,46 @@ def run_e2e_demo():
 
     # STEP 9: Operational Memory Storage
     print("\n[9/13] Operational Memory Storage")
-    res_mem = client.post("/api/v1/memory/store", json={
-        "failed_asset": "P-101",
-        "failure_type": "bearing_overheat",
-        "simulation_id": sim_id,
-        "runbook_id": rb_id,
-        "decision_data": decision_payload,
-        "outcome": "Resolved with Pneumatic Bypass"
-    }).json()
+    res_mem = client.post(
+        "/api/v1/memory/store",
+        json={
+            "failed_asset": "P-101",
+            "failure_type": "bearing_overheat",
+            "simulation_id": sim_id,
+            "runbook_id": rb_id,
+            "decision_data": decision_payload,
+            "outcome": "Resolved with Pneumatic Bypass",
+        },
+    ).json()
     incident_id = res_mem["incident_id"]
     print(f"  -> Stored Incident Memory ID: {incident_id}")
 
     # STEP 10: Operational Memory Search & Trends
     print("\n[10/13] Historical Memory Search & Organizational Trends (<100ms)")
     t_search_start = time.time()
-    search_res = client.post("/api/v1/memory/search", json={"query": "P-101 bearing overheat", "top_k": 3}).json()
+    search_res = client.post(
+        "/api/v1/memory/search", json={"query": "P-101 bearing overheat", "top_k": 3}
+    ).json()
     search_latency = (time.time() - t_search_start) * 1000
     print(f"  -> Found {len(search_res)} similar past incidents in {search_latency:.2f}ms")
 
     trends_res = client.get("/api/v1/memory/trends").json()
-    print(f"  -> Organizational Trends: Most Vulnerable Asset: {trends_res.get('most_vulnerable_asset')}")
+    print(
+        f"  -> Organizational Trends: Most Vulnerable Asset: {trends_res.get('most_vulnerable_asset')}"
+    )
 
     # STEP 11: Explainability Engine Output
     print("\n[11/13] Explainability Engine (<200ms)")
     t_exp_start = time.time()
-    explain_res = client.post("/api/v1/explainability/explain", json={
-        "simulation_id": sim_id,
-        "scenarios": res_sim.get("scenarios", []),
-        "documents": [{"document_id": doc_id, "text": "Isolate inlet valve V-202 immediately"}],
-        "confidence": 94.5
-    }).json()
+    explain_res = client.post(
+        "/api/v1/explainability/explain",
+        json={
+            "simulation_id": sim_id,
+            "scenarios": res_sim.get("scenarios", []),
+            "documents": [{"document_id": doc_id, "text": "Isolate inlet valve V-202 immediately"}],
+            "confidence": 94.5,
+        },
+    ).json()
     exp_latency = (time.time() - t_exp_start) * 1000
     print(f"  -> Explainability Summary ({exp_latency:.2f}ms):\n{explain_res['reasoning_summary']}")
 
@@ -158,6 +195,7 @@ def run_e2e_demo():
     print("\n=======================================================")
     print("      MILESTONE 8 FULL LIFECYCLE PASSED SUCCESSFULLY")
     print("=======================================================")
+
 
 if __name__ == "__main__":
     run_e2e_demo()

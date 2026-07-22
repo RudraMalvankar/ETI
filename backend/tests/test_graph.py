@@ -6,7 +6,6 @@ Covers build, get, node, neighbors, blast-radius, path, statistics.
 
 import pytest
 
-
 GRAPH_PAYLOAD = {
     "nodes": [
         {

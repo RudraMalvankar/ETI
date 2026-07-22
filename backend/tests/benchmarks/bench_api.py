@@ -143,7 +143,9 @@ class TestThroughputBenchmarks:
             client.get("/health")
         elapsed_sec = time.perf_counter() - start
         rps = iterations / elapsed_sec
-        print(f"\n[BENCH] /health throughput: {rps:.1f} req/s ({elapsed_sec:.2f}s for {iterations} reqs)")
+        print(
+            f"\n[BENCH] /health throughput: {rps:.1f} req/s ({elapsed_sec:.2f}s for {iterations} reqs)"
+        )
         assert rps > 10, f"Health endpoint throughput too low: {rps:.1f} req/s"
 
     def test_search_throughput(self, client, operator_headers):
@@ -183,6 +185,7 @@ class TestBenchmarkReport:
         print("=" * 60)
 
         for name, (method, url, body, headers) in benchmarks.items():
+
             def make_request(m=method, u=url, b=body, h=headers):
                 if m == "GET":
                     return client.get(u, headers=h)

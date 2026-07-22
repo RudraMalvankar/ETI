@@ -9,8 +9,8 @@ These tests validate complete multi-step workflows without mocking business logi
 """
 
 import io
-import pytest
 
+import pytest
 
 MINIMAL_CSV = b"asset_id,status,temperature,vibration\npump_A,operational,85.0,2.3\nvalve_B,degraded,60.0,1.1\ncomp_C,operational,40.0,0.8"
 
@@ -74,8 +74,15 @@ class TestWorkflow2_IncidentToAuditLog:
     """
 
     @pytest.fixture(scope="class")
-    def workflow_state(self, client, built_graph, simulation_result, engineer_headers,
-                       operator_headers, auditor_headers):
+    def workflow_state(
+        self,
+        client,
+        built_graph,
+        simulation_result,
+        engineer_headers,
+        operator_headers,
+        auditor_headers,
+    ):
         """Execute the full incident workflow and return all state."""
         state = {}
 

@@ -1,5 +1,6 @@
-import requests
 import json
+
+import requests
 
 URL = "http://localhost:8000/api/v1/documents/upload"
 FILE_PATH = "tests/samples/sample_industrial.pdf"

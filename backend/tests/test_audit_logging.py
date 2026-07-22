@@ -25,6 +25,7 @@ def clean_db():
 
 def test_enterprise_audit_log_capture():
     from app.core.auth import create_access_token
+
     # 1. Trigger registration operation (mutation)
     reg_payload = {"username": "auditor_user", "password": "securepassword"}
     res = client.post("/api/v1/auth/register", json=reg_payload)
@@ -49,7 +50,9 @@ def test_enterprise_audit_log_capture():
     finally:
         db.close()
 
-    token = create_access_token(data={"sub": "auditor_user", "role": "Auditor", "sid": "test-session"})
+    token = create_access_token(
+        data={"sub": "auditor_user", "role": "Auditor", "sid": "test-session"}
+    )
     headers = {"Authorization": f"Bearer {token}"}
 
     # 4. Fetch list of audit logs via API

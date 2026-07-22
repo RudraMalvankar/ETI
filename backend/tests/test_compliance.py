@@ -6,7 +6,6 @@ Covers compliance report generation, retrieval, export (PDF/DOCX).
 
 import pytest
 
-
 MEMORY_PAYLOAD = {
     "failed_asset": "valve_B",
     "failure_type": "seal_leak",

@@ -6,7 +6,6 @@ Covers store, retrieve, search, trends.
 
 import pytest
 
-
 MEMORY_PAYLOAD = {
     "failed_asset": "comp_C",
     "failure_type": "overheating",

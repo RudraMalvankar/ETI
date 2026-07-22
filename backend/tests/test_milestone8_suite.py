@@ -20,6 +20,7 @@ client = TestClient(app)
 def auth_headers():
     """Helper fixture to create an Admin test user and generate Bearer auth headers."""
     from app.core.auth import create_access_token
+
     db = SessionLocal()
     user = db.query(UserModel).filter(UserModel.username == "m8_admin").first()
     if not user:

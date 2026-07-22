@@ -1,5 +1,6 @@
-from reportlab.pdfgen import canvas
 import os
+
+from reportlab.pdfgen import canvas
 
 os.makedirs("tests/samples", exist_ok=True)
 c = canvas.Canvas("tests/samples/sample_industrial.pdf")

@@ -158,6 +158,7 @@ def test_rbac_access_control_enforced():
 def test_rbac_authorized_role_access():
     """Verify authorized role (Auditor) can access Audit and Compliance endpoints successfully."""
     from app.core.auth import create_access_token
+
     create_user_with_role("auditor_user", "securepassword", "Auditor")
     db = SessionLocal()
     u = db.query(UserModel).filter(UserModel.username == "auditor_user").first()
@@ -166,7 +167,9 @@ def test_rbac_authorized_role_access():
         db.commit()
     db.close()
 
-    aud_token = create_access_token(data={"sub": "auditor_user", "role": "Auditor", "sid": "test-auditor-sid"})
+    aud_token = create_access_token(
+        data={"sub": "auditor_user", "role": "Auditor", "sid": "test-auditor-sid"}
+    )
     aud_headers = {"Authorization": f"Bearer {aud_token}"}
 
     res_audit = client.get("/api/v1/audit/", headers=aud_headers)

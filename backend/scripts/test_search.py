@@ -1,6 +1,7 @@
-import requests
 import json
 import time
+
+import requests
 
 URL_UPLOAD = "http://localhost:8000/api/v1/documents/upload"
 URL_INDEX = "http://localhost:8000/api/v1/documents/index"
@@ -17,22 +18,19 @@ print("Upload Status:", response.status_code)
 
 if response.status_code == 201:
     doc_id = doc_response["document_id"]
-    
+
     # 2. Index
     print(f"\n2. Indexing document {doc_id}...")
     index_res = requests.post(URL_INDEX, json={"document_id": doc_id})
     print("Index Status:", index_res.status_code)
     print("Index Response:", json.dumps(index_res.json(), indent=2))
-    
+
     # Give Qdrant a split second (though it's fast)
     time.sleep(0.5)
-    
+
     # 3. Search
     print("\n3. Performing Semantic Search...")
-    search_payload = {
-        "query": "Pressure Valve issues",
-        "top_k": 2
-    }
+    search_payload = {"query": "Pressure Valve issues", "top_k": 2}
     search_res = requests.post(URL_SEARCH, json=search_payload)
     print("Search Status:", search_res.status_code)
     print("Search Response:")

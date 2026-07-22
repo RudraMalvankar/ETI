@@ -1,19 +1,21 @@
-import requests
 import json
-import time
 import os
+import time
+
+import requests
 
 BASE_URL = "http://localhost:8000/api/v1/graph"
 DATA_FILE = "tests/samples/industrial_plant.json"
 
+
 def main():
     print("--- APEX GRAPH ENGINE DEMONSTRATION ---")
-    
+
     # 1. Build a graph from mock industrial assets
     print("\n1. Building Graph...")
-    with open(DATA_FILE, 'r') as f:
+    with open(DATA_FILE, "r") as f:
         data = json.load(f)
-    
+
     build_res = requests.post(f"{BASE_URL}/build", json=data)
     print(f"Status: {build_res.status_code}, Response: {build_res.json()}")
 
@@ -38,13 +40,16 @@ def main():
     print("\n6. Serializing graph...")
     dump_res = requests.get(f"{BASE_URL}/")
     graph_dump = dump_res.json()
-    edges_list = graph_dump.get('links', graph_dump.get('edges', []))
-    print(f"Graph serialized with {len(graph_dump.get('nodes', []))} nodes and {len(edges_list)} edges.")
-    
+    edges_list = graph_dump.get("links", graph_dump.get("edges", []))
+    print(
+        f"Graph serialized with {len(graph_dump.get('nodes', []))} nodes and {len(edges_list)} edges."
+    )
+
     # 7. Show graph statistics
     print("\n7. Graph Statistics...")
     stats_res = requests.get(f"{BASE_URL}/statistics")
     print(json.dumps(stats_res.json(), indent=2))
+
 
 if __name__ == "__main__":
     main()
