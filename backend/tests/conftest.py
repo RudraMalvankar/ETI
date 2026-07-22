@@ -27,7 +27,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.core.rate_limiter import limiter
-from app.database.session import Base, get_db
+from app.database.session import Base, engine, get_db
 from app.main import app
 
 # ──────────────────────────────────────────────────────────────
@@ -60,8 +60,10 @@ app.dependency_overrides[get_db] = override_get_db
 def create_test_tables():
     """Create all tables in the in-memory DB once per session."""
     Base.metadata.create_all(bind=engine_test)
+    Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine_test)
+    Base.metadata.drop_all(bind=engine)
 
 
 @pytest.fixture(autouse=True)
