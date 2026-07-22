@@ -2,7 +2,6 @@
 Tests: Health, Readiness, and Liveness endpoints
 """
 
-import pytest
 
 
 class TestRootHealth:

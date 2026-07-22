@@ -6,13 +6,23 @@ import { FileUploader } from '../components/common/FileUploader';
 import { SearchBar } from '../components/common/SearchBar';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { DataTable, Column } from '../components/common/DataTable';
-import { uploadDocument, indexDocument, listDocuments, vectorSearch } from '../services/apexServices';
+import {
+  uploadDocument,
+  indexDocument,
+  listDocuments,
+  vectorSearch,
+} from '../services/apexServices';
 import { DocumentResponse, SearchResult } from '../types/apex';
 import { useApexStore } from '../store/useApexStore';
 
 export const DocumentsPage: React.FC = () => {
   const [documents, setDocuments] = useState<DocumentResponse[]>([
-    { document_id: 'doc-demo-01', filename: 'sample_manual.pdf', status: 'ingested', chunk_count: 4 }
+    {
+      document_id: 'doc-demo-01',
+      filename: 'sample_manual.pdf',
+      status: 'ingested',
+      chunk_count: 4,
+    },
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('P-101 bearing overheat safety isolation');
@@ -37,7 +47,7 @@ export const DocumentsPage: React.FC = () => {
     setIsLoading(true);
     try {
       const newDoc = await uploadDocument(file);
-      setDocuments((prev) => [newDoc, ...prev]);
+      setDocuments(prev => [newDoc, ...prev]);
       setActiveDocument(newDoc);
       await indexDocument(newDoc.document_id);
       fetchDocs();
@@ -46,9 +56,9 @@ export const DocumentsPage: React.FC = () => {
         document_id: `doc-${Date.now()}`,
         filename: file.name,
         status: 'ingested',
-        chunk_count: Math.floor(Math.random() * 5) + 3
+        chunk_count: Math.floor(Math.random() * 5) + 3,
       };
-      setDocuments((prev) => [mockDoc, ...prev]);
+      setDocuments(prev => [mockDoc, ...prev]);
     } finally {
       setIsLoading(false);
     }
@@ -59,8 +69,8 @@ export const DocumentsPage: React.FC = () => {
       await indexDocument(docId);
       fetchDocs();
     } catch (e) {
-      setDocuments((prev) =>
-        prev.map((d) => (d.document_id === docId ? { ...d, status: 'indexed' } : d))
+      setDocuments(prev =>
+        prev.map(d => (d.document_id === docId ? { ...d, status: 'indexed' } : d))
       );
     }
   };
@@ -78,14 +88,16 @@ export const DocumentsPage: React.FC = () => {
             chunk_id: 'chk-101',
             document_id: 'doc-demo-01',
             score: 0.92,
-            text_snippet: 'In case of bearing overheat on centrifugal pump P-101, immediately isolate inlet valve V-202 and verify lock-out tag-out protocols.'
+            text_snippet:
+              'In case of bearing overheat on centrifugal pump P-101, immediately isolate inlet valve V-202 and verify lock-out tag-out protocols.',
           },
           {
             chunk_id: 'chk-102',
             document_id: 'doc-demo-01',
             score: 0.84,
-            text_snippet: 'Inspect oil lubrication parameters on P-101 housing before initiating pneumatic override.'
-          }
+            text_snippet:
+              'Inspect oil lubrication parameters on P-101 housing before initiating pneumatic override.',
+          },
         ]);
         setIsSearching(false);
       }, 600);
@@ -95,22 +107,24 @@ export const DocumentsPage: React.FC = () => {
   const columns: Column<DocumentResponse>[] = [
     {
       header: 'Filename',
-      accessor: (doc) => (
+      accessor: doc => (
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-brand-500/10 text-brand-400">
             <FileText className="w-4 h-4" />
           </div>
           <span className="font-semibold text-white">{doc.filename}</span>
         </div>
-      )
+      ),
     },
     {
       header: 'Document ID',
-      accessor: (doc) => <span className="font-mono text-xs text-[var(--text-secondary)]">{doc.document_id}</span>
+      accessor: doc => (
+        <span className="font-mono text-xs text-[var(--text-secondary)]">{doc.document_id}</span>
+      ),
     },
     {
       header: 'AI Pipeline Status',
-      accessor: (doc) => (
+      accessor: doc => (
         <div className="flex items-center gap-2">
           <StatusBadge status={doc.status} />
           {doc.status === 'indexed' && (
@@ -119,21 +133,21 @@ export const DocumentsPage: React.FC = () => {
             </span>
           )}
         </div>
-      )
+      ),
     },
     {
       header: 'Vector Chunks',
-      accessor: (doc) => (
+      accessor: doc => (
         <span className="inline-flex items-center gap-1.5 font-semibold text-accent-emerald text-sm">
           <Database className="w-4 h-4" /> {doc.chunk_count} Chunks
         </span>
-      )
+      ),
     },
     {
       header: 'Actions',
-      accessor: (doc) => (
+      accessor: doc => (
         <button
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation();
             handleIndex(doc.document_id);
           }}
@@ -143,8 +157,8 @@ export const DocumentsPage: React.FC = () => {
           <FileText className="w-3.5 h-3.5" />
           <span>{doc.status === 'indexed' ? 'Fully Indexed' : 'Extract & Index'}</span>
         </button>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -162,14 +176,17 @@ export const DocumentsPage: React.FC = () => {
             <FileUploader onFileUpload={handleUpload} isLoading={isLoading} />
           </SectionCard>
         </div>
-        
+
         <div className="lg:col-span-2">
           {/* Ingested Documents List */}
           <SectionCard
             title="Document Pipeline"
             subtitle="Real-time ingestion and vectorization status"
             action={
-              <button onClick={fetchDocs} className="p-2 rounded-xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] text-[var(--text-secondary)] hover:text-white transition">
+              <button
+                onClick={fetchDocs}
+                className="p-2 rounded-xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] text-[var(--text-secondary)] hover:text-white transition"
+              >
                 <RefreshCw className="w-4 h-4" />
               </button>
             }
@@ -180,14 +197,26 @@ export const DocumentsPage: React.FC = () => {
       </div>
 
       {/* Semantic Vector Search */}
-      <SectionCard title="Hybrid Vector Semantic Search" subtitle="Instantly locate standard operating procedures across the enterprise index">
+      <SectionCard
+        title="Hybrid Vector Semantic Search"
+        subtitle="Instantly locate standard operating procedures across the enterprise index"
+      >
         <div className="flex flex-col sm:flex-row items-center gap-3 mb-6">
-          <SearchBar value={searchQuery} onChange={setSearchQuery} onSearch={handleSearch} placeholder="e.g. 'Safety isolation for P-101 overheat'" />
+          <SearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            onSearch={handleSearch}
+            placeholder="e.g. 'Safety isolation for P-101 overheat'"
+          />
           <button
             onClick={handleSearch}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm shadow-[0_0_15px_rgba(14,165,233,0.3)] transition"
           >
-            {isSearching ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+            {isSearching ? (
+              <RefreshCw className="w-4 h-4 animate-spin" />
+            ) : (
+              <Search className="w-4 h-4" />
+            )}
             <span>Query Cortex</span>
           </button>
         </div>
@@ -195,12 +224,19 @@ export const DocumentsPage: React.FC = () => {
         {/* Search Results */}
         {searchResults.length > 0 && (
           <div className="space-y-4">
-            <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Top Contextual Matches</h4>
+            <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
+              Top Contextual Matches
+            </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {searchResults.map((res, idx) => (
-                <div key={idx} className="bg-[var(--bg-elevated)] border border-[var(--border-strong)] p-4 rounded-md hover:border-primary-500/40 transition-colors group shadow-sm">
+                <div
+                  key={idx}
+                  className="bg-[var(--bg-elevated)] border border-[var(--border-strong)] p-4 rounded-md hover:border-primary-500/40 transition-colors group shadow-sm"
+                >
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-mono text-brand-400 bg-brand-500/10 px-2 py-1 rounded">Doc ID: {res.document_id}</span>
+                    <span className="text-xs font-mono text-brand-400 bg-brand-500/10 px-2 py-1 rounded">
+                      Doc ID: {res.document_id}
+                    </span>
                     <span className="text-xs font-extrabold px-2 py-1 rounded bg-accent-emerald/20 text-accent-emerald border border-accent-emerald/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
                       {(res.score * 100).toFixed(1)}% Match
                     </span>

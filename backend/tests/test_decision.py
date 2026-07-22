@@ -4,7 +4,6 @@ Tests: Decision Engine API
 Covers recommend endpoint, error handling, RBAC.
 """
 
-import pytest
 
 
 class TestDecisionRecommend:

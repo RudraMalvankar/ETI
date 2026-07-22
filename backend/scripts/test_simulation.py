@@ -1,5 +1,4 @@
 import json
-import os
 
 import requests
 
@@ -38,9 +37,9 @@ def run_test():
     ]
 
     for inc in incidents:
-        print(f"\n=======================================================")
+        print("\n=======================================================")
         print(f"Simulating Incident: {inc['name']} ({inc['asset']}) Failure [{inc['type']}]")
-        print(f"=======================================================")
+        print("=======================================================")
 
         req = {"failed_asset": inc["asset"], "failure_type": inc["type"]}
 
@@ -55,9 +54,9 @@ def run_test():
         for sc in data["scenarios"]:
             print_scenario_summary(sc)
 
-    print(f"\n=======================================================")
+    print("\n=======================================================")
     print("Simulation Statistics")
-    print(f"=======================================================")
+    print("=======================================================")
     stats_res = requests.get(f"{BASE_URL_SIM}/statistics/")
     print(json.dumps(stats_res.json(), indent=2))
 

@@ -19,7 +19,7 @@ def load_env():
 
 
 def test_database(db_url):
-    print(f"\n--- Testing Database Connection (Neon Postgres) ---")
+    print("\n--- Testing Database Connection (Neon Postgres) ---")
     if not db_url:
         print("[FAIL] DATABASE_URL not set in env.")
         return False
@@ -30,7 +30,7 @@ def test_database(db_url):
 
     try:
         engine = create_engine(db_url, connect_args=connect_args)
-        with engine.connect() as conn:
+        with engine.connect():
             print("[SUCCESS] Connected to database successfully!")
             return True
     except Exception as e:
@@ -39,7 +39,7 @@ def test_database(db_url):
 
 
 def test_qdrant(qdrant_url, qdrant_api_key):
-    print(f"\n--- Testing Qdrant Connection (Cloud Qdrant) ---")
+    print("\n--- Testing Qdrant Connection (Cloud Qdrant) ---")
     if not qdrant_url:
         print("[FAIL] QDRANT_URL is not set.")
         return False
@@ -57,7 +57,7 @@ def test_qdrant(qdrant_url, qdrant_api_key):
 
 
 def test_redis(redis_url):
-    print(f"\n--- Testing Redis Connection (Cloud Redis) ---")
+    print("\n--- Testing Redis Connection (Cloud Redis) ---")
     if not redis_url:
         print("[FAIL] REDIS_URL not set in env.")
         return False

@@ -29,7 +29,7 @@ export const ExpertCopilotDrawer: React.FC = () => {
     'R-101 Pressure Limit',
     'Valve V-102 Overrides',
     'OISD-117 Safety Rules',
-    'Pump P-202A Cooling Rate'
+    'Pump P-202A Cooling Rate',
   ];
 
   return (
@@ -42,10 +42,12 @@ export const ExpertCopilotDrawer: React.FC = () => {
           </div>
           <div>
             <h2 className="text-sm font-bold text-white font-display">Expert Knowledge Copilot</h2>
-            <p className="text-[10px] text-slate-400 font-inter">RAG Industrial Intelligence Engine</p>
+            <p className="text-[10px] text-slate-400 font-inter">
+              RAG Industrial Intelligence Engine
+            </p>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => toggleCopilot(false)}
           className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
         >
@@ -55,9 +57,11 @@ export const ExpertCopilotDrawer: React.FC = () => {
 
       {/* Quick Query Pills */}
       <div className="p-3 bg-[#151D2A] border-b border-slate-800/80">
-        <div className="text-[10px] font-mono text-slate-400 uppercase mb-2">Quick Search Topics</div>
+        <div className="text-[10px] font-mono text-slate-400 uppercase mb-2">
+          Quick Search Topics
+        </div>
         <div className="flex flex-wrap gap-1.5">
-          {sampleQueries.map((sq) => (
+          {sampleQueries.map(sq => (
             <button
               key={sq}
               onClick={() => {
@@ -74,11 +78,17 @@ export const ExpertCopilotDrawer: React.FC = () => {
 
       {/* Query Search Bar */}
       <div className="p-3 border-b border-slate-800 bg-[#0D131F]">
-        <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="relative flex items-center">
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            handleSearch();
+          }}
+          className="relative flex items-center"
+        >
           <input
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={e => setQuery(e.target.value)}
             placeholder="Ask anything about equipment, SOPs, or compliance..."
             className="w-full bg-[#151D2A] text-white text-xs rounded-lg pl-3 pr-10 py-2.5 border border-slate-700 focus:outline-none focus:border-blue-500"
           />
@@ -120,9 +130,14 @@ export const ExpertCopilotDrawer: React.FC = () => {
                 <span>Verified RAG Citations ({result.citations.length})</span>
               </div>
               {result.citations.map((cite, idx) => (
-                <div key={idx} className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-xs font-mono">
+                <div
+                  key={idx}
+                  className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-xs font-mono"
+                >
                   <div className="text-blue-300 font-semibold truncate">{cite.document}</div>
-                  <div className="text-slate-400 text-[11px] truncate">{cite.section} • Page {cite.page}</div>
+                  <div className="text-slate-400 text-[11px] truncate">
+                    {cite.section} • Page {cite.page}
+                  </div>
                 </div>
               ))}
             </div>
@@ -130,7 +145,10 @@ export const ExpertCopilotDrawer: React.FC = () => {
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center text-slate-500 text-xs p-6">
             <Bot className="w-10 h-10 mb-2 text-slate-600" />
-            <p>Type a query or select a topic above to query the APEX RAG Knowledge Base across P&IDs, OEM manuals, and compliance codes.</p>
+            <p>
+              Type a query or select a topic above to query the APEX RAG Knowledge Base across
+              P&IDs, OEM manuals, and compliance codes.
+            </p>
           </div>
         )}
       </div>

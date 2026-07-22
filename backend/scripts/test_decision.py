@@ -1,5 +1,4 @@
 import json
-import os
 
 import requests
 
@@ -28,9 +27,9 @@ def run_test():
     ]
 
     for inc in incidents:
-        print(f"\n=======================================================")
+        print("\n=======================================================")
         print(f"Triggering Decision Engine for: {inc['name']} ({inc['asset']})")
-        print(f"=======================================================")
+        print("=======================================================")
 
         # Step A: Run Shadow Simulation
         req_sim = {"failed_asset": inc["asset"], "failure_type": inc["type"]}

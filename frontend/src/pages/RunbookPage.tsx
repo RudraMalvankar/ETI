@@ -11,7 +11,7 @@ import {
   FileText,
   ArrowRight,
   BrainCircuit,
-  Settings
+  Settings,
 } from 'lucide-react';
 import { PageHeader } from '../components/common/PageHeader';
 import { StatusBadge } from '../components/common/StatusBadge';
@@ -40,20 +40,21 @@ export const RunbookPage: React.FC = () => {
         required_tools: ['LOTO Key Set', 'Insulated Gloves', 'Pressure Gauge'],
         safety_requirements: ['Verify zero pressure', 'Wear Arc-Flash Face Shield'],
         citations: ['doc-manual-01#chk-101'],
-        estimated_duration_minutes: 15
+        estimated_duration_minutes: 15,
       },
       {
         step_id: 'step-02',
         step_number: 2,
         title: 'Depressurize Housing & Inspect Lubrication',
-        action: 'Open drain valve D-101 slowly and inspect bearing housing thermal integrity on P-101.',
+        action:
+          'Open drain valve D-101 slowly and inspect bearing housing thermal integrity on P-101.',
         target_asset: 'P-101',
         priority: 'medium',
         status: 'pending',
         required_tools: ['Torque Wrench', 'Infrared Thermometer'],
         safety_requirements: ['Thermal Protection Gloves'],
         citations: ['doc-manual-01#chk-102'],
-        estimated_duration_minutes: 25
+        estimated_duration_minutes: 25,
       },
       {
         step_id: 'step-03',
@@ -66,9 +67,9 @@ export const RunbookPage: React.FC = () => {
         required_tools: ['SCADA Console'],
         safety_requirements: ['Standard PPE'],
         citations: ['doc-manual-01#chk-103'],
-        estimated_duration_minutes: 20
-      }
-    ]
+        estimated_duration_minutes: 20,
+      },
+    ],
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +77,9 @@ export const RunbookPage: React.FC = () => {
   const [failedStepId, setFailedStepId] = useState<string | null>(null);
 
   // Animation States
-  const [regenStage, setRegenStage] = useState<'none' | 'detecting' | 'analyzing' | 'generating' | 'done'>('none');
+  const [regenStage, setRegenStage] = useState<
+    'none' | 'detecting' | 'analyzing' | 'generating' | 'done'
+  >('none');
 
   const fetchRunbook = async () => {
     setIsLoading(true);
@@ -107,10 +110,10 @@ export const RunbookPage: React.FC = () => {
     await new Promise(r => setTimeout(r, 1500));
     setRegenStage('generating');
     await new Promise(r => setTimeout(r, 1500));
-    
+
     // Perform actual regeneration
     await handleRegenerate();
-    
+
     setRegenStage('done');
     setTimeout(() => setRegenStage('none'), 2000);
   };
@@ -128,11 +131,11 @@ export const RunbookPage: React.FC = () => {
         setCurrentRunbook(updated);
       }
     } catch (e) {
-      setRunbook((prev) => ({
+      setRunbook(prev => ({
         ...prev,
-        steps: prev.steps.map((s) =>
+        steps: prev.steps.map(s =>
           s.step_id === stepId ? { ...s, status, feedback_notes: feedbackNote } : s
-        )
+        ),
       }));
     } finally {
       if (status === 'failed') {
@@ -165,17 +168,19 @@ export const RunbookPage: React.FC = () => {
         required_tools: ['Pneumatic Hose Kit'],
         safety_requirements: ['High-Pressure Containment PPE'],
         citations: ['SOP-BYPASS-09'],
-        estimated_duration_minutes: 15
+        estimated_duration_minutes: 15,
       };
 
-      setRunbook((prev) => ({
+      setRunbook(prev => ({
         ...prev,
         is_regenerated: true,
         status: 'regenerated',
         steps: [
-          ...prev.steps.map((s) => (s.status === 'failed' ? { ...s, status: 'completed' as const } : s)),
-          newStep
-        ]
+          ...prev.steps.map(s =>
+            s.status === 'failed' ? { ...s, status: 'completed' as const } : s
+          ),
+          newStep,
+        ],
       }));
     } finally {
       setIsLoading(false);
@@ -184,36 +189,44 @@ export const RunbookPage: React.FC = () => {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    show: { opacity: 1, transition: { staggerChildren: 0.1 } },
   };
   const stepVariants = {
     hidden: { opacity: 0, x: -20 },
-    show: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+    show: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
   };
 
   return (
     <div className="space-y-6 relative">
       <AnimatePresence>
         {regenStage !== 'none' && regenStage !== 'done' && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg-primary)]/80 backdrop-blur-md"
           >
             <div className="bg-[var(--bg-elevated)] border border-[var(--border-strong)] p-8 rounded-lg flex flex-col items-center max-w-sm text-center shadow-sm">
-              {regenStage === 'detecting' && <XCircle className="w-16 h-16 text-accent-red animate-pulse mb-6" />}
-              {regenStage === 'analyzing' && <BrainCircuit className="w-16 h-16 text-accent-purple animate-pulse mb-6" />}
-              {regenStage === 'generating' && <Settings className="w-16 h-16 text-brand-500 animate-spin mb-6" />}
-              
+              {regenStage === 'detecting' && (
+                <XCircle className="w-16 h-16 text-accent-red animate-pulse mb-6" />
+              )}
+              {regenStage === 'analyzing' && (
+                <BrainCircuit className="w-16 h-16 text-accent-purple animate-pulse mb-6" />
+              )}
+              {regenStage === 'generating' && (
+                <Settings className="w-16 h-16 text-brand-500 animate-spin mb-6" />
+              )}
+
               <h2 className="heading-2 mb-2">
                 {regenStage === 'detecting' && 'Failure Detected'}
                 {regenStage === 'analyzing' && 'AI Analysis Initiated'}
                 {regenStage === 'generating' && 'Generating Alternative Procedure'}
               </h2>
               <p className="subtitle">
-                {regenStage === 'detecting' && 'Logging technician feedback into operational memory...'}
-                {regenStage === 'analyzing' && 'Querying knowledge graph for blast radius containment...'}
+                {regenStage === 'detecting' &&
+                  'Logging technician feedback into operational memory...'}
+                {regenStage === 'analyzing' &&
+                  'Querying knowledge graph for blast radius containment...'}
                 {regenStage === 'generating' && 'Synthesizing new runbook sequence...'}
               </p>
             </div>
@@ -239,33 +252,48 @@ export const RunbookPage: React.FC = () => {
 
       <div className="p-3 rounded bg-[var(--bg-elevated)] border border-[var(--border-strong)] flex flex-wrap items-center justify-between gap-4 shadow-sm">
         <div>
-          <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">Runbook ID</span>
-          <span className="text-sm font-extrabold text-[var(--text-primary)] block mt-0.5">{runbook.runbook_id}</span>
+          <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">
+            Runbook ID
+          </span>
+          <span className="text-sm font-extrabold text-[var(--text-primary)] block mt-0.5">
+            {runbook.runbook_id}
+          </span>
         </div>
         <div>
-          <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">Simulation ID</span>
-          <span className="text-sm font-mono text-brand-500 block mt-0.5">{runbook.simulation_id}</span>
+          <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">
+            Simulation ID
+          </span>
+          <span className="text-sm font-mono text-brand-500 block mt-0.5">
+            {runbook.simulation_id}
+          </span>
         </div>
-        
+
         {/* Progress Tracker added here */}
         <div className="flex-1 min-w-[200px] max-w-md mx-auto hidden md:block">
           <div className="flex justify-between items-end mb-2">
-            <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">Workflow Progress</span>
+            <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">
+              Workflow Progress
+            </span>
             <span className="text-xs font-bold text-[var(--text-primary)]">
-              {runbook.steps.filter(s => s.status === 'completed').length} / {runbook.steps.length} Steps
+              {runbook.steps.filter(s => s.status === 'completed').length} / {runbook.steps.length}{' '}
+              Steps
             </span>
           </div>
           <div className="w-full h-2 bg-[var(--bg-secondary)] rounded-full overflow-hidden border border-[var(--glass-border)]">
-            <motion.div 
+            <motion.div
               initial={{ width: 0 }}
-              animate={{ width: `${(runbook.steps.filter(s => s.status === 'completed').length / runbook.steps.length) * 100}%` }}
+              animate={{
+                width: `${(runbook.steps.filter(s => s.status === 'completed').length / runbook.steps.length) * 100}%`,
+              }}
               className="h-full bg-gradient-to-r from-brand-500 to-accent-emerald transition-all duration-500"
             />
           </div>
         </div>
 
         <div>
-          <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">Status</span>
+          <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">
+            Status
+          </span>
           <div className="mt-1">
             <StatusBadge status={runbook.is_regenerated ? 'regenerated' : runbook.status} />
           </div>
@@ -273,8 +301,13 @@ export const RunbookPage: React.FC = () => {
       </div>
 
       {/* Step Checklist */}
-      <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-4">
-        {runbook.steps.map((step) => (
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="space-y-4"
+      >
+        {runbook.steps.map(step => (
           <motion.div
             variants={stepVariants}
             key={step.step_id}
@@ -282,17 +315,21 @@ export const RunbookPage: React.FC = () => {
               step.status === 'completed'
                 ? 'bg-accent-emerald/5 border-accent-emerald/30'
                 : step.status === 'failed'
-                ? 'bg-accent-red/5 border-accent-red/30'
-                : 'bg-[var(--bg-surface)] border-[var(--border-muted)] hover:border-[var(--border-strong)]'
+                  ? 'bg-accent-red/5 border-accent-red/30'
+                  : 'bg-[var(--bg-surface)] border-[var(--border-muted)] hover:border-[var(--border-strong)]'
             }`}
           >
             <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 mb-4 border-b border-[var(--glass-border)] gap-2">
               <div className="flex items-center gap-3">
-                <span className={`flex items-center justify-center w-8 h-8 rounded-xl font-mono text-sm font-extrabold ${
-                  step.status === 'completed' ? 'bg-accent-emerald/20 text-accent-emerald' :
-                  step.status === 'failed' ? 'bg-accent-red/20 text-accent-red' :
-                  'bg-[var(--bg-secondary)] text-brand-500 border border-[var(--glass-border)]'
-                }`}>
+                <span
+                  className={`flex items-center justify-center w-8 h-8 rounded-xl font-mono text-sm font-extrabold ${
+                    step.status === 'completed'
+                      ? 'bg-accent-emerald/20 text-accent-emerald'
+                      : step.status === 'failed'
+                        ? 'bg-accent-red/20 text-accent-red'
+                        : 'bg-[var(--bg-secondary)] text-brand-500 border border-[var(--glass-border)]'
+                  }`}
+                >
                   {step.step_number}
                 </span>
                 <h3 className="heading-2 text-base md:text-lg">{step.title}</h3>
@@ -317,39 +354,49 @@ export const RunbookPage: React.FC = () => {
                 <span className="text-[var(--text-secondary)] text-[10px] uppercase tracking-wider font-semibold flex items-center gap-1.5 mb-2">
                   <Wrench className="w-3.5 h-3.5 text-brand-500" /> Required Tools
                 </span>
-                <span className="text-[var(--text-primary)] text-xs font-medium">{(step.required_tools || []).join(', ') || 'Standard Tools'}</span>
+                <span className="text-[var(--text-primary)] text-xs font-medium">
+                  {(step.required_tools || []).join(', ') || 'Standard Tools'}
+                </span>
               </div>
 
               <div className="p-3.5 rounded-xl bg-[var(--bg-secondary)]/50 border border-[var(--glass-border)] transition-colors hover:border-accent-amber/30">
                 <span className="text-[var(--text-secondary)] text-[10px] uppercase tracking-wider font-semibold flex items-center gap-1.5 mb-2">
                   <ShieldCheck className="w-3.5 h-3.5 text-accent-amber" /> Safety Requirements
                 </span>
-                <span className="text-[var(--text-primary)] text-xs font-medium">{(step.safety_requirements || []).join(', ') || 'Standard PPE'}</span>
+                <span className="text-[var(--text-primary)] text-xs font-medium">
+                  {(step.safety_requirements || []).join(', ') || 'Standard PPE'}
+                </span>
               </div>
 
               <div className="p-3.5 rounded-xl bg-[var(--bg-secondary)]/50 border border-[var(--glass-border)] transition-colors hover:border-accent-emerald/30">
                 <span className="text-[var(--text-secondary)] text-[10px] uppercase tracking-wider font-semibold flex items-center gap-1.5 mb-2">
                   <FileText className="w-3.5 h-3.5 text-accent-emerald" /> Grounded Citations
                 </span>
-                <span className="text-[var(--text-primary)] font-mono text-[10px] bg-[var(--bg-secondary)] px-1.5 py-0.5 rounded">{(step.citations || []).join(', ') || 'N/A'}</span>
+                <span className="text-[var(--text-primary)] font-mono text-[10px] bg-[var(--bg-secondary)] px-1.5 py-0.5 rounded">
+                  {(step.citations || []).join(', ') || 'N/A'}
+                </span>
               </div>
             </div>
 
             {/* Technician Action Controls */}
             <AnimatePresence mode="wait">
               {step.status !== 'completed' && step.status !== 'failed' && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
                   className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-[var(--glass-border)] gap-4"
                 >
                   {failedStepId === step.step_id ? (
-                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-3 w-full">
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex items-center gap-3 w-full"
+                    >
                       <input
                         type="text"
                         value={feedbackNote}
-                        onChange={(e) => setFeedbackNote(e.target.value)}
+                        onChange={e => setFeedbackNote(e.target.value)}
                         placeholder="Detail the failure reason (e.g., Handwheel stuck, excessive pressure)..."
                         className="w-full px-4 py-2.5 bg-[var(--bg-secondary)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] text-xs rounded-xl border border-accent-red/40 focus:outline-none focus:ring-2 focus:ring-accent-red/20 shadow-sm transition-all"
                       />
@@ -362,7 +409,9 @@ export const RunbookPage: React.FC = () => {
                     </motion.div>
                   ) : (
                     <>
-                      <span className="text-xs text-[var(--text-secondary)] font-medium">Technician Sign-Off Control</span>
+                      <span className="text-xs text-[var(--text-secondary)] font-medium">
+                        Technician Sign-Off Control
+                      </span>
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() => setFailedStepId(step.step_id)}
@@ -390,7 +439,12 @@ export const RunbookPage: React.FC = () => {
       </motion.div>
 
       {/* Action to proceed to Operational Memory */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="flex justify-end mt-8">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="flex justify-end mt-8"
+      >
         <button
           onClick={() => setActiveTab('memory')}
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-bold text-sm shadow-[0_4px_20px_rgba(14,165,233,0.4)] transition-all hover:-translate-y-0.5"

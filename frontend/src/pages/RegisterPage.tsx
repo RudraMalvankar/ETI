@@ -15,13 +15,15 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <AuthLayout 
-      title="Create Workspace" 
+    <AuthLayout
+      title="Create Workspace"
       subtitle="Set up your organization's industrial intelligence hub."
     >
       <form onSubmit={handleRegister} className="space-y-4">
         <div>
-          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Full Name</label>
+          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">
+            Full Name
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--text-secondary)]">
               <User className="h-4 w-4" />
@@ -36,7 +38,9 @@ export const RegisterPage: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Organization</label>
+          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">
+            Organization
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--text-secondary)]">
               <Building className="h-4 w-4" />
@@ -51,7 +55,9 @@ export const RegisterPage: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Work Email</label>
+          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">
+            Work Email
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--text-secondary)]">
               <Mail className="h-4 w-4" />
@@ -66,7 +72,9 @@ export const RegisterPage: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Password</label>
+          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">
+            Password
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--text-secondary)]">
               <Lock className="h-4 w-4" />
@@ -88,7 +96,7 @@ export const RegisterPage: React.FC = () => {
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </button>
       </form>
-      
+
       <p className="mt-6 text-center text-xs text-[var(--text-secondary)]">
         Already have an account?{' '}
         <Link to="/login" className="font-medium text-white hover:text-brand-400 transition-colors">

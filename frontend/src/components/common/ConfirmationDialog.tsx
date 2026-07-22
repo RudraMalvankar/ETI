@@ -20,7 +20,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   message,
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
-  isDanger = false
+  isDanger = false,
 }) => {
   if (!isOpen) return null;
 
@@ -34,7 +34,9 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           <X className="w-4 h-4" />
         </button>
         <div className="flex items-center gap-3 mb-3">
-          <div className={`p-2.5 rounded-xl ${isDanger ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'}`}>
+          <div
+            className={`p-2.5 rounded-xl ${isDanger ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'}`}
+          >
             <AlertCircle className="w-5 h-5" />
           </div>
           <h3 className="text-base font-bold text-white">{title}</h3>

@@ -5,7 +5,6 @@ Verifies every endpoint returns correct status codes and conforms to
 its declared response model schema.
 """
 
-import pytest
 
 
 class TestOpenAPISchema:

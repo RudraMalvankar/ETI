@@ -30,7 +30,7 @@ class TestWorkflow1_DocumentToSearch:
 
     def test_w1_step2_document_in_list(self, client, engineer_headers, operator_headers):
         # Upload
-        upload_resp = client.post(
+        client.post(
             "/api/v1/documents/upload",
             files={"file": ("w1_list.csv", io.BytesIO(MINIMAL_CSV), "text/csv")},
             headers=engineer_headers,

@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from app.schemas.memory import IncidentMemory, StoreMemoryRequest
 from app.services.graph.GraphFactory import GraphFactory

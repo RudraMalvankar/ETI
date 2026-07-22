@@ -4,7 +4,6 @@ Tests: Simulation API
 Covers run, retrieve, scenarios, statistics.
 """
 
-import pytest
 
 SIM_PAYLOAD = {
     "failed_asset": "pump_A",

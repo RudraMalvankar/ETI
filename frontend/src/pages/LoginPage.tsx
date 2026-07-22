@@ -18,13 +18,12 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <AuthLayout 
-      title="Welcome back" 
-      subtitle="Enter your credentials to access the APEX platform."
-    >
+    <AuthLayout title="Welcome back" subtitle="Enter your credentials to access the APEX platform.">
       <form onSubmit={handleLogin} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Work Email</label>
+          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+            Work Email
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--text-secondary)]">
               <Mail className="h-5 w-5" />
@@ -32,7 +31,7 @@ export const LoginPage: React.FC = () => {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl py-3 pl-10 pr-4 text-white placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
               placeholder="technician@enterprise.com"
               required
@@ -42,8 +41,12 @@ export const LoginPage: React.FC = () => {
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-[var(--text-secondary)]">Password</label>
-            <a href="#" className="text-xs font-medium text-brand-400 hover:text-brand-300">Forgot password?</a>
+            <label className="block text-sm font-medium text-[var(--text-secondary)]">
+              Password
+            </label>
+            <a href="#" className="text-xs font-medium text-brand-400 hover:text-brand-300">
+              Forgot password?
+            </a>
           </div>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--text-secondary)]">
@@ -52,7 +55,7 @@ export const LoginPage: React.FC = () => {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl py-3 pl-10 pr-4 text-white placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
               placeholder="••••••••"
               required
@@ -68,10 +71,13 @@ export const LoginPage: React.FC = () => {
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </button>
       </form>
-      
+
       <p className="mt-8 text-center text-sm text-[var(--text-secondary)]">
         Don't have an account?{' '}
-        <Link to="/register" className="font-medium text-white hover:text-brand-400 transition-colors">
+        <Link
+          to="/register"
+          className="font-medium text-white hover:text-brand-400 transition-colors"
+        >
           Request access
         </Link>
       </p>

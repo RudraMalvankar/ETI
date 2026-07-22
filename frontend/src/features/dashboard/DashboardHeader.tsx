@@ -1,29 +1,29 @@
 import React from 'react';
-import { 
-  AlertTriangle, 
-  CheckCircle2, 
-  RotateCcw, 
-  Smartphone, 
-  Monitor, 
-  ShieldCheck, 
-  Search, 
-  Clock, 
+import {
+  AlertTriangle,
+  CheckCircle2,
+  RotateCcw,
+  Smartphone,
+  Monitor,
+  ShieldCheck,
+  Search,
+  Clock,
   Zap,
-  Tag
+  Tag,
 } from 'lucide-react';
 import { useApexStore } from '../../store/useApexStore';
 
 export const DashboardHeader: React.FC = () => {
-  const { 
-    isAnomalyActive, 
-    isRerouted, 
-    viewMode, 
-    setViewMode, 
-    triggerAnomaly, 
+  const {
+    isAnomalyActive,
+    isRerouted,
+    viewMode,
+    setViewMode,
+    triggerAnomaly,
     resetPlantState,
     toggleCopilot,
     toggleComplianceModal,
-    toggleTagInspector
+    toggleTagInspector,
   } = useApexStore();
 
   return (
@@ -43,22 +43,30 @@ export const DashboardHeader: React.FC = () => {
                 AUTOPILOT v2.4
               </span>
             </div>
-            <p className="text-xs text-slate-400 font-inter">Causal Shadow-Run & Executable Runbook Engine</p>
+            <p className="text-xs text-slate-400 font-inter">
+              Causal Shadow-Run & Executable Runbook Engine
+            </p>
           </div>
         </div>
 
         {/* Live Status Pill */}
-        <div className={`px-3 py-1.5 rounded-full border flex items-center gap-2 text-xs font-semibold font-mono ${
-          isAnomalyActive 
-            ? isRerouted
-              ? 'bg-amber-500/10 border-amber-500/30 text-amber-400 animate-pulse'
-              : 'bg-red-500/10 border-red-500/30 text-red-400 animate-pulse' 
-            : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-        }`}>
+        <div
+          className={`px-3 py-1.5 rounded-full border flex items-center gap-2 text-xs font-semibold font-mono ${
+            isAnomalyActive
+              ? isRerouted
+                ? 'bg-amber-500/10 border-amber-500/30 text-amber-400 animate-pulse'
+                : 'bg-red-500/10 border-red-500/30 text-red-400 animate-pulse'
+              : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+          }`}
+        >
           {isAnomalyActive ? (
             <>
               <AlertTriangle className="w-4 h-4" />
-              <span>{isRerouted ? 'ANOMALY: DYNAMICALLY REROUTED' : 'CRITICAL ANOMALY: REACTOR OVERPRESSURE'}</span>
+              <span>
+                {isRerouted
+                  ? 'ANOMALY: DYNAMICALLY REROUTED'
+                  : 'CRITICAL ANOMALY: REACTOR OVERPRESSURE'}
+              </span>
             </>
           ) : (
             <>
@@ -72,7 +80,10 @@ export const DashboardHeader: React.FC = () => {
       {/* ROI Time-Saved Counter */}
       <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#151E2E] border border-slate-800 text-xs text-slate-300">
         <Clock className="w-4 h-4 text-emerald-400" />
-        <span>Time Saved: <strong className="text-emerald-400 font-mono">~45 Mins</strong> vs Manual RAG Search</span>
+        <span>
+          Time Saved: <strong className="text-emerald-400 font-mono">~45 Mins</strong> vs Manual RAG
+          Search
+        </span>
       </div>
 
       {/* Action Controls */}
@@ -82,7 +93,7 @@ export const DashboardHeader: React.FC = () => {
           <button
             onClick={triggerAnomaly}
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${
-              isAnomalyActive 
+              isAnomalyActive
                 ? 'bg-red-500/20 text-red-300 border border-red-500/40 shadow-sm'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
@@ -91,11 +102,11 @@ export const DashboardHeader: React.FC = () => {
             <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
             <span>Simulate Anomaly</span>
           </button>
-          
+
           <button
             onClick={resetPlantState}
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${
-              !isAnomalyActive 
+              !isAnomalyActive
                 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}

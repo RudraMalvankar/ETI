@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
-import { 
-  CheckSquare, 
-  Square, 
-  FileText, 
-  ExternalLink, 
-  Clock, 
-  RefreshCw, 
-  Lock, 
+import {
+  CheckSquare,
+  Square,
+  FileText,
+  ExternalLink,
+  Clock,
+  RefreshCw,
+  Lock,
   UserCheck,
   History,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 import { useApexStore } from '../../store/useApexStore';
 
 export const ExecutableRunbookEngine: React.FC = () => {
-  const { 
-    runbook, 
-    toggleStepCompletion, 
-    toggleLotoStatus, 
-    markStepFailedAndReroute, 
+  const {
+    runbook,
+    toggleStepCompletion,
+    toggleLotoStatus,
+    markStepFailedAndReroute,
     isRerouted,
-    isAnomalyActive
+    isAnomalyActive,
   } = useApexStore();
 
   const [isRerouting, setIsRerouting] = useState(false);
@@ -37,9 +37,13 @@ export const ExecutableRunbookEngine: React.FC = () => {
       <div className="border-b border-slate-800 pb-4 mb-4">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2">
-            <span className={`px-2.5 py-0.5 rounded text-[11px] font-bold font-mono uppercase ${
-              runbook.riskLevel === 'CRITICAL' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-amber-500/20 text-amber-400'
-            }`}>
+            <span
+              className={`px-2.5 py-0.5 rounded text-[11px] font-bold font-mono uppercase ${
+                runbook.riskLevel === 'CRITICAL'
+                  ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                  : 'bg-amber-500/20 text-amber-400'
+              }`}
+            >
               {runbook.riskLevel} RISK
             </span>
             <span className="text-xs text-slate-400 font-mono">ID: {runbook.id}</span>
@@ -66,10 +70,18 @@ export const ExecutableRunbookEngine: React.FC = () => {
             <History className="w-4 h-4 text-indigo-400 shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-white truncate">Historical Incident Match ({runbook.matchedHistoricalIncident.similarity}% Similarity)</span>
-                <span className="text-[10px] text-indigo-300 font-mono">{runbook.matchedHistoricalIncident.date}</span>
+                <span className="font-semibold text-white truncate">
+                  Historical Incident Match ({runbook.matchedHistoricalIncident.similarity}%
+                  Similarity)
+                </span>
+                <span className="text-[10px] text-indigo-300 font-mono">
+                  {runbook.matchedHistoricalIncident.date}
+                </span>
               </div>
-              <p className="text-[11px] text-indigo-300/80 truncate">{runbook.matchedHistoricalIncident.title} • {runbook.matchedHistoricalIncident.plant}</p>
+              <p className="text-[11px] text-indigo-300/80 truncate">
+                {runbook.matchedHistoricalIncident.title} •{' '}
+                {runbook.matchedHistoricalIncident.plant}
+              </p>
             </div>
           </div>
         )}
@@ -80,14 +92,15 @@ export const ExecutableRunbookEngine: React.FC = () => {
         <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center gap-3 text-xs text-amber-300 animate-fadeIn">
           <Sparkles className="w-5 h-5 text-amber-400 shrink-0 animate-spin" />
           <div>
-            <span className="font-bold">Dynamic Causal Reroute Engaged:</span> AI Autopilot detected primary valve jam. Rerouted mitigation flow to Bypass V-108 to maintain safe venting.
+            <span className="font-bold">Dynamic Causal Reroute Engaged:</span> AI Autopilot detected
+            primary valve jam. Rerouted mitigation flow to Bypass V-108 to maintain safe venting.
           </div>
         </div>
       )}
 
       {/* Step Checklist List */}
       <div className="flex-1 overflow-y-auto space-y-3.5 pr-1">
-        {runbook.steps.map((step) => {
+        {runbook.steps.map(step => {
           const isLotoDone = step.lotoStatus === 'verified';
 
           return (
@@ -118,7 +131,9 @@ export const ExecutableRunbookEngine: React.FC = () => {
                       <span className="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
                         STEP 0{step.stepNumber}
                       </span>
-                      <h3 className={`text-sm font-semibold ${step.isCompleted ? 'line-through text-slate-400' : 'text-white'}`}>
+                      <h3
+                        className={`text-sm font-semibold ${step.isCompleted ? 'line-through text-slate-400' : 'text-white'}`}
+                      >
                         {step.title}
                       </h3>
                     </div>
@@ -129,9 +144,7 @@ export const ExecutableRunbookEngine: React.FC = () => {
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-300 leading-relaxed mb-3">
-                    {step.description}
-                  </p>
+                  <p className="text-xs text-slate-300 leading-relaxed mb-3">{step.description}</p>
 
                   {/* Footer Row: LOTO Validation & RAG Citation & Reroute Trigger */}
                   <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/80 text-[11px]">
@@ -155,7 +168,9 @@ export const ExecutableRunbookEngine: React.FC = () => {
                     {/* RAG Citation Link */}
                     <div className="flex items-center gap-1.5 text-blue-400 bg-blue-950/40 px-2.5 py-1 rounded border border-blue-500/20 font-mono truncate max-w-[240px]">
                       <FileText className="w-3 h-3 text-blue-400 shrink-0" />
-                      <span className="truncate">{step.citation.documentName} ({step.citation.section})</span>
+                      <span className="truncate">
+                        {step.citation.documentName} ({step.citation.section})
+                      </span>
                       <ExternalLink className="w-3 h-3 shrink-0 ml-1 text-slate-400 hover:text-blue-300" />
                     </div>
 

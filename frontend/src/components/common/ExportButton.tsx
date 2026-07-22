@@ -14,7 +14,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
   onClick,
   format = 'pdf',
   isLoading = false,
-  disabled = false
+  disabled = false,
 }) => {
   const formatColors = {
     pdf: 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30 shadow-red-500/10',

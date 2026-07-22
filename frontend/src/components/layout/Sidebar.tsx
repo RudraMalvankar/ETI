@@ -15,7 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Hexagon,
-  ChevronsUpDown
+  ChevronsUpDown,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -31,7 +31,7 @@ export const Sidebar: React.FC = () => {
         { id: 'dashboard', label: 'Command Center', icon: LayoutDashboard },
         { id: 'documents', label: 'Data Sources', icon: FileText },
         { id: 'graph', label: 'Knowledge Graph', icon: Network },
-      ]
+      ],
     },
     {
       title: 'Intelligence',
@@ -39,7 +39,7 @@ export const Sidebar: React.FC = () => {
         { id: 'simulation', label: 'Shadow Simulation', icon: Activity },
         { id: 'decision', label: 'AI Copilot', icon: BrainCircuit },
         { id: 'runbook', label: 'Runbooks', icon: BookOpen },
-      ]
+      ],
     },
     {
       title: 'Audit & Memory',
@@ -47,8 +47,8 @@ export const Sidebar: React.FC = () => {
         { id: 'memory', label: 'Op Memory', icon: Database },
         { id: 'compliance', label: 'Compliance', icon: ShieldCheck },
         { id: 'history', label: 'Incidents', icon: History },
-      ]
-    }
+      ],
+    },
   ];
 
   return (
@@ -76,10 +76,14 @@ export const Sidebar: React.FC = () => {
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition"
           >
-            {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            {isCollapsed ? (
+              <ChevronRight className="w-4 h-4" />
+            ) : (
+              <ChevronLeft className="w-4 h-4" />
+            )}
           </button>
         </div>
-        
+
         {!isCollapsed && (
           <div className="px-4 pb-4">
             <button className="w-full flex items-center justify-between px-3 py-2 text-xs rounded border border-[var(--border-strong)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
@@ -100,9 +104,11 @@ export const Sidebar: React.FC = () => {
               </h3>
             )}
             <div className="space-y-0.5">
-              {group.items.map((item) => {
+              {group.items.map(item => {
                 const Icon = item.icon;
-                const isActive = location.pathname.includes(item.id) || (item.id === 'dashboard' && location.pathname === '/dashboard');
+                const isActive =
+                  location.pathname.includes(item.id) ||
+                  (item.id === 'dashboard' && location.pathname === '/dashboard');
                 return (
                   <motion.button
                     whileHover={{ x: 2 }}
@@ -116,7 +122,9 @@ export const Sidebar: React.FC = () => {
                     }`}
                     title={isCollapsed ? item.label : undefined}
                   >
-                    <Icon className={`shrink-0 w-4 h-4 transition-colors ${isActive ? 'text-primary-500' : 'text-[var(--text-muted)] group-hover:text-primary-400'}`} />
+                    <Icon
+                      className={`shrink-0 w-4 h-4 transition-colors ${isActive ? 'text-primary-500' : 'text-[var(--text-muted)] group-hover:text-primary-400'}`}
+                    />
                     {!isCollapsed && <span className="truncate">{item.label}</span>}
                   </motion.button>
                 );

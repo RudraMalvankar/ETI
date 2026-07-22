@@ -1,4 +1,3 @@
-import json
 import os
 
 import requests
@@ -80,7 +79,7 @@ def test_nvidia_nim(api_key, base_url, model_name):
 
 
 def list_nvidia_models(api_key, base_url):
-    print(f"\n--- Fetching Available NVIDIA NIM Models ---")
+    print("\n--- Fetching Available NVIDIA NIM Models ---")
     if not api_key:
         print("[FAIL] Error: NIM_API_KEY is not set.")
         return

@@ -10,12 +10,9 @@ Run with:
 Requirements: pytest-benchmark (optional), falls back to timeit.
 """
 
-import io
 import statistics
 import time
 from typing import Callable
-
-import pytest
 
 # ---------------------------------------------------------------------------
 # Benchmark Harness (does not require pytest-benchmark)

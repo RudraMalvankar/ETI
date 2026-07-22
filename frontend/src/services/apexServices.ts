@@ -9,7 +9,7 @@ import {
   IncidentMemory,
   TrendAnalysis,
   ExplanationResponse,
-  ComplianceReport
+  ComplianceReport,
 } from '../types/apex';
 
 // --- DOCUMENTS ---
@@ -22,7 +22,9 @@ export async function uploadDocument(file: File): Promise<DocumentResponse> {
   return res.data;
 }
 
-export async function indexDocument(document_id: string): Promise<{ message: string; chunk_count: number }> {
+export async function indexDocument(
+  document_id: string
+): Promise<{ message: string; chunk_count: number }> {
   const res = await apiClient.post('/documents/index', { document_id });
   return res.data;
 }
@@ -38,7 +40,9 @@ export async function vectorSearch(query: string, top_k: number = 5): Promise<Se
 }
 
 // --- KNOWLEDGE GRAPH ---
-export async function buildGraph(graphData: any): Promise<{ status: string; node_count: number; edge_count: number }> {
+export async function buildGraph(
+  graphData: any
+): Promise<{ status: string; node_count: number; edge_count: number }> {
   const res = await apiClient.post('/graph/build', graphData);
   return res.data;
 }
@@ -48,25 +52,42 @@ export async function getGraph(): Promise<GraphData> {
   return res.data;
 }
 
-export async function getBlastRadius(assetId: string, depth: number = 2): Promise<{ failed_asset: string; blast_radius: string[]; risk_score: number }> {
+export async function getBlastRadius(
+  assetId: string,
+  depth: number = 2
+): Promise<{ failed_asset: string; blast_radius: string[]; risk_score: number }> {
   const res = await apiClient.get(`/graph/blast-radius/${assetId}`, { params: { depth } });
   return res.data;
 }
 
 // --- SHADOW SIMULATION ---
-export async function runSimulation(failed_asset: string, failure_type: string): Promise<SimulationResponse> {
+export async function runSimulation(
+  failed_asset: string,
+  failure_type: string
+): Promise<SimulationResponse> {
   const res = await apiClient.post('/simulation/run', { failed_asset, failure_type });
   return res.data;
 }
 
 // --- AI DECISION ---
-export async function evaluateDecision(failed_asset: string, failure_type: string, simulation_id: string): Promise<DecisionResponse> {
-  const res = await apiClient.post('/decision/evaluate', { failed_asset, failure_type, simulation_id });
+export async function evaluateDecision(
+  failed_asset: string,
+  failure_type: string,
+  simulation_id: string
+): Promise<DecisionResponse> {
+  const res = await apiClient.post('/decision/evaluate', {
+    failed_asset,
+    failure_type,
+    simulation_id,
+  });
   return res.data;
 }
 
 // --- DYNAMIC RUNBOOK ---
-export async function generateRunbook(decision_payload: any, simulation_id: string): Promise<Runbook> {
+export async function generateRunbook(
+  decision_payload: any,
+  simulation_id: string
+): Promise<Runbook> {
   const res = await apiClient.post('/runbook/generate', { decision_payload, simulation_id });
   return res.data;
 }
@@ -76,8 +97,16 @@ export async function getRunbook(runbook_id: string): Promise<Runbook> {
   return res.data;
 }
 
-export async function updateRunbookStep(runbook_id: string, step_id: string, status: string, feedback_notes?: string): Promise<Runbook> {
-  const res = await apiClient.put(`/runbook/${runbook_id}/step/${step_id}`, { status, feedback_notes });
+export async function updateRunbookStep(
+  runbook_id: string,
+  step_id: string,
+  status: string,
+  feedback_notes?: string
+): Promise<Runbook> {
+  const res = await apiClient.put(`/runbook/${runbook_id}/step/${step_id}`, {
+    status,
+    feedback_notes,
+  });
   return res.data;
 }
 
@@ -138,11 +167,21 @@ export async function getComplianceReport(report_id: string): Promise<Compliance
 }
 
 export async function exportCompliancePdf(report_id: string): Promise<Blob> {
-  const res = await apiClient.post('/compliance/export/pdf', { report_id }, { responseType: 'blob' });
+  const res = await apiClient.post(
+    '/compliance/export/pdf',
+    { report_id },
+    { responseType: 'blob' }
+  );
   return new Blob([res.data], { type: 'application/pdf' });
 }
 
 export async function exportComplianceDocx(report_id: string): Promise<Blob> {
-  const res = await apiClient.post('/compliance/export/docx', { report_id }, { responseType: 'blob' });
-  return new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+  const res = await apiClient.post(
+    '/compliance/export/docx',
+    { report_id },
+    { responseType: 'blob' }
+  );
+  return new Blob([res.data], {
+    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  });
 }

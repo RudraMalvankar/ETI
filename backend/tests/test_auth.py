@@ -11,7 +11,6 @@ Covers:
 - Me endpoint
 """
 
-import pytest
 
 
 class TestRegistration:

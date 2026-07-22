@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  ArrowRight, 
-  Hexagon, 
-  Activity, 
-  Network, 
-  Database, 
+import {
+  ArrowRight,
+  Hexagon,
+  Activity,
+  Network,
+  Database,
   BrainCircuit,
   AlertTriangle,
   Factory,
@@ -16,7 +16,7 @@ import {
   Layers,
   Cpu,
   Play,
-  CheckCircle2
+  CheckCircle2,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,7 +25,6 @@ export const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] overflow-hidden">
-      
       {/* 0. Navbar */}
       <nav className="absolute top-0 left-0 w-full z-50 px-6 py-4 flex items-center justify-between border-b border-[var(--border-muted)] bg-[var(--bg-base)]/90 backdrop-blur-md">
         <div className="flex items-center gap-3">
@@ -35,8 +34,16 @@ export const LandingPage: React.FC = () => {
           <span className="text-sm font-display font-semibold tracking-tight">APEX</span>
         </div>
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/login')} className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">Sign In</button>
-          <button onClick={() => navigate('/register')} className="px-4 py-2 rounded text-xs font-medium bg-[var(--bg-elevated)] border border-[var(--border-strong)] hover:bg-[var(--bg-surface)] transition-colors">
+          <button
+            onClick={() => navigate('/login')}
+            className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+          >
+            Sign In
+          </button>
+          <button
+            onClick={() => navigate('/register')}
+            className="px-4 py-2 rounded text-xs font-medium bg-[var(--bg-elevated)] border border-[var(--border-strong)] hover:bg-[var(--bg-surface)] transition-colors"
+          >
             Get Started
           </button>
         </div>
@@ -56,7 +63,7 @@ export const LandingPage: React.FC = () => {
             APEX is now available for Enterprise
           </motion.div>
 
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
@@ -65,22 +72,23 @@ export const LandingPage: React.FC = () => {
             The Decision Intelligence <br /> Platform for Industry.
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
             className="text-body text-lg mb-10 max-w-2xl mx-auto"
           >
-            APEX combines causal shadow simulation, live knowledge graphs, and executable runbooks to keep mission-critical assets running. Predict failures before they happen.
+            APEX combines causal shadow simulation, live knowledge graphs, and executable runbooks
+            to keep mission-critical assets running. Predict failures before they happen.
           </motion.p>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <button 
+            <button
               onClick={() => navigate('/login')}
               className="flex items-center gap-2 px-6 py-3 rounded-md bg-primary-600 hover:bg-primary-500 text-white font-medium text-sm transition-colors w-full sm:w-auto"
             >
@@ -108,92 +116,125 @@ export const LandingPage: React.FC = () => {
                 </div>
               </div>
               <div className="flex-1 p-6 flex flex-col gap-4 bg-[var(--bg-base)]">
-                 <div className="grid grid-cols-4 gap-4 h-1/4">
-                   {/* Mock KPI 1 */}
-                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] p-3 flex flex-col justify-between">
-                     <span className="text-[10px] text-[var(--text-secondary)] font-medium">System Health</span>
-                     <span className="text-lg font-bold text-[var(--text-primary)]">82.4%</span>
-                     <div className="w-full h-4 mt-1 bg-gradient-to-r from-accent-emerald/20 to-accent-emerald/50 rounded flex items-center justify-end px-1"><span className="text-[8px] text-accent-emerald font-bold">+1.2%</span></div>
-                   </div>
-                   {/* Mock KPI 2 */}
-                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] p-3 flex flex-col justify-between">
-                     <span className="text-[10px] text-[var(--text-secondary)] font-medium">Active Incidents</span>
-                     <span className="text-lg font-bold text-accent-red">1 Critical</span>
-                     <div className="w-full h-4 mt-1 bg-accent-red/10 border border-accent-red/20 rounded flex items-center justify-center"><span className="text-[8px] text-accent-red font-bold">P-101 anomaly</span></div>
-                   </div>
-                   {/* Mock KPI 3 */}
-                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] p-3 flex flex-col justify-between">
-                     <span className="text-[10px] text-[var(--text-secondary)] font-medium">Shadow Sims</span>
-                     <span className="text-lg font-bold text-[var(--text-primary)]">1,402</span>
-                     <div className="w-full h-4 mt-1">
-                        <svg viewBox="0 0 100 20" className="w-full h-full opacity-70"><path d="M0 20 L20 15 L40 18 L60 10 L80 12 L100 5" stroke="#3b82f6" strokeWidth="2" fill="none"/></svg>
-                     </div>
-                   </div>
-                   {/* Mock KPI 4 */}
-                   <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] p-3 flex flex-col justify-between">
-                     <span className="text-[10px] text-[var(--text-secondary)] font-medium">Compliance</span>
-                     <span className="text-lg font-bold text-accent-emerald">Ready</span>
-                     <div className="w-full h-4 mt-1 bg-accent-emerald/10 rounded flex items-center px-1 gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
-                        <span className="text-[8px] text-accent-emerald font-bold">100% Audit</span>
-                     </div>
-                   </div>
-                 </div>
-                 <div className="flex gap-4 flex-1">
-                   {/* Realistic Alert Panel */}
-                   <div className="w-2/3 bg-[var(--bg-elevated)] border border-accent-red/50 rounded-lg p-5 flex flex-col justify-between shadow-sm relative overflow-hidden">
-                      <div>
-                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-accent-red/10 border border-accent-red/20 text-accent-red text-[8px] uppercase font-bold tracking-widest mb-3">
-                          <AlertTriangle className="w-2.5 h-2.5" /> Priority 1 Alert
-                        </div>
-                        <h1 className="text-lg font-bold mb-1 text-[var(--text-primary)]">P-101 Bearing Overheat</h1>
-                        <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed max-w-sm">
-                          Telemetry indicates bearing friction exceeding nominal thresholds. Knowledge graph analysis projects a high probability of cascading failure to V-202 within <span className="text-accent-red font-bold">45 minutes</span>.
+                <div className="grid grid-cols-4 gap-4 h-1/4">
+                  {/* Mock KPI 1 */}
+                  <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] p-3 flex flex-col justify-between">
+                    <span className="text-[10px] text-[var(--text-secondary)] font-medium">
+                      System Health
+                    </span>
+                    <span className="text-lg font-bold text-[var(--text-primary)]">82.4%</span>
+                    <div className="w-full h-4 mt-1 bg-gradient-to-r from-accent-emerald/20 to-accent-emerald/50 rounded flex items-center justify-end px-1">
+                      <span className="text-[8px] text-accent-emerald font-bold">+1.2%</span>
+                    </div>
+                  </div>
+                  {/* Mock KPI 2 */}
+                  <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] p-3 flex flex-col justify-between">
+                    <span className="text-[10px] text-[var(--text-secondary)] font-medium">
+                      Active Incidents
+                    </span>
+                    <span className="text-lg font-bold text-accent-red">1 Critical</span>
+                    <div className="w-full h-4 mt-1 bg-accent-red/10 border border-accent-red/20 rounded flex items-center justify-center">
+                      <span className="text-[8px] text-accent-red font-bold">P-101 anomaly</span>
+                    </div>
+                  </div>
+                  {/* Mock KPI 3 */}
+                  <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] p-3 flex flex-col justify-between">
+                    <span className="text-[10px] text-[var(--text-secondary)] font-medium">
+                      Shadow Sims
+                    </span>
+                    <span className="text-lg font-bold text-[var(--text-primary)]">1,402</span>
+                    <div className="w-full h-4 mt-1">
+                      <svg viewBox="0 0 100 20" className="w-full h-full opacity-70">
+                        <path
+                          d="M0 20 L20 15 L40 18 L60 10 L80 12 L100 5"
+                          stroke="#3b82f6"
+                          strokeWidth="2"
+                          fill="none"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  {/* Mock KPI 4 */}
+                  <div className="bg-[var(--bg-surface)] rounded border border-[var(--border-muted)] p-3 flex flex-col justify-between">
+                    <span className="text-[10px] text-[var(--text-secondary)] font-medium">
+                      Compliance
+                    </span>
+                    <span className="text-lg font-bold text-accent-emerald">Ready</span>
+                    <div className="w-full h-4 mt-1 bg-accent-emerald/10 rounded flex items-center px-1 gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
+                      <span className="text-[8px] text-accent-emerald font-bold">100% Audit</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-4 flex-1">
+                  {/* Realistic Alert Panel */}
+                  <div className="w-2/3 bg-[var(--bg-elevated)] border border-accent-red/50 rounded-lg p-5 flex flex-col justify-between shadow-sm relative overflow-hidden">
+                    <div>
+                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-accent-red/10 border border-accent-red/20 text-accent-red text-[8px] uppercase font-bold tracking-widest mb-3">
+                        <AlertTriangle className="w-2.5 h-2.5" /> Priority 1 Alert
+                      </div>
+                      <h1 className="text-lg font-bold mb-1 text-[var(--text-primary)]">
+                        P-101 Bearing Overheat
+                      </h1>
+                      <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed max-w-sm">
+                        Telemetry indicates bearing friction exceeding nominal thresholds. Knowledge
+                        graph analysis projects a high probability of cascading failure to V-202
+                        within <span className="text-accent-red font-bold">45 minutes</span>.
+                      </p>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <div className="px-3 py-1.5 rounded bg-accent-red/90 text-white font-medium text-[9px] flex items-center gap-1 cursor-pointer hover:bg-accent-red transition-colors">
+                        Execute Recovery Runbook <ArrowRight className="w-3 h-3" />
+                      </div>
+                      <div className="px-3 py-1.5 rounded bg-[var(--bg-surface)] border border-[var(--border-strong)] text-[var(--text-primary)] font-medium text-[9px] flex items-center gap-1 cursor-pointer hover:bg-[var(--bg-base)] transition-colors">
+                        <Play className="w-3 h-3 text-primary-500" /> Run Shadow Simulation
+                      </div>
+                    </div>
+
+                    {/* Faint Topology Graphic in background */}
+                    <svg
+                      className="absolute bottom-0 right-0 w-1/2 h-full opacity-20 pointer-events-none"
+                      viewBox="0 0 100 100"
+                      preserveAspectRatio="none"
+                    >
+                      <path d="M0 80 Q 40 20 100 50" stroke="#ef4444" strokeWidth="2" fill="none" />
+                      <circle cx="0" cy="80" r="4" fill="#ef4444" />
+                      <circle cx="100" cy="50" r="4" fill="#f59e0b" />
+                    </svg>
+                  </div>
+
+                  {/* Realistic Copilot Panel */}
+                  <div className="w-1/3 bg-[var(--bg-elevated)] border border-primary-500/30 rounded-lg p-4 flex flex-col relative">
+                    <div className="flex items-center gap-2 mb-3 pb-3 border-b border-[var(--border-muted)]">
+                      <div className="p-1 rounded bg-primary-500/10 text-primary-500">
+                        <BrainCircuit className="w-3 h-3" />
+                      </div>
+                      <h2 className="text-[9px] font-semibold tracking-tight text-[var(--text-primary)] uppercase">
+                        AI Copilot Recommendation
+                      </h2>
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <div className="p-2.5 rounded bg-accent-emerald/5 border border-accent-emerald/20">
+                        <span className="text-[8px] uppercase font-bold text-accent-emerald tracking-wider mb-1 flex items-center gap-1">
+                          <CheckCircle2 className="w-2.5 h-2.5" /> Safest Strategy (94.5%)
+                        </span>
+                        <p className="text-[9px] font-medium text-[var(--text-primary)] leading-relaxed">
+                          Immediately isolate inlet valve V-202 via LOTO and depressurize housing.
                         </p>
                       </div>
-                      <div className="flex gap-2 mt-4">
-                        <div className="px-3 py-1.5 rounded bg-accent-red/90 text-white font-medium text-[9px] flex items-center gap-1 cursor-pointer hover:bg-accent-red transition-colors">
-                          Execute Recovery Runbook <ArrowRight className="w-3 h-3" />
-                        </div>
-                        <div className="px-3 py-1.5 rounded bg-[var(--bg-surface)] border border-[var(--border-strong)] text-[var(--text-primary)] font-medium text-[9px] flex items-center gap-1 cursor-pointer hover:bg-[var(--bg-base)] transition-colors">
-                          <Play className="w-3 h-3 text-primary-500" /> Run Shadow Simulation
-                        </div>
+                      <div className="p-2.5 rounded bg-[var(--bg-surface)] border border-[var(--border-strong)]">
+                        <p className="text-[8px] text-[var(--text-secondary)] font-medium leading-relaxed">
+                          <span className="text-primary-500 font-bold">Citation:</span> OEM Manual
+                          Sec 4.2 recommends this procedure for high-friction anomalies on P-class
+                          centrifugal pumps.
+                        </p>
                       </div>
-                      
-                      {/* Faint Topology Graphic in background */}
-                      <svg className="absolute bottom-0 right-0 w-1/2 h-full opacity-20 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-                         <path d="M0 80 Q 40 20 100 50" stroke="#ef4444" strokeWidth="2" fill="none" />
-                         <circle cx="0" cy="80" r="4" fill="#ef4444" />
-                         <circle cx="100" cy="50" r="4" fill="#f59e0b" />
-                      </svg>
-                   </div>
-                   
-                   {/* Realistic Copilot Panel */}
-                   <div className="w-1/3 bg-[var(--bg-elevated)] border border-primary-500/30 rounded-lg p-4 flex flex-col relative">
-                      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-[var(--border-muted)]">
-                        <div className="p-1 rounded bg-primary-500/10 text-primary-500"><BrainCircuit className="w-3 h-3" /></div>
-                        <h2 className="text-[9px] font-semibold tracking-tight text-[var(--text-primary)] uppercase">AI Copilot Recommendation</h2>
-                      </div>
-                      <div className="flex-1 space-y-2">
-                        <div className="p-2.5 rounded bg-accent-emerald/5 border border-accent-emerald/20">
-                          <span className="text-[8px] uppercase font-bold text-accent-emerald tracking-wider mb-1 flex items-center gap-1">
-                            <CheckCircle2 className="w-2.5 h-2.5" /> Safest Strategy (94.5%)
-                          </span>
-                          <p className="text-[9px] font-medium text-[var(--text-primary)] leading-relaxed">
-                            Immediately isolate inlet valve V-202 via LOTO and depressurize housing.
-                          </p>
-                        </div>
-                        <div className="p-2.5 rounded bg-[var(--bg-surface)] border border-[var(--border-strong)]">
-                           <p className="text-[8px] text-[var(--text-secondary)] font-medium leading-relaxed">
-                             <span className="text-primary-500 font-bold">Citation:</span> OEM Manual Sec 4.2 recommends this procedure for high-friction anomalies on P-class centrifugal pumps.
-                           </p>
-                        </div>
-                      </div>
-                   </div>
-                 </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            
+
             {/* Ambient Glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary-500/10 blur-[100px] pointer-events-none z-10 rounded-full" />
           </motion.div>
@@ -205,24 +246,36 @@ export const LandingPage: React.FC = () => {
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-16">
             <h2 className="heading-lg mb-4">The $50B Problem</h2>
-            <p className="text-body text-lg max-w-2xl mx-auto">Unplanned downtime costs the industrial sector billions annually. Traditional monitoring is no longer sufficient.</p>
+            <p className="text-body text-lg max-w-2xl mx-auto">
+              Unplanned downtime costs the industrial sector billions annually. Traditional
+              monitoring is no longer sufficient.
+            </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-6">
             <div className="enterprise-card p-6">
               <AlertTriangle className="w-6 h-6 text-accent-red mb-4" />
               <h3 className="font-semibold mb-2">Reactive Maintenance</h3>
-              <p className="text-small">Fixing assets only after they break leads to catastrophic cascading failures and hazardous conditions.</p>
+              <p className="text-small">
+                Fixing assets only after they break leads to catastrophic cascading failures and
+                hazardous conditions.
+              </p>
             </div>
             <div className="enterprise-card p-6">
               <Factory className="w-6 h-6 text-accent-amber mb-4" />
               <h3 className="font-semibold mb-2">Information Silos</h3>
-              <p className="text-small">Operational manuals are disconnected from live telemetry data, forcing engineers to guess.</p>
+              <p className="text-small">
+                Operational manuals are disconnected from live telemetry data, forcing engineers to
+                guess.
+              </p>
             </div>
             <div className="enterprise-card p-6">
               <BarChart className="w-6 h-6 text-primary-500 mb-4" />
               <h3 className="font-semibold mb-2">Alarm Fatigue</h3>
-              <p className="text-small">Thousands of trivial SCADA alarms bury the single critical warning that precedes a failure.</p>
+              <p className="text-small">
+                Thousands of trivial SCADA alarms bury the single critical warning that precedes a
+                failure.
+              </p>
             </div>
           </div>
         </div>
@@ -235,29 +288,38 @@ export const LandingPage: React.FC = () => {
             <div>
               <h2 className="heading-lg mb-6">Why existing systems fail</h2>
               <p className="text-body mb-6">
-                Most industrial software was built for data logging, not decision making. They show you a dashboard of raw metrics and leave the root cause analysis up to you.
+                Most industrial software was built for data logging, not decision making. They show
+                you a dashboard of raw metrics and leave the root cause analysis up to you.
               </p>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
-                  <span className="p-1 rounded bg-accent-red/10 text-accent-red mt-0.5"><Lock className="w-3 h-3" /></span>
+                  <span className="p-1 rounded bg-accent-red/10 text-accent-red mt-0.5">
+                    <Lock className="w-3 h-3" />
+                  </span>
                   <span className="text-small">Data is locked in proprietary OEM formats.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="p-1 rounded bg-accent-red/10 text-accent-red mt-0.5"><Lock className="w-3 h-3" /></span>
-                  <span className="text-small">Lack of contextual intelligence between systems.</span>
+                  <span className="p-1 rounded bg-accent-red/10 text-accent-red mt-0.5">
+                    <Lock className="w-3 h-3" />
+                  </span>
+                  <span className="text-small">
+                    Lack of contextual intelligence between systems.
+                  </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="p-1 rounded bg-accent-red/10 text-accent-red mt-0.5"><Lock className="w-3 h-3" /></span>
+                  <span className="p-1 rounded bg-accent-red/10 text-accent-red mt-0.5">
+                    <Lock className="w-3 h-3" />
+                  </span>
                   <span className="text-small">Manual root cause analysis takes hours.</span>
                 </li>
               </ul>
             </div>
             <div className="relative h-64 bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg flex items-center justify-center shadow-inner">
               <div className="text-[var(--text-muted)] text-sm font-mono text-center">
-                <p>{"{"}</p>
+                <p>{'{'}</p>
                 <p className="pl-4">"error": "Context undefined",</p>
                 <p className="pl-4">"status": "System fragmented"</p>
-                <p>{"}"}</p>
+                <p>{'}'}</p>
               </div>
             </div>
           </div>
@@ -271,27 +333,33 @@ export const LandingPage: React.FC = () => {
           <div className="grid md:grid-cols-3 gap-8 relative">
             {/* Connecting lines for desktop */}
             <div className="hidden md:block absolute top-12 left-[20%] right-[20%] h-px bg-[var(--border-strong)]" />
-            
+
             <div className="relative z-10 flex flex-col items-center">
               <div className="w-24 h-24 rounded-full bg-[var(--bg-base)] border border-[var(--border-strong)] shadow-sm flex items-center justify-center mb-6">
                 <Database className="w-8 h-8 text-primary-500" />
               </div>
               <h3 className="font-semibold mb-2">1. Ingest</h3>
-              <p className="text-small max-w-[250px]">Consume SCADA telemetry, maintenance logs, and 1000-page OEM manuals.</p>
+              <p className="text-small max-w-[250px]">
+                Consume SCADA telemetry, maintenance logs, and 1000-page OEM manuals.
+              </p>
             </div>
             <div className="relative z-10 flex flex-col items-center">
               <div className="w-24 h-24 rounded-full bg-[var(--bg-base)] border border-[var(--border-strong)] shadow-sm flex items-center justify-center mb-6">
                 <Network className="w-8 h-8 text-primary-500" />
               </div>
               <h3 className="font-semibold mb-2">2. Map</h3>
-              <p className="text-small max-w-[250px]">Construct a live Knowledge Graph topology of all physical and logical assets.</p>
+              <p className="text-small max-w-[250px]">
+                Construct a live Knowledge Graph topology of all physical and logical assets.
+              </p>
             </div>
             <div className="relative z-10 flex flex-col items-center">
               <div className="w-24 h-24 rounded-full bg-[var(--bg-base)] border border-[var(--border-strong)] shadow-sm flex items-center justify-center mb-6">
                 <BrainCircuit className="w-8 h-8 text-primary-500" />
               </div>
               <h3 className="font-semibold mb-2">3. Decide</h3>
-              <p className="text-small max-w-[250px]">Deploy AI Copilots to simulate failures and generate executable recovery runbooks.</p>
+              <p className="text-small max-w-[250px]">
+                Deploy AI Copilots to simulate failures and generate executable recovery runbooks.
+              </p>
             </div>
           </div>
         </div>
@@ -300,7 +368,6 @@ export const LandingPage: React.FC = () => {
       {/* Modules (6, 7, 8, 9) */}
       <section className="py-24 px-6 bg-[var(--bg-base)] border-b border-[var(--border-muted)]">
         <div className="container mx-auto max-w-5xl space-y-32">
-          
           {/* Knowledge Graph */}
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
@@ -308,82 +375,199 @@ export const LandingPage: React.FC = () => {
                 <Network className="w-5 h-5 text-primary-500" />
               </div>
               <h2 className="heading-lg mb-4">Knowledge Graph Topology</h2>
-              <p className="text-body mb-6">Instantly map industrial dependencies. When an asset fails, see the exact blast radius and downstream effects in real-time.</p>
+              <p className="text-body mb-6">
+                Instantly map industrial dependencies. When an asset fails, see the exact blast
+                radius and downstream effects in real-time.
+              </p>
             </div>
             <div className="aspect-video bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg shadow-sm flex items-center justify-center p-6 relative overflow-hidden group">
-               <div className="w-full h-full border border-[var(--border-muted)] rounded flex items-center justify-center relative bg-[var(--bg-base)]">
-                 <svg className="w-full h-full" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                   {/* Background Grid */}
-                   <g opacity="0.1">
-                     {Array.from({length: 20}).map((_, i) => <line key={`v${i}`} x1={i*20} y1="0" x2={i*20} y2="200" stroke="currentColor" strokeWidth="0.5" />)}
-                     {Array.from({length: 10}).map((_, i) => <line key={`h${i}`} x1="0" y1={i*20} x2="400" y2={i*20} stroke="currentColor" strokeWidth="0.5" />)}
-                   </g>
-                   {/* Edges */}
-                   <motion.path d="M100 100 Q 150 50 200 80 T 300 120" stroke="var(--border-strong)" strokeWidth="2" fill="none" />
-                   <motion.path d="M100 100 Q 150 150 250 160 T 300 120" stroke="var(--border-strong)" strokeWidth="2" fill="none" />
-                   <motion.path d="M200 80 Q 220 120 250 160" stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="4 4" fill="none" />
-                   {/* Active Data Flow (Pulsing) */}
-                   <motion.path 
-                     d="M100 100 Q 150 50 200 80 T 300 120" 
-                     stroke="#3b82f6" 
-                     strokeWidth="2" 
-                     fill="none" 
-                     initial={{ pathLength: 0, opacity: 0 }}
-                     animate={{ pathLength: 1, opacity: [0, 1, 0] }}
-                     transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                   />
-                   {/* Nodes */}
-                   <circle cx="100" cy="100" r="6" fill="#3b82f6" />
-                   <text x="100" y="120" fill="currentColor" fontSize="10" fontFamily="monospace" textAnchor="middle" opacity="0.7">Sensor-A4</text>
-                   
-                   <circle cx="200" cy="80" r="8" fill="#f59e0b" className="animate-pulse" />
-                   <text x="200" y="60" fill="currentColor" fontSize="10" fontFamily="monospace" textAnchor="middle" opacity="0.7">PLC-X12</text>
-                   
-                   <circle cx="250" cy="160" r="6" fill="currentColor" opacity="0.5" />
-                   <text x="250" y="180" fill="currentColor" fontSize="10" fontFamily="monospace" textAnchor="middle" opacity="0.7">Valv-09</text>
-                   
-                   <circle cx="300" cy="120" r="10" fill="#ef4444" />
-                   <circle cx="300" cy="120" r="14" fill="none" stroke="#ef4444" strokeWidth="1" className="animate-ping" style={{ transformOrigin: '300px 120px' }} />
-                   <text x="300" y="145" fill="currentColor" fontSize="10" fontFamily="monospace" textAnchor="middle" opacity="0.7">Turbine-4 (FAIL)</text>
-                 </svg>
-               </div>
+              <div className="w-full h-full border border-[var(--border-muted)] rounded flex items-center justify-center relative bg-[var(--bg-base)]">
+                <svg
+                  className="w-full h-full"
+                  viewBox="0 0 400 200"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  {/* Background Grid */}
+                  <g opacity="0.1">
+                    {Array.from({ length: 20 }).map((_, i) => (
+                      <line
+                        key={`v${i}`}
+                        x1={i * 20}
+                        y1="0"
+                        x2={i * 20}
+                        y2="200"
+                        stroke="currentColor"
+                        strokeWidth="0.5"
+                      />
+                    ))}
+                    {Array.from({ length: 10 }).map((_, i) => (
+                      <line
+                        key={`h${i}`}
+                        x1="0"
+                        y1={i * 20}
+                        x2="400"
+                        y2={i * 20}
+                        stroke="currentColor"
+                        strokeWidth="0.5"
+                      />
+                    ))}
+                  </g>
+                  {/* Edges */}
+                  <motion.path
+                    d="M100 100 Q 150 50 200 80 T 300 120"
+                    stroke="var(--border-strong)"
+                    strokeWidth="2"
+                    fill="none"
+                  />
+                  <motion.path
+                    d="M100 100 Q 150 150 250 160 T 300 120"
+                    stroke="var(--border-strong)"
+                    strokeWidth="2"
+                    fill="none"
+                  />
+                  <motion.path
+                    d="M200 80 Q 220 120 250 160"
+                    stroke="var(--border-strong)"
+                    strokeWidth="1"
+                    strokeDasharray="4 4"
+                    fill="none"
+                  />
+                  {/* Active Data Flow (Pulsing) */}
+                  <motion.path
+                    d="M100 100 Q 150 50 200 80 T 300 120"
+                    stroke="#3b82f6"
+                    strokeWidth="2"
+                    fill="none"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: [0, 1, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                  />
+                  {/* Nodes */}
+                  <circle cx="100" cy="100" r="6" fill="#3b82f6" />
+                  <text
+                    x="100"
+                    y="120"
+                    fill="currentColor"
+                    fontSize="10"
+                    fontFamily="monospace"
+                    textAnchor="middle"
+                    opacity="0.7"
+                  >
+                    Sensor-A4
+                  </text>
+
+                  <circle cx="200" cy="80" r="8" fill="#f59e0b" className="animate-pulse" />
+                  <text
+                    x="200"
+                    y="60"
+                    fill="currentColor"
+                    fontSize="10"
+                    fontFamily="monospace"
+                    textAnchor="middle"
+                    opacity="0.7"
+                  >
+                    PLC-X12
+                  </text>
+
+                  <circle cx="250" cy="160" r="6" fill="currentColor" opacity="0.5" />
+                  <text
+                    x="250"
+                    y="180"
+                    fill="currentColor"
+                    fontSize="10"
+                    fontFamily="monospace"
+                    textAnchor="middle"
+                    opacity="0.7"
+                  >
+                    Valv-09
+                  </text>
+
+                  <circle cx="300" cy="120" r="10" fill="#ef4444" />
+                  <circle
+                    cx="300"
+                    cy="120"
+                    r="14"
+                    fill="none"
+                    stroke="#ef4444"
+                    strokeWidth="1"
+                    className="animate-ping"
+                    style={{ transformOrigin: '300px 120px' }}
+                  />
+                  <text
+                    x="300"
+                    y="145"
+                    fill="currentColor"
+                    fontSize="10"
+                    fontFamily="monospace"
+                    textAnchor="middle"
+                    opacity="0.7"
+                  >
+                    Turbine-4 (FAIL)
+                  </text>
+                </svg>
+              </div>
             </div>
           </div>
 
           {/* AI Copilot */}
           <div className="grid md:grid-cols-2 gap-12 items-center md:flex-row-reverse">
             <div className="order-2 md:order-1 aspect-video bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg shadow-sm p-4 relative overflow-hidden group">
-               <div className="w-full h-full border border-[var(--border-strong)] rounded bg-[var(--bg-base)] shadow-inner flex flex-col font-mono text-[10px] overflow-hidden">
-                 {/* Fake Terminal Header */}
-                 <div className="w-full px-3 py-2 border-b border-[var(--border-strong)] flex items-center gap-2 bg-[var(--bg-surface)]">
-                    <div className="flex gap-1.5"><div className="w-2 h-2 rounded-full bg-accent-red" /><div className="w-2 h-2 rounded-full bg-accent-amber" /><div className="w-2 h-2 rounded-full bg-accent-emerald" /></div>
-                    <span className="text-[var(--text-muted)] ml-2">apex-copilot-sh</span>
-                 </div>
-                 {/* Terminal Content */}
-                 <div className="p-4 flex flex-col gap-3 text-[var(--text-secondary)]">
-                    <div className="flex items-start gap-2">
-                      <span className="text-primary-500">{">"}</span>
-                      <motion.p initial={{ width: 0 }} animate={{ width: "100%" }} className="overflow-hidden whitespace-nowrap">Analyze failure in Turbine-4</motion.p>
-                    </div>
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}>
-                      <p className="text-[var(--text-muted)]">Searching OEM manuals...</p>
-                      <p className="text-[var(--text-muted)]">Correlating telemetry data (PLC-X12 overheat)...</p>
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.5 }} className="mt-2 p-3 rounded bg-accent-emerald/10 border border-accent-emerald/20 text-accent-emerald">
-                      <p className="font-bold mb-1">Recommended Runbook: RB-1042</p>
-                      <p>1. Isolate intake valve Valv-09.</p>
-                      <p>2. Vent pressure via secondary loop.</p>
-                      <p>3. Restart PLC-X12 logic controller.</p>
-                    </motion.div>
-                 </div>
-               </div>
+              <div className="w-full h-full border border-[var(--border-strong)] rounded bg-[var(--bg-base)] shadow-inner flex flex-col font-mono text-[10px] overflow-hidden">
+                {/* Fake Terminal Header */}
+                <div className="w-full px-3 py-2 border-b border-[var(--border-strong)] flex items-center gap-2 bg-[var(--bg-surface)]">
+                  <div className="flex gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-accent-red" />
+                    <div className="w-2 h-2 rounded-full bg-accent-amber" />
+                    <div className="w-2 h-2 rounded-full bg-accent-emerald" />
+                  </div>
+                  <span className="text-[var(--text-muted)] ml-2">apex-copilot-sh</span>
+                </div>
+                {/* Terminal Content */}
+                <div className="p-4 flex flex-col gap-3 text-[var(--text-secondary)]">
+                  <div className="flex items-start gap-2">
+                    <span className="text-primary-500">{'>'}</span>
+                    <motion.p
+                      initial={{ width: 0 }}
+                      animate={{ width: '100%' }}
+                      className="overflow-hidden whitespace-nowrap"
+                    >
+                      Analyze failure in Turbine-4
+                    </motion.p>
+                  </div>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1 }}
+                  >
+                    <p className="text-[var(--text-muted)]">Searching OEM manuals...</p>
+                    <p className="text-[var(--text-muted)]">
+                      Correlating telemetry data (PLC-X12 overheat)...
+                    </p>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 2.5 }}
+                    className="mt-2 p-3 rounded bg-accent-emerald/10 border border-accent-emerald/20 text-accent-emerald"
+                  >
+                    <p className="font-bold mb-1">Recommended Runbook: RB-1042</p>
+                    <p>1. Isolate intake valve Valv-09.</p>
+                    <p>2. Vent pressure via secondary loop.</p>
+                    <p>3. Restart PLC-X12 logic controller.</p>
+                  </motion.div>
+                </div>
+              </div>
             </div>
             <div className="order-1 md:order-2">
               <div className="inline-flex p-2 rounded bg-accent-emerald/10 mb-4">
                 <BrainCircuit className="w-5 h-5 text-accent-emerald" />
               </div>
               <h2 className="heading-lg mb-4">Expert AI Copilot</h2>
-              <p className="text-body mb-6">Ask questions about complex OEM manuals. The AI instantly retrieves citations, generates executable runbooks, and synthesizes mitigation steps.</p>
+              <p className="text-body mb-6">
+                Ask questions about complex OEM manuals. The AI instantly retrieves citations,
+                generates executable runbooks, and synthesizes mitigation steps.
+              </p>
             </div>
           </div>
 
@@ -394,51 +578,125 @@ export const LandingPage: React.FC = () => {
                 <Activity className="w-5 h-5 text-accent-amber" />
               </div>
               <h2 className="heading-lg mb-4">Maintenance Intelligence</h2>
-              <p className="text-body mb-6">Run thousands of Monte Carlo shadow simulations to predict remaining useful life and forecast catastrophic failures before they cascade.</p>
+              <p className="text-body mb-6">
+                Run thousands of Monte Carlo shadow simulations to predict remaining useful life and
+                forecast catastrophic failures before they cascade.
+              </p>
             </div>
             <div className="aspect-video bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg shadow-sm flex items-center justify-center p-6 relative overflow-hidden group">
-               <div className="w-full h-full bg-[var(--bg-base)] border border-[var(--border-muted)] rounded p-4 relative">
-                  <svg className="w-full h-full" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    {/* Grid */}
-                    <g opacity="0.1">
-                      {Array.from({length: 8}).map((_, i) => <line key={`h${i}`} x1="0" y1={i*25} x2="400" y2={i*25} stroke="currentColor" strokeWidth="0.5" />)}
-                      {Array.from({length: 10}).map((_, i) => <line key={`v${i}`} x1={i*40} y1="0" x2={i*40} y2="200" stroke="currentColor" strokeWidth="0.5" />)}
-                    </g>
-                    {/* Confidence Interval Fill */}
-                    <path d="M0 150 Q 100 140 200 120 T 400 40 L 400 200 L 0 200 Z" fill="url(#grad)" opacity="0.2" />
-                    <defs>
-                      <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#ef4444" />
-                        <stop offset="100%" stopColor="transparent" />
-                      </linearGradient>
-                    </defs>
-                    {/* Trend Lines */}
-                    <motion.path 
-                      d="M0 150 Q 100 140 200 120 T 400 40" 
-                      stroke="#ef4444" strokeWidth="2" fill="none"
-                      initial={{ pathLength: 0 }}
-                      whileInView={{ pathLength: 1 }}
-                      transition={{ duration: 1.5, ease: "easeInOut" }}
-                    />
-                    <motion.path 
-                      d="M0 160 Q 100 150 200 140 T 400 100" 
-                      stroke="#3b82f6" strokeWidth="1" strokeDasharray="4 4" fill="none"
-                      initial={{ pathLength: 0 }}
-                      whileInView={{ pathLength: 1 }}
-                      transition={{ duration: 2, ease: "easeInOut" }}
-                    />
-                    
-                    {/* Markers */}
-                    <line x1="200" y1="0" x2="200" y2="200" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" opacity="0.3" />
-                    <text x="195" y="15" fill="currentColor" fontSize="10" fontFamily="monospace" textAnchor="end" opacity="0.6">TODAY</text>
-                    
-                    <line x1="320" y1="0" x2="320" y2="200" stroke="#ef4444" strokeWidth="1" strokeDasharray="2 2" opacity="0.5" />
-                    <text x="325" y="15" fill="#ef4444" fontSize="10" fontFamily="monospace" textAnchor="start" opacity="0.9">FAILURE (EST. 14 DAYS)</text>
-                  </svg>
-               </div>
+              <div className="w-full h-full bg-[var(--bg-base)] border border-[var(--border-muted)] rounded p-4 relative">
+                <svg
+                  className="w-full h-full"
+                  viewBox="0 0 400 200"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  {/* Grid */}
+                  <g opacity="0.1">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <line
+                        key={`h${i}`}
+                        x1="0"
+                        y1={i * 25}
+                        x2="400"
+                        y2={i * 25}
+                        stroke="currentColor"
+                        strokeWidth="0.5"
+                      />
+                    ))}
+                    {Array.from({ length: 10 }).map((_, i) => (
+                      <line
+                        key={`v${i}`}
+                        x1={i * 40}
+                        y1="0"
+                        x2={i * 40}
+                        y2="200"
+                        stroke="currentColor"
+                        strokeWidth="0.5"
+                      />
+                    ))}
+                  </g>
+                  {/* Confidence Interval Fill */}
+                  <path
+                    d="M0 150 Q 100 140 200 120 T 400 40 L 400 200 L 0 200 Z"
+                    fill="url(#grad)"
+                    opacity="0.2"
+                  />
+                  <defs>
+                    <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#ef4444" />
+                      <stop offset="100%" stopColor="transparent" />
+                    </linearGradient>
+                  </defs>
+                  {/* Trend Lines */}
+                  <motion.path
+                    d="M0 150 Q 100 140 200 120 T 400 40"
+                    stroke="#ef4444"
+                    strokeWidth="2"
+                    fill="none"
+                    initial={{ pathLength: 0 }}
+                    whileInView={{ pathLength: 1 }}
+                    transition={{ duration: 1.5, ease: 'easeInOut' }}
+                  />
+                  <motion.path
+                    d="M0 160 Q 100 150 200 140 T 400 100"
+                    stroke="#3b82f6"
+                    strokeWidth="1"
+                    strokeDasharray="4 4"
+                    fill="none"
+                    initial={{ pathLength: 0 }}
+                    whileInView={{ pathLength: 1 }}
+                    transition={{ duration: 2, ease: 'easeInOut' }}
+                  />
+
+                  {/* Markers */}
+                  <line
+                    x1="200"
+                    y1="0"
+                    x2="200"
+                    y2="200"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    strokeDasharray="2 2"
+                    opacity="0.3"
+                  />
+                  <text
+                    x="195"
+                    y="15"
+                    fill="currentColor"
+                    fontSize="10"
+                    fontFamily="monospace"
+                    textAnchor="end"
+                    opacity="0.6"
+                  >
+                    TODAY
+                  </text>
+
+                  <line
+                    x1="320"
+                    y1="0"
+                    x2="320"
+                    y2="200"
+                    stroke="#ef4444"
+                    strokeWidth="1"
+                    strokeDasharray="2 2"
+                    opacity="0.5"
+                  />
+                  <text
+                    x="325"
+                    y="15"
+                    fill="#ef4444"
+                    fontSize="10"
+                    fontFamily="monospace"
+                    textAnchor="start"
+                    opacity="0.9"
+                  >
+                    FAILURE (EST. 14 DAYS)
+                  </text>
+                </svg>
+              </div>
             </div>
           </div>
-
         </div>
       </section>
 
@@ -474,10 +732,17 @@ export const LandingPage: React.FC = () => {
       {/* 13. Call To Action */}
       <section className="py-24 px-6 bg-primary-600 border-b border-primary-700 text-center">
         <div className="container mx-auto max-w-3xl">
-          <h2 className="text-3xl font-display font-semibold text-white mb-6">Ready to secure your operations?</h2>
-          <p className="text-primary-100 text-lg mb-10">Join the industrial leaders who rely on APEX for decision intelligence.</p>
+          <h2 className="text-3xl font-display font-semibold text-white mb-6">
+            Ready to secure your operations?
+          </h2>
+          <p className="text-primary-100 text-lg mb-10">
+            Join the industrial leaders who rely on APEX for decision intelligence.
+          </p>
           <div className="flex justify-center gap-4">
-            <button onClick={() => navigate('/login')} className="px-8 py-3 rounded-md bg-white text-primary-600 font-semibold transition-colors hover:bg-gray-50">
+            <button
+              onClick={() => navigate('/login')}
+              className="px-8 py-3 rounded-md bg-white text-primary-600 font-semibold transition-colors hover:bg-gray-50"
+            >
               Start Free Trial
             </button>
             <button className="px-8 py-3 rounded-md bg-transparent border border-primary-400 text-white font-semibold transition-colors hover:bg-primary-500">
@@ -497,18 +762,29 @@ export const LandingPage: React.FC = () => {
                 <span className="font-display font-semibold text-lg tracking-tight">APEX</span>
               </div>
               <p className="text-sm text-[var(--text-secondary)] max-w-xs mb-6">
-                The Decision Intelligence Platform for Industry. Designed for mission-critical infrastructure.
+                The Decision Intelligence Platform for Industry. Designed for mission-critical
+                infrastructure.
               </p>
               <div className="flex gap-4">
-                <a href="#" className="w-8 h-8 flex items-center justify-center rounded-md border border-[var(--border-strong)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] hover:text-primary-500 transition-colors text-[var(--text-secondary)]">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                <a
+                  href="#"
+                  className="w-8 h-8 flex items-center justify-center rounded-md border border-[var(--border-strong)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] hover:text-primary-500 transition-colors text-[var(--text-secondary)]"
+                >
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                  </svg>
                 </a>
-                <a href="#" className="w-8 h-8 flex items-center justify-center rounded-md border border-[var(--border-strong)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] hover:text-primary-500 transition-colors text-[var(--text-secondary)]">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                <a
+                  href="#"
+                  className="w-8 h-8 flex items-center justify-center rounded-md border border-[var(--border-strong)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] hover:text-primary-500 transition-colors text-[var(--text-secondary)]"
+                >
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                  </svg>
                 </a>
               </div>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-sm mb-4">Product</h4>
               <ul className="space-y-3 text-sm text-[var(--text-secondary)]">
@@ -518,7 +794,7 @@ export const LandingPage: React.FC = () => {
                 <li className="hover:text-[var(--text-primary)] cursor-pointer">Security</li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-sm mb-4">Resources</h4>
               <ul className="space-y-3 text-sm text-[var(--text-secondary)]">
@@ -528,7 +804,7 @@ export const LandingPage: React.FC = () => {
                 <li className="hover:text-[var(--text-primary)] cursor-pointer">Case Studies</li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-sm mb-4">Company</h4>
               <ul className="space-y-3 text-sm text-[var(--text-secondary)]">
@@ -539,24 +815,34 @@ export const LandingPage: React.FC = () => {
               </ul>
             </div>
           </div>
-          
+
           <div className="pt-8 border-t border-[var(--border-muted)] flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-[var(--text-muted)]">
             <div className="flex items-center gap-6">
               <p>© {new Date().getFullYear()} APEX Enterprise. All rights reserved.</p>
               <div className="hidden md:flex items-center gap-2 px-2 py-1 rounded-full bg-[var(--bg-surface)] border border-[var(--border-strong)]">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse" />
-                <span className="font-medium text-[var(--text-secondary)]">All systems operational</span>
+                <span className="font-medium text-[var(--text-secondary)]">
+                  All systems operational
+                </span>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-4">
-              <span className="px-2 py-1 rounded bg-[var(--bg-surface)] border border-[var(--border-strong)] font-mono text-[10px] text-[var(--text-secondary)]">SOC2 Type II</span>
-              <span className="px-2 py-1 rounded bg-[var(--bg-surface)] border border-[var(--border-strong)] font-mono text-[10px] text-[var(--text-secondary)]">99.99% Uptime SLA</span>
+              <span className="px-2 py-1 rounded bg-[var(--bg-surface)] border border-[var(--border-strong)] font-mono text-[10px] text-[var(--text-secondary)]">
+                SOC2 Type II
+              </span>
+              <span className="px-2 py-1 rounded bg-[var(--bg-surface)] border border-[var(--border-strong)] font-mono text-[10px] text-[var(--text-secondary)]">
+                99.99% Uptime SLA
+              </span>
             </div>
-            
+
             <div className="flex gap-6">
-              <span className="hover:text-[var(--text-primary)] cursor-pointer">Terms of Service</span>
-              <span className="hover:text-[var(--text-primary)] cursor-pointer">Privacy Policy</span>
+              <span className="hover:text-[var(--text-primary)] cursor-pointer">
+                Terms of Service
+              </span>
+              <span className="hover:text-[var(--text-primary)] cursor-pointer">
+                Privacy Policy
+              </span>
             </div>
           </div>
         </div>

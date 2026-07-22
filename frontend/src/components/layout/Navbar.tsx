@@ -1,35 +1,35 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Bell, 
-  CheckCircle2, 
-  User, 
-  Search, 
-  Slash, 
-  Tag, 
-  Bot, 
-  ShieldCheck, 
-  X, 
-  AlertTriangle, 
-  LogOut, 
-  Check, 
-  Shield, 
-  Sliders 
+import {
+  Bell,
+  CheckCircle2,
+  User,
+  Search,
+  Slash,
+  Tag,
+  Bot,
+  ShieldCheck,
+  X,
+  AlertTriangle,
+  LogOut,
+  Check,
+  Shield,
+  Sliders,
 } from 'lucide-react';
 import { useApexStore } from '../../store/useApexStore';
 import { ThemeSwitcher } from '../common/ThemeSwitcher';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export const Navbar: React.FC = () => {
-  const { 
-    globalQuery, 
-    setGlobalQuery, 
-    setActiveTab, 
-    toggleTagInspector, 
-    toggleCopilot, 
-    toggleComplianceModal 
+  const {
+    globalQuery,
+    setGlobalQuery,
+    setActiveTab,
+    toggleTagInspector,
+    toggleCopilot,
+    toggleComplianceModal,
   } = useApexStore();
-  
+
   const location = useLocation();
   const navigate = useNavigate();
   const path = location.pathname.split('/').filter(Boolean).pop() || 'dashboard';
@@ -38,18 +38,38 @@ export const Navbar: React.FC = () => {
   const [showUserProfile, setShowUserProfile] = useState(false);
 
   const sampleNotifications = [
-    { id: 1, title: 'Reactor R-101 Pressure Surge', time: '2 mins ago', type: 'critical', desc: 'PT-401 telemetry logged 18.4 Bar.' },
-    { id: 2, title: 'Valve V-102 Actuator Jammed', time: '5 mins ago', type: 'warning', desc: 'LOTO isolation step failed.' },
-    { id: 3, title: 'OISD Audit Package Ready', time: '12 mins ago', type: 'info', desc: 'Auto-compiled compliance certificate.' }
+    {
+      id: 1,
+      title: 'Reactor R-101 Pressure Surge',
+      time: '2 mins ago',
+      type: 'critical',
+      desc: 'PT-401 telemetry logged 18.4 Bar.',
+    },
+    {
+      id: 2,
+      title: 'Valve V-102 Actuator Jammed',
+      time: '5 mins ago',
+      type: 'warning',
+      desc: 'LOTO isolation step failed.',
+    },
+    {
+      id: 3,
+      title: 'OISD Audit Package Ready',
+      time: '12 mins ago',
+      type: 'info',
+      desc: 'Auto-compiled compliance certificate.',
+    },
   ];
 
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between px-6 py-3 bg-[var(--bg-surface)] border-b border-[var(--border-muted)] h-16 select-none shadow-sm">
-      
       {/* Breadcrumbs & Search Bar */}
       <div className="flex items-center gap-4 flex-1">
         <div className="hidden lg:flex items-center text-xs font-mono font-medium text-[var(--text-muted)]">
-          <span className="hover:text-[var(--text-primary)] cursor-pointer transition-colors" onClick={() => navigate('/dashboard')}>
+          <span
+            className="hover:text-[var(--text-primary)] cursor-pointer transition-colors"
+            onClick={() => navigate('/dashboard')}
+          >
             Plant Ops
           </span>
           <Slash className="w-3.5 h-3.5 mx-1.5 opacity-40 text-slate-500" />
@@ -61,8 +81,8 @@ export const Navbar: React.FC = () => {
           <input
             type="text"
             value={globalQuery}
-            onChange={(e) => setGlobalQuery(e.target.value)}
-            onKeyDown={(e) => {
+            onChange={e => setGlobalQuery(e.target.value)}
+            onKeyDown={e => {
               if (e.key === 'Enter') setActiveTab('documents');
             }}
             placeholder="Search assets, P&IDs, tags, SOPs... (⌘K)"
@@ -111,9 +131,9 @@ export const Navbar: React.FC = () => {
 
         {/* 1. Notifications Bell Button & Popover */}
         <div className="relative">
-          <motion.button 
-            whileHover={{ scale: 1.05 }} 
-            whileTap={{ scale: 0.95 }} 
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => {
               setShowNotifications(!showNotifications);
               setShowUserProfile(false);
@@ -141,7 +161,9 @@ export const Navbar: React.FC = () => {
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
                   <div className="flex items-center gap-2">
                     <Bell className="w-4 h-4 text-blue-400" />
-                    <span className="text-xs font-bold text-white font-display">Command Center Alerts</span>
+                    <span className="text-xs font-bold text-white font-display">
+                      Command Center Alerts
+                    </span>
                   </div>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30">
                     3 New
@@ -149,8 +171,8 @@ export const Navbar: React.FC = () => {
                 </div>
 
                 <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-                  {sampleNotifications.map((notif) => (
-                    <div 
+                  {sampleNotifications.map(notif => (
+                    <div
                       key={notif.id}
                       className="p-2.5 rounded-xl bg-[#151D2A] border border-slate-800 hover:border-slate-700 transition-all text-xs"
                     >
@@ -163,7 +185,7 @@ export const Navbar: React.FC = () => {
                   ))}
                 </div>
 
-                <button 
+                <button
                   onClick={() => setShowNotifications(false)}
                   className="w-full mt-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono text-center transition-colors"
                 >
@@ -179,9 +201,9 @@ export const Navbar: React.FC = () => {
 
         {/* 3. User Profile Button & Dropdown */}
         <div className="relative">
-          <motion.button 
-            whileHover={{ scale: 1.05 }} 
-            whileTap={{ scale: 0.95 }} 
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => {
               setShowUserProfile(!showUserProfile);
               setShowNotifications(false);

@@ -12,9 +12,7 @@ try:
     from app.core.auth import get_password_hash
     from app.database.session import SessionLocal
     from app.main import app
-    from app.models.audit import AuditLogModel
-    from app.models.models import DocumentModel, IncidentModel, UserModel
-    from app.models.simulation_runbook import RunbookModel, SimulationModel
+    from app.models.models import UserModel
 
     client = TestClient(app)
 

@@ -14,7 +14,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onChange,
   onSearch,
   placeholder = 'Search assets, documents, incidents...',
-  className = ''
+  className = '',
 }) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && onSearch) {
@@ -28,7 +28,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       <input
         type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={e => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className="w-full pl-10 pr-9 py-2.5 bg-slate-900/60 text-white placeholder-slate-500 text-xs rounded-xl border border-slate-800 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all"

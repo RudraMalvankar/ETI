@@ -8,7 +8,13 @@ interface MetricCardProps {
   badgeType?: 'info' | 'success' | 'warning' | 'error';
 }
 
-export const MetricCard: React.FC<MetricCardProps> = ({ label, value, subtext, badge, badgeType = 'info' }) => {
+export const MetricCard: React.FC<MetricCardProps> = ({
+  label,
+  value,
+  subtext,
+  badge,
+  badgeType = 'info',
+}) => {
   const badgeStyles = {
     info: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
     success: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -21,7 +27,9 @@ export const MetricCard: React.FC<MetricCardProps> = ({ label, value, subtext, b
       <div className="flex justify-between items-start">
         <span className="text-xs font-medium text-slate-400">{label}</span>
         {badge && (
-          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${badgeStyles[badgeType]}`}>
+          <span
+            className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${badgeStyles[badgeType]}`}
+          >
             {badge}
           </span>
         )}

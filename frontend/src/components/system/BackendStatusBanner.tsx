@@ -48,7 +48,9 @@ export const BackendStatusBanner: React.FC = () => {
   return (
     <div className="flex items-center justify-between px-4 py-2 bg-slate-950/80 border-b border-slate-800 text-xs backdrop-blur-md">
       <div className="flex items-center gap-3">
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${config.badge} font-semibold text-[11px]`}>
+        <span
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${config.badge} font-semibold text-[11px]`}
+        >
           <span className={`w-2 h-2 rounded-full ${config.dot}`} />
           <Icon className="w-3.5 h-3.5" />
           <span>{config.label}</span>

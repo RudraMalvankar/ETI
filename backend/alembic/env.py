@@ -11,10 +11,6 @@ from alembic import context
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app.database.session import Base
-from app.models.audit import AuditLogModel
-from app.models.blacklist import BlacklistedToken
-from app.models.models import DocumentModel, IncidentModel, UserModel
-from app.models.simulation_runbook import RunbookModel, SimulationModel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -12,7 +12,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   title = 'No Data Found',
   description = 'There are currently no items or records to display.',
   action,
-  icon
+  icon,
 }) => {
   return (
     <div className="flex flex-col items-center justify-center p-10 text-center rounded-2xl bg-slate-900/30 border border-slate-800/60 backdrop-blur-md">

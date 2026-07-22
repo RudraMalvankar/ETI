@@ -8,7 +8,13 @@ interface SectionCardProps {
   className?: string;
 }
 
-export const SectionCard: React.FC<SectionCardProps> = ({ title, subtitle, action, children, className = '' }) => {
+export const SectionCard: React.FC<SectionCardProps> = ({
+  title,
+  subtitle,
+  action,
+  children,
+  className = '',
+}) => {
   return (
     <div className={`enterprise-card p-6 ${className}`}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-[var(--border-muted)] gap-4">

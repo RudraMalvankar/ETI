@@ -10,7 +10,7 @@ interface FileUploaderProps {
 export const FileUploader: React.FC<FileUploaderProps> = ({
   onFileUpload,
   isLoading = false,
-  acceptedFormats = '.pdf,.csv'
+  acceptedFormats = '.pdf,.csv',
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -36,7 +36,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
 
   return (
     <div
-      onDragOver={(e) => {
+      onDragOver={e => {
         e.preventDefault();
         setIsDragOver(true);
       }}

@@ -8,11 +8,41 @@ export const TagEntityInspector: React.FC = () => {
   if (!isTagInspectorOpen) return null;
 
   const sampleExtractedEntities = [
-    { tag: 'R-101', type: 'Reactor', spec: 'Max Working Pressure: 15.0 Bar', doc: 'OEM-R101-REV3.pdf', reg: 'OISD-STD-117 Sec 4.2' },
-    { tag: 'V-102', type: 'Emergency Isolation Valve', spec: 'Fail-Closed Pneumatic Actuator', doc: 'VALVE-V102-SPEC.pdf', reg: 'PESO UPV Rule 14' },
-    { tag: 'V-108', type: 'Bypass Relief Valve', spec: 'High-Capacity Flare Diverter', doc: 'VALVE-V108-BYPASS.pdf', reg: 'Factory Act Sec 31' },
-    { tag: 'P-202A', type: 'Cooling Pump', spec: 'Flow Rating: 600 L/min', doc: 'PUMP-P202A-OEM.pdf', reg: 'OISD-STD-117 Sec 8.1' },
-    { tag: 'PT-401', type: 'Pressure Transmitter', spec: 'Range: 0-30 Bar SIL-2 Rated', doc: 'SENS-PT401.pdf', reg: 'PESO UPV Schedule VI' }
+    {
+      tag: 'R-101',
+      type: 'Reactor',
+      spec: 'Max Working Pressure: 15.0 Bar',
+      doc: 'OEM-R101-REV3.pdf',
+      reg: 'OISD-STD-117 Sec 4.2',
+    },
+    {
+      tag: 'V-102',
+      type: 'Emergency Isolation Valve',
+      spec: 'Fail-Closed Pneumatic Actuator',
+      doc: 'VALVE-V102-SPEC.pdf',
+      reg: 'PESO UPV Rule 14',
+    },
+    {
+      tag: 'V-108',
+      type: 'Bypass Relief Valve',
+      spec: 'High-Capacity Flare Diverter',
+      doc: 'VALVE-V108-BYPASS.pdf',
+      reg: 'Factory Act Sec 31',
+    },
+    {
+      tag: 'P-202A',
+      type: 'Cooling Pump',
+      spec: 'Flow Rating: 600 L/min',
+      doc: 'PUMP-P202A-OEM.pdf',
+      reg: 'OISD-STD-117 Sec 8.1',
+    },
+    {
+      tag: 'PT-401',
+      type: 'Pressure Transmitter',
+      spec: 'Range: 0-30 Bar SIL-2 Rated',
+      doc: 'SENS-PT401.pdf',
+      reg: 'PESO UPV Schedule VI',
+    },
   ];
 
   return (
@@ -21,9 +51,11 @@ export const TagEntityInspector: React.FC = () => {
       <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-[#111827]">
         <div className="flex items-center gap-2">
           <Tag className="w-5 h-5 text-indigo-400" />
-          <h2 className="text-sm font-bold text-white font-display">Entity Extractor & Tag Knowledge</h2>
+          <h2 className="text-sm font-bold text-white font-display">
+            Entity Extractor & Tag Knowledge
+          </h2>
         </div>
-        <button 
+        <button
           onClick={() => toggleTagInspector(false)}
           className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
         >
@@ -40,7 +72,9 @@ export const TagEntityInspector: React.FC = () => {
             </span>
           </div>
           <p className="text-xs font-semibold text-white mb-1">{selectedNode.label}</p>
-          <p className="text-[11px] text-slate-400 font-mono">Document Link: {selectedNode.designSpecs?.oemManual}</p>
+          <p className="text-[11px] text-slate-400 font-mono">
+            Document Link: {selectedNode.designSpecs?.oemManual}
+          </p>
         </div>
       )}
 
@@ -50,8 +84,8 @@ export const TagEntityInspector: React.FC = () => {
           Extracted Plant Entities ({sampleExtractedEntities.length})
         </div>
 
-        {sampleExtractedEntities.map((item) => (
-          <div 
+        {sampleExtractedEntities.map(item => (
+          <div
             key={item.tag}
             className={`p-3 rounded-lg border text-xs transition-all ${
               selectedNode?.designSpecs?.tag === item.tag

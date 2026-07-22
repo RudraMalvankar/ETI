@@ -22,7 +22,7 @@ export const IncidentHistoryPage: React.FC = () => {
       runbook_history: [{ title: 'Isolate V-202' }],
       technician_feedback: ['Valve handwheel stuck'],
       outcome: 'Resolved with Pneumatic Bypass',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     },
     {
       incident_id: '955d8046-60a1-49fd-ab55-698e769a9306',
@@ -34,22 +34,22 @@ export const IncidentHistoryPage: React.FC = () => {
       runbook_history: [{ title: 'Seal Leak Containment' }],
       technician_feedback: ['Nominal seal replaced'],
       outcome: 'Resolved',
-      timestamp: new Date(Date.now() - 86400000).toISOString()
-    }
+      timestamp: new Date(Date.now() - 86400000).toISOString(),
+    },
   ]);
 
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     getIncidents()
-      .then((data) => {
+      .then(data => {
         if (data && data.length > 0) setIncidents(data);
       })
       .catch(() => {});
   }, []);
 
   const filteredIncidents = incidents.filter(
-    (inc) =>
+    inc =>
       inc.failed_asset.toLowerCase().includes(searchQuery.toLowerCase()) ||
       inc.failure_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
       inc.outcome.toLowerCase().includes(searchQuery.toLowerCase())
@@ -58,27 +58,35 @@ export const IncidentHistoryPage: React.FC = () => {
   const columns: Column<IncidentMemory>[] = [
     {
       header: 'Incident ID',
-      accessor: (inc) => <span className="font-mono text-xs font-bold text-blue-400">{inc.incident_id.slice(0, 8)}...</span>
+      accessor: inc => (
+        <span className="font-mono text-xs font-bold text-blue-400">
+          {inc.incident_id.slice(0, 8)}...
+        </span>
+      ),
     },
     {
       header: 'Target Asset',
-      accessor: (inc) => <span className="font-bold text-white">{inc.failed_asset}</span>
+      accessor: inc => <span className="font-bold text-white">{inc.failed_asset}</span>,
     },
     {
       header: 'Failure Mode',
-      accessor: (inc) => <StatusBadge status={inc.failure_type} />
+      accessor: inc => <StatusBadge status={inc.failure_type} />,
     },
     {
       header: 'Final Outcome',
-      accessor: (inc) => <span className="font-semibold text-emerald-400">{inc.outcome}</span>
+      accessor: inc => <span className="font-semibold text-emerald-400">{inc.outcome}</span>,
     },
     {
       header: 'Logged Date',
-      accessor: (inc) => <span className="font-mono text-xs text-slate-400">{new Date(inc.timestamp).toLocaleString()}</span>
+      accessor: inc => (
+        <span className="font-mono text-xs text-slate-400">
+          {new Date(inc.timestamp).toLocaleString()}
+        </span>
+      ),
     },
     {
       header: 'Action',
-      accessor: (inc) => (
+      accessor: inc => (
         <button
           onClick={() => {
             setCurrentMemory(inc);
@@ -89,8 +97,8 @@ export const IncidentHistoryPage: React.FC = () => {
           <Eye className="w-3.5 h-3.5" />
           <span>Restore Context</span>
         </button>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -101,14 +109,21 @@ export const IncidentHistoryPage: React.FC = () => {
         icon={History}
       />
 
-      <SectionCard title="All Recorded Incidents" subtitle="Click any row to restore incident context and compliance report">
+      <SectionCard
+        title="All Recorded Incidents"
+        subtitle="Click any row to restore incident context and compliance report"
+      >
         <div className="mb-4">
-          <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Filter incidents by asset, failure type, or outcome..." />
+          <SearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Filter incidents by asset, failure type, or outcome..."
+          />
         </div>
         <DataTable
           columns={columns}
           data={filteredIncidents}
-          onRowClick={(inc) => {
+          onRowClick={inc => {
             setCurrentMemory(inc);
             setActiveTab('compliance');
           }}

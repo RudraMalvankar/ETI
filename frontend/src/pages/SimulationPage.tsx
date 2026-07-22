@@ -9,7 +9,13 @@ import { useApexStore } from '../store/useApexStore';
 import { useNavigate } from 'react-router-dom';
 
 export const SimulationPage: React.FC = () => {
-  const { activeAssetId, setActiveAssetId, activeFailureType, setActiveFailureType, setCurrentSimulation } = useApexStore();
+  const {
+    activeAssetId,
+    setActiveAssetId,
+    activeFailureType,
+    setActiveFailureType,
+    setCurrentSimulation,
+  } = useApexStore();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -24,7 +30,7 @@ export const SimulationPage: React.FC = () => {
         estimated_downtime_hours: 1.2,
         estimated_cost_usd: 1800,
         risk_level: 'Low',
-        propagation_path: ['P-101', 'V-202']
+        propagation_path: ['P-101', 'V-202'],
       },
       {
         name: 'Deferred Maintenance',
@@ -32,7 +38,7 @@ export const SimulationPage: React.FC = () => {
         estimated_downtime_hours: 4.5,
         estimated_cost_usd: 8500,
         risk_level: 'Medium',
-        propagation_path: ['P-101', 'V-202', 'HE-303']
+        propagation_path: ['P-101', 'V-202', 'HE-303'],
       },
       {
         name: 'Run to Failure',
@@ -40,10 +46,10 @@ export const SimulationPage: React.FC = () => {
         estimated_downtime_hours: 18.0,
         estimated_cost_usd: 45000,
         risk_level: 'Critical',
-        propagation_path: ['P-101', 'V-202', 'HE-303', 'PL-505']
-      }
+        propagation_path: ['P-101', 'V-202', 'HE-303', 'PL-505'],
+      },
     ],
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 
   const handleRunSim = async () => {
@@ -60,7 +66,6 @@ export const SimulationPage: React.FC = () => {
       setIsLoading(false);
     }
   };
-
 
   const degradationData = [
     { day: 'Day 1', health: 100 },
@@ -84,25 +89,54 @@ export const SimulationPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="md:col-span-1 p-6 rounded-3xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] shadow-lg text-center flex flex-col items-center justify-center">
           <div className="w-24 h-24 rounded-full border-4 border-accent-red flex items-center justify-center mb-4 relative shadow-[0_0_20px_rgba(239,68,68,0.3)]">
-            <span className="text-3xl font-extrabold text-white">42<span className="text-sm">%</span></span>
+            <span className="text-3xl font-extrabold text-white">
+              42<span className="text-sm">%</span>
+            </span>
             <div className="absolute inset-0 rounded-full border-4 border-accent-red animate-ping opacity-20" />
           </div>
           <h3 className="text-sm font-bold text-[var(--text-primary)]">Remaining Useful Life</h3>
           <p className="text-xs text-[var(--text-secondary)] mt-1">Critical threshold reached</p>
         </div>
-        
+
         <div className="md:col-span-3">
-          <SectionCard title="Predictive Degradation Curve" subtitle="AI forecast based on current telemetry">
+          <SectionCard
+            title="Predictive Degradation Curve"
+            subtitle="AI forecast based on current telemetry"
+          >
             <div className="h-[180px] w-full pt-4">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={degradationData}>
-                  <XAxis dataKey="day" stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} domain={[0, 100]} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#0B0F17', borderColor: '#1E293B', borderRadius: '12px', fontSize: '12px' }} 
+                  <XAxis
+                    dataKey="day"
+                    stroke="#64748b"
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    stroke="#64748b"
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
+                    domain={[0, 100]}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#0B0F17',
+                      borderColor: '#1E293B',
+                      borderRadius: '12px',
+                      fontSize: '12px',
+                    }}
                     itemStyle={{ color: '#0EA5E9' }}
                   />
-                  <Line type="monotone" dataKey="health" stroke="#0EA5E9" strokeWidth={3} dot={{ r: 4, fill: '#0EA5E9' }} activeDot={{ r: 6, fill: '#fff' }} />
+                  <Line
+                    type="monotone"
+                    dataKey="health"
+                    stroke="#0EA5E9"
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: '#0EA5E9' }}
+                    activeDot={{ r: 6, fill: '#fff' }}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -111,13 +145,18 @@ export const SimulationPage: React.FC = () => {
       </div>
 
       {/* Control Panel */}
-      <SectionCard title="Shadow Simulation Parameters" subtitle="Configure Monte Carlo risk scenarios">
+      <SectionCard
+        title="Shadow Simulation Parameters"
+        subtitle="Configure Monte Carlo risk scenarios"
+      >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-2">Target Asset ID</label>
+            <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-2">
+              Target Asset ID
+            </label>
             <select
               value={activeAssetId}
-              onChange={(e) => setActiveAssetId(e.target.value)}
+              onChange={e => setActiveAssetId(e.target.value)}
               className="w-full p-3 bg-[var(--bg-primary)] text-white text-xs rounded-xl border border-[var(--glass-border)] focus:outline-none focus:border-brand-500 font-mono transition-colors"
             >
               <option value="P-101">P-101 (Centrifugal Pump)</option>
@@ -127,10 +166,12 @@ export const SimulationPage: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-2">Failure Mode Type</label>
+            <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-2">
+              Failure Mode Type
+            </label>
             <select
               value={activeFailureType}
-              onChange={(e) => setActiveFailureType(e.target.value)}
+              onChange={e => setActiveFailureType(e.target.value)}
               className="w-full p-3 bg-[var(--bg-primary)] text-white text-xs rounded-xl border border-[var(--glass-border)] focus:outline-none focus:border-brand-500 font-mono transition-colors"
             >
               <option value="bearing_overheat">Bearing Overheat</option>
@@ -145,7 +186,11 @@ export const SimulationPage: React.FC = () => {
               disabled={isLoading}
               className="w-full inline-flex items-center justify-center gap-2 p-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold shadow-[0_0_15px_rgba(14,165,233,0.3)] transition disabled:opacity-50"
             >
-              {isLoading ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
+              {isLoading ? (
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Play className="w-4 h-4 fill-current" />
+              )}
               <span>Run Shadow Simulation</span>
             </button>
           </div>
@@ -161,37 +206,54 @@ export const SimulationPage: React.FC = () => {
               idx === 0
                 ? 'bg-gradient-to-b from-accent-emerald/10 to-transparent border-accent-emerald/30 shadow-[0_4px_20px_rgba(16,185,129,0.1)]'
                 : idx === 1
-                ? 'bg-gradient-to-b from-accent-amber/10 to-transparent border-accent-amber/30 shadow-[0_4px_20px_rgba(245,158,11,0.1)]'
-                : 'bg-gradient-to-b from-accent-red/10 to-transparent border-accent-red/30 shadow-[0_4px_20px_rgba(239,68,68,0.1)]'
+                  ? 'bg-gradient-to-b from-accent-amber/10 to-transparent border-accent-amber/30 shadow-[0_4px_20px_rgba(245,158,11,0.1)]'
+                  : 'bg-gradient-to-b from-accent-red/10 to-transparent border-accent-red/30 shadow-[0_4px_20px_rgba(239,68,68,0.1)]'
             }`}
           >
             <div className="flex justify-between items-center mb-5">
               <span className="text-sm font-bold text-white tracking-wide">{sc.name}</span>
-              <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${
-                idx === 0 ? 'bg-accent-emerald/20 text-accent-emerald border-accent-emerald/30' :
-                idx === 1 ? 'bg-accent-amber/20 text-accent-amber border-accent-amber/30' :
-                'bg-accent-red/20 text-accent-red border-accent-red/30'
-              }`}>
+              <span
+                className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${
+                  idx === 0
+                    ? 'bg-accent-emerald/20 text-accent-emerald border-accent-emerald/30'
+                    : idx === 1
+                      ? 'bg-accent-amber/20 text-accent-amber border-accent-amber/30'
+                      : 'bg-accent-red/20 text-accent-red border-accent-red/30'
+                }`}
+              >
                 {sc.risk_level} Risk
               </span>
             </div>
 
             <div className="space-y-3 text-xs">
               <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
-                <span className="text-[var(--text-secondary)] flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-brand-400" /> Est. Downtime</span>
-                <span className="font-mono font-bold text-white">{sc.estimated_downtime_hours} hrs</span>
+                <span className="text-[var(--text-secondary)] flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-brand-400" /> Est. Downtime
+                </span>
+                <span className="font-mono font-bold text-white">
+                  {sc.estimated_downtime_hours} hrs
+                </span>
               </div>
 
               <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
-                <span className="text-[var(--text-secondary)] flex items-center gap-1.5"><TrendingDown className="w-3.5 h-3.5 text-accent-emerald" /> Financial Impact</span>
-                <span className="font-mono font-bold text-white">${sc.estimated_cost_usd.toLocaleString()}</span>
+                <span className="text-[var(--text-secondary)] flex items-center gap-1.5">
+                  <TrendingDown className="w-3.5 h-3.5 text-accent-emerald" /> Financial Impact
+                </span>
+                <span className="font-mono font-bold text-white">
+                  ${sc.estimated_cost_usd.toLocaleString()}
+                </span>
               </div>
 
               <div className="p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
-                <span className="text-[var(--text-secondary)] block mb-2">Failure Cascade Path</span>
+                <span className="text-[var(--text-secondary)] block mb-2">
+                  Failure Cascade Path
+                </span>
                 <div className="flex flex-wrap gap-1.5">
                   {sc.propagation_path.map((node, nIdx) => (
-                    <span key={nIdx} className="px-2 py-1 rounded bg-[var(--bg-secondary)] border border-[var(--glass-border)] text-[10px] font-mono text-[var(--text-secondary)]">
+                    <span
+                      key={nIdx}
+                      className="px-2 py-1 rounded bg-[var(--bg-secondary)] border border-[var(--glass-border)] text-[10px] font-mono text-[var(--text-secondary)]"
+                    >
                       {node}
                     </span>
                   ))}

@@ -73,7 +73,7 @@ def run_test():
     )
     rb = res.json()
 
-    print(f"\n4. Reviewing Regenerated Runbook...")
+    print("\n4. Reviewing Regenerated Runbook...")
     print(f"Runbook Status: {rb['status']}")
     print(f"Total Steps Now: {len(rb['steps'])}")
     for i, step in enumerate(rb["steps"]):

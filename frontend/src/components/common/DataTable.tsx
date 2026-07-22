@@ -13,7 +13,12 @@ interface DataTableProps<T> {
   emptyMessage?: string;
 }
 
-export function DataTable<T>({ columns, data, onRowClick, emptyMessage = 'No records available.' }: DataTableProps<T>) {
+export function DataTable<T>({
+  columns,
+  data,
+  onRowClick,
+  emptyMessage = 'No records available.',
+}: DataTableProps<T>) {
   if (!data || data.length === 0) {
     return (
       <div className="p-8 text-center text-xs text-slate-500 bg-slate-900/40 rounded-xl border border-slate-800">

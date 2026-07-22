@@ -10,7 +10,7 @@ interface ErrorStateProps {
 export const ErrorState: React.FC<ErrorStateProps> = ({
   title = 'Service Unavailable',
   message = 'An unexpected error occurred while communicating with backend APIs.',
-  onRetry
+  onRetry,
 }) => {
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center rounded-2xl bg-red-950/20 border border-red-500/20 backdrop-blur-md">

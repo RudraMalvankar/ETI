@@ -4,7 +4,6 @@ Tests: Search API
 Covers semantic search endpoint, RBAC, edge cases.
 """
 
-import pytest
 
 
 class TestSemanticSearch:

@@ -4,7 +4,6 @@ Tests: Audit API
 Covers audit log retrieval with RBAC enforcement.
 """
 
-import pytest
 
 
 class TestAuditLogs:

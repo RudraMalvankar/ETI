@@ -7,18 +7,18 @@ import {
   Runbook,
   IncidentMemory,
   ComplianceReport,
-  ExplanationResponse
+  ExplanationResponse,
 } from '../types/apex';
-import { 
-  PlantNode, 
-  PlantEdge, 
-  RunbookData, 
-  ComplianceStandard, 
-  MOCK_GRAPH_INITIAL, 
-  MOCK_GRAPH_REROUTED, 
-  MOCK_RUNBOOK_INITIAL, 
+import {
+  PlantNode,
+  PlantEdge,
+  RunbookData,
+  ComplianceStandard,
+  MOCK_GRAPH_INITIAL,
+  MOCK_GRAPH_REROUTED,
+  MOCK_RUNBOOK_INITIAL,
   MOCK_COMPLIANCE,
-  apexApi 
+  apexApi,
 } from '../services/api';
 
 export type BackendConnectionState = 'connected' | 'demo' | 'offline';
@@ -75,16 +75,16 @@ interface ApexState {
   isRerouted: boolean;
   viewMode: 'desktop' | 'rugged_mobile';
   selectedNode: PlantNode | null;
-  
+
   isCopilotOpen: boolean;
   isComplianceModalOpen: boolean;
   isTagInspectorOpen: boolean;
-  
+
   nodes: PlantNode[];
   edges: PlantEdge[];
   runbook: RunbookData;
   complianceStandards: ComplianceStandard[];
-  
+
   triggerAnomaly: () => void;
   resetPlantState: () => void;
   setViewMode: (mode: 'desktop' | 'rugged_mobile') => void;
@@ -92,74 +92,74 @@ interface ApexState {
   toggleCopilot: (open?: boolean) => void;
   toggleComplianceModal: (open?: boolean) => void;
   toggleTagInspector: (open?: boolean) => void;
-  
+
   toggleStepCompletion: (stepId: string) => void;
   toggleLotoStatus: (stepId: string) => void;
   markStepFailedAndReroute: (stepId: string) => Promise<void>;
 }
 
-export const useApexStore = create<ApexState>((set) => ({
+export const useApexStore = create<ApexState>(set => ({
   // Legacy Store State
   activeTab: 'dashboard',
-  setActiveTab: (tab) => set({ activeTab: tab }),
+  setActiveTab: tab => set({ activeTab: tab }),
 
   isDarkMode: true,
-  toggleTheme: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
+  toggleTheme: () => set(state => ({ isDarkMode: !state.isDarkMode })),
 
   connectionState: 'connected',
-  setConnectionState: (connectionState) => set({ connectionState }),
+  setConnectionState: connectionState => set({ connectionState }),
   apiBaseUrl: API_BASE_URL,
   confidenceThreshold: 85,
-  setConfidenceThreshold: (confidenceThreshold) => set({ confidenceThreshold }),
+  setConfidenceThreshold: confidenceThreshold => set({ confidenceThreshold }),
 
   globalQuery: '',
-  setGlobalQuery: (globalQuery) => set({ globalQuery }),
+  setGlobalQuery: globalQuery => set({ globalQuery }),
 
   activeDocument: null,
-  setActiveDocument: (activeDocument) => set({ activeDocument }),
+  setActiveDocument: activeDocument => set({ activeDocument }),
 
   activeAssetId: 'P-101',
-  setActiveAssetId: (activeAssetId) => set({ activeAssetId }),
+  setActiveAssetId: activeAssetId => set({ activeAssetId }),
 
   activeFailureType: 'bearing_overheat',
-  setActiveFailureType: (activeFailureType) => set({ activeFailureType }),
+  setActiveFailureType: activeFailureType => set({ activeFailureType }),
 
   currentSimulation: null,
-  setCurrentSimulation: (currentSimulation) => set({ currentSimulation }),
+  setCurrentSimulation: currentSimulation => set({ currentSimulation }),
 
   currentDecision: null,
-  setCurrentDecision: (currentDecision) => set({ currentDecision }),
+  setCurrentDecision: currentDecision => set({ currentDecision }),
 
   currentRunbook: null,
-  setCurrentRunbook: (currentRunbook) => set({ currentRunbook }),
+  setCurrentRunbook: currentRunbook => set({ currentRunbook }),
 
   currentMemory: null,
-  setCurrentMemory: (currentMemory) => set({ currentMemory }),
+  setCurrentMemory: currentMemory => set({ currentMemory }),
 
   currentExplanation: null,
-  setCurrentExplanation: (currentExplanation) => set({ currentExplanation }),
+  setCurrentExplanation: currentExplanation => set({ currentExplanation }),
 
   currentReport: null,
-  setCurrentReport: (currentReport) => set({ currentReport }),
+  setCurrentReport: currentReport => set({ currentReport }),
 
   incidentsList: [],
-  setIncidentsList: (incidentsList) => set({ incidentsList }),
+  setIncidentsList: incidentsList => set({ incidentsList }),
 
   // New Decision Engine State
   isAnomalyActive: true,
   isRerouted: false,
   viewMode: 'desktop',
   selectedNode: MOCK_GRAPH_INITIAL.nodes[0],
-  
+
   isCopilotOpen: false,
   isComplianceModalOpen: false,
   isTagInspectorOpen: false,
-  
+
   nodes: MOCK_GRAPH_INITIAL.nodes,
   edges: MOCK_GRAPH_INITIAL.edges,
   runbook: MOCK_RUNBOOK_INITIAL,
   complianceStandards: MOCK_COMPLIANCE,
-  
+
   triggerAnomaly: () => {
     set({
       isAnomalyActive: true,
@@ -167,10 +167,10 @@ export const useApexStore = create<ApexState>((set) => ({
       nodes: MOCK_GRAPH_INITIAL.nodes,
       edges: MOCK_GRAPH_INITIAL.edges,
       runbook: MOCK_RUNBOOK_INITIAL,
-      selectedNode: MOCK_GRAPH_INITIAL.nodes[0]
+      selectedNode: MOCK_GRAPH_INITIAL.nodes[0],
     });
   },
-  
+
   resetPlantState: () => {
     const nominalNodes = MOCK_GRAPH_INITIAL.nodes.map(n => ({
       ...n,
@@ -178,49 +178,55 @@ export const useApexStore = create<ApexState>((set) => ({
       telemetry: {
         pressure: n.type === 'reactor' ? '11.8 Bar' : undefined,
         temperature: n.type === 'reactor' ? '210°C' : undefined,
-        flow: n.type === 'pump' ? '400 L/min' : 'Nominal'
-      }
+        flow: n.type === 'pump' ? '400 L/min' : 'Nominal',
+      },
     }));
     const nominalEdges = MOCK_GRAPH_INITIAL.edges.map(e => ({
       ...e,
-      status: 'nominal' as const
+      status: 'nominal' as const,
     }));
-    
+
     set({
       isAnomalyActive: false,
       isRerouted: false,
       nodes: nominalNodes,
       edges: nominalEdges,
-      selectedNode: nominalNodes[0]
+      selectedNode: nominalNodes[0],
     });
   },
-  
-  setViewMode: (viewMode) => set({ viewMode }),
-  setSelectedNode: (selectedNode) => set({ selectedNode, isTagInspectorOpen: true }),
-  
-  toggleCopilot: (open) => set((state) => ({ isCopilotOpen: open !== undefined ? open : !state.isCopilotOpen })),
-  toggleComplianceModal: (open) => set((state) => ({ isComplianceModalOpen: open !== undefined ? open : !state.isComplianceModalOpen })),
-  toggleTagInspector: (open) => set((state) => ({ isTagInspectorOpen: open !== undefined ? open : !state.isTagInspectorOpen })),
-  
-  toggleStepCompletion: (stepId) => {
-    set((state) => {
-      const updatedSteps = state.runbook.steps.map(step => 
+
+  setViewMode: viewMode => set({ viewMode }),
+  setSelectedNode: selectedNode => set({ selectedNode, isTagInspectorOpen: true }),
+
+  toggleCopilot: open =>
+    set(state => ({ isCopilotOpen: open !== undefined ? open : !state.isCopilotOpen })),
+  toggleComplianceModal: open =>
+    set(state => ({
+      isComplianceModalOpen: open !== undefined ? open : !state.isComplianceModalOpen,
+    })),
+  toggleTagInspector: open =>
+    set(state => ({ isTagInspectorOpen: open !== undefined ? open : !state.isTagInspectorOpen })),
+
+  toggleStepCompletion: stepId => {
+    set(state => {
+      const updatedSteps = state.runbook.steps.map(step =>
         step.id === stepId ? { ...step, isCompleted: !step.isCompleted } : step
       );
       return {
         runbook: {
           ...state.runbook,
-          steps: updatedSteps
-        }
+          steps: updatedSteps,
+        },
       };
     });
   },
-  
-  toggleLotoStatus: (stepId) => {
-    set((state) => {
+
+  toggleLotoStatus: stepId => {
+    set(state => {
       const updatedSteps = state.runbook.steps.map(step => {
         if (step.id === stepId) {
-          const nextStatus: 'pending' | 'verified' | 'skipped' = step.lotoStatus === 'pending' ? 'verified' : 'pending';
+          const nextStatus: 'pending' | 'verified' | 'skipped' =
+            step.lotoStatus === 'pending' ? 'verified' : 'pending';
           return { ...step, lotoStatus: nextStatus };
         }
         return step;
@@ -228,12 +234,12 @@ export const useApexStore = create<ApexState>((set) => ({
       return {
         runbook: {
           ...state.runbook,
-          steps: updatedSteps
-        }
+          steps: updatedSteps,
+        },
       };
     });
   },
-  
+
   markStepFailedAndReroute: async () => {
     const reroutedRunbook = await apexApi.triggerStepReroute();
     set({
@@ -241,7 +247,7 @@ export const useApexStore = create<ApexState>((set) => ({
       nodes: MOCK_GRAPH_REROUTED.nodes,
       edges: MOCK_GRAPH_REROUTED.edges,
       runbook: reroutedRunbook,
-      selectedNode: MOCK_GRAPH_REROUTED.nodes[2]
+      selectedNode: MOCK_GRAPH_REROUTED.nodes[2],
     });
-  }
+  },
 }));
