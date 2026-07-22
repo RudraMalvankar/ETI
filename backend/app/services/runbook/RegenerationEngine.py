@@ -27,9 +27,7 @@ class RegenerationEngine:
                 cited_docs = sorted(
                     {citation.get("document_id", "") for citation in failed_step.document_citations}
                 )
-                evidence_summary = (
-                    f" Re-check cited procedures and evidence from: {', '.join(doc for doc in cited_docs if doc)}."
-                )
+                evidence_summary = f" Re-check cited procedures and evidence from: {', '.join(doc for doc in cited_docs if doc)}."
 
             new_steps.append(
                 RunbookStep(

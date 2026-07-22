@@ -143,13 +143,22 @@ def run_validation_suite():
     headers = {"Authorization": f"Bearer {token}"}
 
     # Create Admin & Auditor tokens for RBAC endpoints
-    reg_admin = client.post("/api/v1/auth/register", json={"username": "s7_admin_user", "password": "Adm1n2026!Pass"})
-    login_admin = client.post("/api/v1/auth/login", json={"username": "s7_admin_user", "password": "Adm1n2026!Pass"})
+    reg_admin = client.post(
+        "/api/v1/auth/register", json={"username": "s7_admin_user", "password": "Adm1n2026!Pass"}
+    )
+    login_admin = client.post(
+        "/api/v1/auth/login", json={"username": "s7_admin_user", "password": "Adm1n2026!Pass"}
+    )
     admin_token = login_admin.json()["access_token"]
     admin_headers = {"Authorization": f"Bearer {admin_token}"}
 
-    reg_auditor = client.post("/api/v1/auth/register", json={"username": "s7_auditor_user", "password": "Aud1tor2026!Pass"})
-    login_auditor = client.post("/api/v1/auth/login", json={"username": "s7_auditor_user", "password": "Aud1tor2026!Pass"})
+    reg_auditor = client.post(
+        "/api/v1/auth/register",
+        json={"username": "s7_auditor_user", "password": "Aud1tor2026!Pass"},
+    )
+    login_auditor = client.post(
+        "/api/v1/auth/login", json={"username": "s7_auditor_user", "password": "Aud1tor2026!Pass"}
+    )
     auditor_token = login_auditor.json()["access_token"]
     auditor_headers = {"Authorization": f"Bearer {auditor_token}"}
 
@@ -169,11 +178,24 @@ def run_validation_suite():
     # 2. Build Graph Topology using Admin Headers
     graph_payload = {
         "nodes": [
-            {"node_id": s["asset"], "asset_id": s["asset"], "asset_type": "IndustrialAsset", "status": "operational", "criticality": "high"}
+            {
+                "node_id": s["asset"],
+                "asset_id": s["asset"],
+                "asset_type": "IndustrialAsset",
+                "status": "operational",
+                "criticality": "high",
+            }
             for s in SCENARIOS
         ],
         "edges": [
-            {"edge_id": f"e_{i}", "source": SCENARIOS[i]["asset"], "target": SCENARIOS[(i + 1) % 10]["asset"], "relationship": "feeds", "weight": 1.0, "risk_factor": 0.8}
+            {
+                "edge_id": f"e_{i}",
+                "source": SCENARIOS[i]["asset"],
+                "target": SCENARIOS[(i + 1) % 10]["asset"],
+                "relationship": "feeds",
+                "weight": 1.0,
+                "risk_factor": 0.8,
+            }
             for i in range(9)
         ],
     }
@@ -199,12 +221,16 @@ def run_validation_suite():
                 scenario_result["steps_passed"] += 1
 
             # Step 2: RAG Search
-            search_res = client.post("/api/v1/search/", json={"query": sc["query"], "top_k": 3}, headers=headers)
+            search_res = client.post(
+                "/api/v1/search/", json={"query": sc["query"], "top_k": 3}, headers=headers
+            )
             if search_res.status_code == 200 and "results" in search_res.json():
                 scenario_result["steps_passed"] += 1
 
             # Step 3: Graph Blast Radius
-            blast_res = client.post("/api/v1/graph/blast-radius", json={"failed_asset": sc["asset"]}, headers=headers)
+            blast_res = client.post(
+                "/api/v1/graph/blast-radius", json={"failed_asset": sc["asset"]}, headers=headers
+            )
             if blast_res.status_code in (200, 404):
                 scenario_result["steps_passed"] += 1
 
@@ -229,14 +255,21 @@ def run_validation_suite():
             # Step 5: AI Decision Recommendation
             dec_res = client.post(
                 "/api/v1/decision/recommend",
-                json={"failed_asset": sc["asset"], "failure_type": sc["type"], "simulation_id": sim_id},
+                json={
+                    "failed_asset": sc["asset"],
+                    "failure_type": sc["type"],
+                    "simulation_id": sim_id,
+                },
                 headers=headers,
             )
             if dec_res.status_code == 200:
                 dec_data = dec_res.json()
                 scenario_result["steps_passed"] += 1
             else:
-                dec_data = {"recommended_strategy": f"Isolate {sc['asset']}", "confidence_score": 92.5}
+                dec_data = {
+                    "recommended_strategy": f"Isolate {sc['asset']}",
+                    "confidence_score": 92.5,
+                }
 
             # Step 6: Explainability Trace
             exp_res = client.post(
@@ -267,7 +300,10 @@ def run_validation_suite():
                 step_id = rb_data["steps"][0]["step_id"]
                 client.put(
                     f"/api/v1/runbook/{rb_id}/step/{step_id}",
-                    json={"status": "completed", "feedback_notes": f"Step executed for {sc['asset']}"},
+                    json={
+                        "status": "completed",
+                        "feedback_notes": f"Step executed for {sc['asset']}",
+                    },
                     headers=headers,
                 )
             else:
@@ -292,7 +328,9 @@ def run_validation_suite():
                 inc_id = f"inc_mock_{sc['id']}"
 
             # Step 9: Compliance Report & PDF Export
-            comp_res = client.post("/api/v1/compliance/report", json={"incident_id": inc_id}, headers=auditor_headers)
+            comp_res = client.post(
+                "/api/v1/compliance/report", json={"incident_id": inc_id}, headers=auditor_headers
+            )
             if comp_res.status_code == 201:
                 scenario_result["steps_passed"] += 1
 
@@ -308,7 +346,9 @@ def run_validation_suite():
             scenario_result["logs"].append(str(e))
 
         results.append(scenario_result)
-        print(f"   -> Result: {scenario_result['status']} ({scenario_result['steps_passed']}/10 steps succeeded)")
+        print(
+            f"   -> Result: {scenario_result['status']} ({scenario_result['steps_passed']}/10 steps succeeded)"
+        )
 
     print("\n" + "=" * 80)
     print("SUMMARY RESULTS:")
