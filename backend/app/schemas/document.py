@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
-from datetime import datetime, timezone
 import uuid
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
+
 
 class DocumentChunk(BaseModel):
     chunk_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -13,6 +15,7 @@ class DocumentChunk(BaseModel):
     text: str
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
+
 class IngestedDocument(BaseModel):
     document_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     filename: str
@@ -21,6 +24,7 @@ class IngestedDocument(BaseModel):
     chunks: List[DocumentChunk] = Field(default_factory=list)
     status: str = "processing"
     error_message: Optional[str] = None
+
 
 class DocumentResponse(BaseModel):
     document_id: str

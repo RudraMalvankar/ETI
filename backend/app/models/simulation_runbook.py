@@ -1,6 +1,9 @@
-from sqlalchemy import Column, String, Integer, JSON, DateTime, Boolean, ForeignKey
 from datetime import datetime, timezone
+
+from sqlalchemy import JSON, Boolean, Column, DateTime, String
+
 from app.database.session import Base
+
 
 class RunbookModel(Base):
     __tablename__ = "runbooks"
@@ -13,6 +16,7 @@ class RunbookModel(Base):
     is_regenerated = Column(Boolean, default=False)
     update_history = Column(JSON, default=list)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
 
 class SimulationModel(Base):
     __tablename__ = "simulations"

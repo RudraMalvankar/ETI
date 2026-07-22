@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
 from typing import List
 
+
 class AIProvider(ABC):
     """
     Abstract Base Class representing an AI Provider.
     Ensures standard generation and embedding interfaces across Gemini, NVIDIA NIM, and Mock providers.
     """
+
     @abstractmethod
     def complete(self, prompt: str, system_prompt: str = "") -> str:
         """

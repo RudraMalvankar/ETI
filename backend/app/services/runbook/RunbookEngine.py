@@ -1,16 +1,19 @@
-from typing import Dict
-from app.schemas.runbook import Runbook, RunbookRequest, FeedbackRequest
-from app.services.runbook.RunbookGenerator import RunbookGenerator
+from typing import Optional
+
+from app.database.session import get_db_context
+from app.models.simulation_runbook import RunbookModel
+from app.schemas.runbook import FeedbackRequest, Runbook, RunbookRequest
 from app.services.runbook.FeedbackProcessor import FeedbackProcessor
 from app.services.runbook.RegenerationEngine import RegenerationEngine
+from app.services.runbook.RunbookGenerator import RunbookGenerator
 from app.services.runbook.RunbookValidator import RunbookValidator
-from app.database.session import SessionLocal
-from app.models.simulation_runbook import RunbookModel
+
 
 class RunbookEngine:
     """
     Orchestrates the Dynamic Runbook Engine and holds state in DB.
     """
+
     _stats = {"total": 0, "active": 0, "completed": 0, "regenerations": 0}
 
     def __init__(self):
@@ -22,9 +25,7 @@ class RunbookEngine:
     def generate(self, request: RunbookRequest) -> Runbook:
         rb = self.generator.generate(request)
         if self.validator.validate(rb):
-            db = SessionLocal()
-            try:
-                # Map schema Pydantic objects inside steps list back to raw dictionary
+            with get_db_context() as db:
                 steps_dict = [s.model_dump() if hasattr(s, "model_dump") else s for s in rb.steps]
                 db_rb = RunbookModel(
                     runbook_id=rb.runbook_id,
@@ -33,97 +34,82 @@ class RunbookEngine:
                     steps=steps_dict,
                     status=rb.status,
                     is_regenerated=rb.is_regenerated,
-                    update_history=rb.update_history
+                    update_history=rb.update_history,
                 )
                 db.add(db_rb)
-                db.commit()
-            finally:
-                db.close()
 
             RunbookEngine._stats["total"] += 1
             RunbookEngine._stats["active"] += 1
             return rb
         raise ValueError("Generated runbook is invalid.")
 
-    def get_runbook(self, rb_id: str) -> Runbook:
-        db = SessionLocal()
-        try:
+    def get_runbook(self, rb_id: str) -> Optional[Runbook]:
+        with get_db_context() as db:
             row = db.query(RunbookModel).filter(RunbookModel.runbook_id == rb_id).first()
             if not row:
                 return None
             from app.schemas.runbook import RunbookStep
+
             steps_list = [RunbookStep(**s) for s in row.steps] if row.steps else []
+            total_dur = sum(s.estimated_duration for s in steps_list)
             return Runbook(
                 runbook_id=row.runbook_id,
                 failed_asset=row.failed_asset,
                 failure_type=row.failure_type,
                 steps=steps_list,
+                affected_assets=[],
+                total_estimated_duration=total_dur,
                 status=row.status,
                 is_regenerated=row.is_regenerated,
-                update_history=row.update_history or []
+                update_history=row.update_history or [],
             )
-        finally:
-            db.close()
 
     def process_feedback(self, rb_id: str, step_id: str, request: FeedbackRequest) -> Runbook:
         rb = self.get_runbook(rb_id)
         if not rb:
             raise ValueError("Runbook not found.")
-            
+
         failed = self.feedback.process(rb, step_id, request)
-        
-        # Save changed status back to DB
-        db = SessionLocal()
-        try:
+
+        with get_db_context() as db:
             db_row = db.query(RunbookModel).filter(RunbookModel.runbook_id == rb_id).first()
             if db_row:
                 steps_dict = [s.model_dump() if hasattr(s, "model_dump") else s for s in rb.steps]
                 db_row.steps = steps_dict
                 db_row.status = rb.status
                 db_row.update_history = rb.update_history
-                db.commit()
-        finally:
-            db.close()
 
         if failed:
             return self.regenerate(rb_id)
-            
+
         # Check completion
         if all(s.status == "completed" for s in rb.steps):
             rb.status = "completed"
-            
-            db = SessionLocal()
-            try:
+
+            with get_db_context() as db:
                 db_row = db.query(RunbookModel).filter(RunbookModel.runbook_id == rb_id).first()
                 if db_row:
                     db_row.status = "completed"
-                    db.commit()
-            finally:
-                db.close()
 
             RunbookEngine._stats["active"] -= 1
             RunbookEngine._stats["completed"] += 1
-            
+
         return rb
 
     def regenerate(self, rb_id: str) -> Runbook:
         rb = self.get_runbook(rb_id)
         if not rb:
             raise ValueError("Runbook not found.")
-            
+
         rb = self.regenerator.regenerate(rb)
-        
-        db = SessionLocal()
-        try:
+
+        with get_db_context() as db:
             db_row = db.query(RunbookModel).filter(RunbookModel.runbook_id == rb_id).first()
             if db_row:
                 steps_dict = [s.model_dump() if hasattr(s, "model_dump") else s for s in rb.steps]
                 db_row.steps = steps_dict
                 db_row.is_regenerated = rb.is_regenerated
                 db_row.status = rb.status
-                db.commit()
-        finally:
-            db.close()
 
         RunbookEngine._stats["regenerations"] += 1
         return rb
@@ -133,6 +119,5 @@ class RunbookEngine:
             "total_runbooks": RunbookEngine._stats["total"],
             "active_runbooks": RunbookEngine._stats["active"],
             "completed_runbooks": RunbookEngine._stats["completed"],
-            "total_regenerations": RunbookEngine._stats["regenerations"]
+            "total_regenerations": RunbookEngine._stats["regenerations"],
         }
-

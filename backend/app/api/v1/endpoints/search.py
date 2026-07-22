@@ -1,12 +1,15 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+import time
+
+from fastapi import APIRouter, Depends, HTTPException
+
+from app.core.auth import RoleChecker
 from app.schemas.search import SearchRequest, SearchResponse
 from app.services.rag.vector_store import global_vector_store
-from app.core.auth import RoleChecker
-import time
 
 router = APIRouter()
 
 search_check = RoleChecker(allowed_roles=["Operator", "Engineer", "Auditor", "Admin"])
+
 
 @router.post("/", response_model=SearchResponse)
 def semantic_search(request: SearchRequest, current_user: dict = Depends(search_check)):
@@ -20,10 +23,10 @@ def semantic_search(request: SearchRequest, current_user: dict = Depends(search_
             query=request.query,
             top_k=request.top_k,
             asset_id=request.asset_id,
-            document_id=request.document_id
+            document_id=request.document_id,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
-        
+
     duration = int((time.time() - start) * 1000)
     return SearchResponse(results=results, query_time_ms=duration)

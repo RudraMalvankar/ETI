@@ -1,5 +1,7 @@
-from app.services.graph.GraphFactory import GraphFactory
 import networkx as nx
+
+from app.services.graph.GraphFactory import GraphFactory
+
 
 class GraphTraversal:
     def __init__(self):

@@ -1,13 +1,16 @@
+from typing import Any, Dict
+
 from app.schemas.explainability import ExplanationResponse
-from app.services.explainability.EvidenceFormatter import EvidenceFormatter
 from app.services.explainability.DecisionTraceBuilder import DecisionTraceBuilder
+from app.services.explainability.EvidenceFormatter import EvidenceFormatter
 from app.services.explainability.ReasoningFormatter import ReasoningFormatter
-from typing import Dict, Any
+
 
 class ExplanationEngine:
     """
     Synthesizes deterministic evidence into a traceable, explainable AI response (<200ms latency).
     """
+
     def __init__(self):
         self.evidence_fmt = EvidenceFormatter()
         self.trace_builder = DecisionTraceBuilder()
@@ -19,11 +22,11 @@ class ExplanationEngine:
         d_ev = self.evidence_fmt.format_document_evidence(context)
         trace = self.trace_builder.build_trace(context)
         summary = self.reason_fmt.format_summary(trace, g_ev, s_ev, d_ev)
-        
+
         return ExplanationResponse(
             decision_trace=trace,
             graph_evidence=g_ev,
             simulation_evidence=s_ev,
             document_evidence=d_ev,
-            reasoning_summary=summary
+            reasoning_summary=summary,
         )

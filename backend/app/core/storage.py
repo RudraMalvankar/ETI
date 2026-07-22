@@ -1,10 +1,11 @@
 import os
-import shutil
+
 
 class StorageManager:
     """
     Abstractions for local or cloud file systems storage (e.g. S3/MinIO).
     """
+
     def __init__(self):
         self.upload_dir = os.environ.get("STORAGE_DIR", "storage_uploads")
         if not os.path.exists(self.upload_dir):
@@ -23,5 +24,6 @@ class StorageManager:
             raise FileNotFoundError(f"Stored file not found: {filepath}")
         with open(filepath, "rb") as f:
             return f.read()
+
 
 global_storage_manager = StorageManager()

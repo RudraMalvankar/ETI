@@ -1,0 +1,80 @@
+version: 2
+
+updates:
+  # ── Python backend dependencies ──────────────────────────────────────────
+  - package-ecosystem: pip
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: UTC
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - backend
+      - security
+    assignees:
+      - apex-team
+    commit-message:
+      prefix: "deps(backend)"
+    groups:
+      fastapi-group:
+        patterns:
+          - "fastapi*"
+          - "starlette*"
+      sqlalchemy-group:
+        patterns:
+          - "sqlalchemy*"
+          - "alembic*"
+      ai-providers:
+        patterns:
+          - "google-generativeai*"
+          - "openai*"
+      security-group:
+        patterns:
+          - "python-jose*"
+          - "passlib*"
+          - "bcrypt*"
+
+  # ── Frontend dependencies ────────────────────────────────────────────────
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: UTC
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - frontend
+    commit-message:
+      prefix: "deps(frontend)"
+    groups:
+      react-group:
+        patterns:
+          - "react*"
+          - "@types/react*"
+      vite-group:
+        patterns:
+          - "vite*"
+          - "@vitejs/*"
+      testing-group:
+        patterns:
+          - "vitest*"
+          - "@testing-library/*"
+
+  # ── GitHub Actions ──────────────────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: UTC
+    labels:
+      - dependencies
+      - ci-cd
+    commit-message:
+      prefix: "ci"

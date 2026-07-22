@@ -1,13 +1,16 @@
-from typing import Dict, Any
+from typing import Any, Dict
+
 from app.services.memory.IncidentHistoryStore import global_incident_store
+
 
 class TrendAnalyzer:
     """
     Analyzes stored incidents to generate organizational trends and failure statistics.
     """
+
     def analyze_trends(self) -> Dict[str, Any]:
         incidents = global_incident_store.get_all()
-        
+
         total = len(incidents)
         if total == 0:
             return {
@@ -17,9 +20,9 @@ class TrendAnalyzer:
                 "failure_distribution": {},
                 "asset_vulnerability_ranking": {},
                 "resolution_rate": 100.0,
-                "message": "No historical data to analyze trends."
+                "message": "No historical data to analyze trends.",
             }
-            
+
         failure_types: Dict[str, int] = {}
         affected_assets: Dict[str, int] = {}
         outcomes: Dict[str, int] = {}
@@ -38,5 +41,5 @@ class TrendAnalyzer:
             "most_vulnerable_asset": max(affected_assets, key=affected_assets.get),
             "failure_distribution": failure_types,
             "asset_vulnerability_ranking": affected_assets,
-            "resolution_rate": resolution_rate
+            "resolution_rate": resolution_rate,
         }

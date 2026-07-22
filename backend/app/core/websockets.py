@@ -1,11 +1,14 @@
+from typing import List
+
 from fastapi import WebSocket
-from typing import List, Dict
+
 
 class ConnectionManager:
     """
     Manager class handling multiple incoming WebSocket client connections.
     Supports real-time telemetry / simulation progress updates streaming.
     """
+
     def __init__(self):
         self.active_connections: List[WebSocket] = []
 
@@ -20,12 +23,12 @@ class ConnectionManager:
         await websocket.send_text(message)
 
     async def broadcast(self, message: dict):
-        import json
         for connection in self.active_connections:
             try:
                 await connection.send_json(message)
             except Exception:
                 # Connection might be dead, handle cleanup gracefully
                 pass
+
 
 global_connection_manager = ConnectionManager()

@@ -1,35 +1,39 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
-from sqlalchemy.orm import Session
-from pydantic import BaseModel, Field
-from datetime import datetime, timezone, timedelta
 import uuid
-from app.database.session import get_db
-from app.models.models import UserModel
+from datetime import datetime, timedelta, timezone
+
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
+
 from app.core.auth import (
-    get_password_hash,
-    verify_password,
+    blacklist_token,
     create_access_token,
     create_refresh_token,
+    decode_access_token,
     get_current_user_payload,
-    blacklist_token,
+    get_password_hash,
     is_token_blacklisted,
-    decode_access_token
+    verify_password,
 )
 from app.core.rate_limiter import limiter
-
+from app.database.session import get_db
+from app.models.models import UserModel
 
 router = APIRouter()
 
 MAX_FAILED_ATTEMPTS = 5
 LOCKOUT_MINUTES = 15
 
+
 class UserRegister(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
     password: str = Field(..., min_length=6)
 
+
 class UserLogin(BaseModel):
     username: str
     password: str
+
 
 class Token(BaseModel):
     access_token: str
@@ -37,16 +41,20 @@ class Token(BaseModel):
     token_type: str
     role: str
 
+
 class UserProfile(BaseModel):
     username: str
     role: str
 
+
 class RefreshRequest(BaseModel):
     refresh_token: str
+
 
 class PasswordResetRequest(BaseModel):
     old_password: str
     new_password: str = Field(..., min_length=6)
+
 
 @router.post("/register", response_model=UserProfile, status_code=status.HTTP_201_CREATED)
 def register(request: UserRegister, db: Session = Depends(get_db)):
@@ -54,33 +62,29 @@ def register(request: UserRegister, db: Session = Depends(get_db)):
     existing_user = db.query(UserModel).filter(UserModel.username == request.username).first()
     if existing_user:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already registered"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Username already registered"
         )
-    
+
     hashed_pwd = get_password_hash(request.password)
     # SECURITY HARDENING: Self-registration strictly assigns default Operator role.
     # Prevents privilege escalation attacks via user payload manipulation.
-    user = UserModel(
-        username=request.username,
-        hashed_password=hashed_pwd,
-        role="Operator"
-    )
+    user = UserModel(username=request.username, hashed_password=hashed_pwd, role="Operator")
     db.add(user)
     db.commit()
     db.refresh(user)
     return UserProfile(username=user.username, role=user.role)
 
+
 @router.post("/login", response_model=Token)
 @limiter.limit("5/minute")
-def login(request: Request, response: Response, request_body: UserLogin, db: Session = Depends(get_db)):
+def login(
+    request: Request, response: Response, request_body: UserLogin, db: Session = Depends(get_db)
+):
     user = db.query(UserModel).filter(UserModel.username == request_body.username).first()
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid username or password"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password"
         )
-
 
     # Check for Account Lockout
     now = datetime.now(timezone.utc)
@@ -93,7 +97,7 @@ def login(request: Request, response: Response, request_body: UserLogin, db: Ses
             minutes_left = int((locked_until_utc - now).total_seconds() / 60) + 1
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Account is temporarily locked. Try again in {minutes_left} minutes."
+                detail=f"Account is temporarily locked. Try again in {minutes_left} minutes.",
             )
 
     if not verify_password(request_body.password, user.hashed_password):
@@ -104,12 +108,11 @@ def login(request: Request, response: Response, request_body: UserLogin, db: Ses
             db.commit()
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Account locked due to too many failed attempts. Locked for {LOCKOUT_MINUTES} minutes."
+                detail=f"Account locked due to too many failed attempts. Locked for {LOCKOUT_MINUTES} minutes.",
             )
         db.commit()
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid username or password"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password"
         )
 
     # Success: Reset failed attempts & generate sessions
@@ -119,10 +122,13 @@ def login(request: Request, response: Response, request_body: UserLogin, db: Ses
     user.current_session_id = session_id
     db.commit()
 
-
     # Generate Access + Refresh Token
-    access_token = create_access_token(data={"sub": user.username, "role": user.role, "sid": session_id})
-    refresh_token = create_refresh_token(data={"sub": user.username, "role": user.role, "sid": session_id})
+    access_token = create_access_token(
+        data={"sub": user.username, "role": user.role, "sid": session_id}
+    )
+    refresh_token = create_refresh_token(
+        data={"sub": user.username, "role": user.role, "sid": session_id}
+    )
 
     # Secure Cookie Support
     response.set_cookie(
@@ -131,18 +137,18 @@ def login(request: Request, response: Response, request_body: UserLogin, db: Ses
         httponly=True,
         secure=True,
         samesite="lax",
-        max_age=3600
+        max_age=3600,
     )
 
     return Token(
-        access_token=access_token,
-        refresh_token=refresh_token,
-        token_type="bearer",
-        role=user.role
+        access_token=access_token, refresh_token=refresh_token, token_type="bearer", role=user.role
     )
 
+
 @router.post("/refresh", response_model=Token)
-def refresh_token_rotation(request: RefreshRequest, response: Response, db: Session = Depends(get_db)):
+def refresh_token_rotation(
+    request: RefreshRequest, response: Response, db: Session = Depends(get_db)
+):
     """Token Rotation endpoint."""
     token = request.refresh_token
     if is_token_blacklisted(token):
@@ -166,8 +172,12 @@ def refresh_token_rotation(request: RefreshRequest, response: Response, db: Sess
     user.current_session_id = session_id
     db.commit()
 
-    new_access = create_access_token(data={"sub": user.username, "role": user.role, "sid": session_id})
-    new_refresh = create_refresh_token(data={"sub": user.username, "role": user.role, "sid": session_id})
+    new_access = create_access_token(
+        data={"sub": user.username, "role": user.role, "sid": session_id}
+    )
+    new_refresh = create_refresh_token(
+        data={"sub": user.username, "role": user.role, "sid": session_id}
+    )
 
     # Set new secure cookie
     response.set_cookie(
@@ -176,18 +186,20 @@ def refresh_token_rotation(request: RefreshRequest, response: Response, db: Sess
         httponly=True,
         secure=True,
         samesite="lax",
-        max_age=3600
+        max_age=3600,
     )
 
     return Token(
-        access_token=new_access,
-        refresh_token=new_refresh,
-        token_type="bearer",
-        role=user.role
+        access_token=new_access, refresh_token=new_refresh, token_type="bearer", role=user.role
     )
 
+
 @router.post("/logout")
-def logout(response: Response, payload: dict = Depends(get_current_user_payload), db: Session = Depends(get_db)):
+def logout(
+    response: Response,
+    payload: dict = Depends(get_current_user_payload),
+    db: Session = Depends(get_db),
+):
     """Logs out user, invalidates active JWT, and deletes secure cookies."""
     token = payload.get("token_str")
     if token:
@@ -203,11 +215,12 @@ def logout(response: Response, payload: dict = Depends(get_current_user_payload)
     response.delete_cookie("access_token")
     return {"message": "Logged out successfully"}
 
+
 @router.post("/reset-password")
 def reset_password(
     request: PasswordResetRequest,
     payload: dict = Depends(get_current_user_payload),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Authenticated Password Change workflow requiring verification of current password."""
     username = payload.get("sub")
@@ -217,14 +230,14 @@ def reset_password(
 
     if not verify_password(request.old_password, user.hashed_password):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect current password"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect current password"
         )
 
     user.hashed_password = get_password_hash(request.new_password)
     user.current_session_id = None  # Force active session revocation
     db.commit()
     return {"message": "Password updated successfully and all active sessions revoked"}
+
 
 @router.get("/me", response_model=UserProfile)
 def get_me(payload: dict = Depends(get_current_user_payload), db: Session = Depends(get_db)):
@@ -233,4 +246,3 @@ def get_me(payload: dict = Depends(get_current_user_payload), db: Session = Depe
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return UserProfile(username=user.username, role=user.role)
-

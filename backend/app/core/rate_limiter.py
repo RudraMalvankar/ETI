@@ -1,4 +1,5 @@
 import os
+
 from fastapi import Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -8,6 +9,7 @@ REDIS_URL = os.environ.get("REDIS_URL", "memory://")
 
 # Allow bypassing rate limiting during unit tests unless explicitly testing rate limits
 TESTING = os.environ.get("TESTING", "0") == "1"
+
 
 def custom_rate_key(request: Request) -> str:
     """
@@ -19,7 +21,9 @@ def custom_rate_key(request: Request) -> str:
         token = auth_header.split(" ")[1]
         try:
             from jose import jwt
-            from app.core.auth import JWT_SECRET, JWT_ALGORITHM
+
+            from app.core.auth import JWT_ALGORITHM, JWT_SECRET
+
             payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
             username = payload.get("sub")
             if username:
@@ -28,9 +32,5 @@ def custom_rate_key(request: Request) -> str:
             pass
     return f"ip:{get_remote_address(request)}"
 
-limiter = Limiter(
-    key_func=custom_rate_key,
-    storage_uri=REDIS_URL,
-    enabled=not TESTING
-)
 
+limiter = Limiter(key_func=custom_rate_key, storage_uri=REDIS_URL, enabled=not TESTING)

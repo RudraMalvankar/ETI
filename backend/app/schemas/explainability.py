@@ -1,5 +1,7 @@
+from typing import Any, Dict, List
+
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
+
 
 class ExtendedDecisionTrace(BaseModel):
     documents_used: List[Any] = Field(default_factory=list)
@@ -8,6 +10,7 @@ class ExtendedDecisionTrace(BaseModel):
     simulation_id: str = ""
     citations_verified: List[Any] = Field(default_factory=list)
     confidence: float = 0.0
+
 
 class ExplanationResponse(BaseModel):
     decision_trace: ExtendedDecisionTrace

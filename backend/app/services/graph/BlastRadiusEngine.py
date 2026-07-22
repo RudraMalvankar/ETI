@@ -1,7 +1,8 @@
-from app.services.graph.GraphFactory import GraphFactory
-from app.schemas.graph import BlastRadiusResponse
 import networkx as nx
-from typing import List
+
+from app.schemas.graph import BlastRadiusResponse
+from app.services.graph.GraphFactory import GraphFactory
+
 
 class BlastRadiusEngine:
     def __init__(self):
@@ -17,27 +18,27 @@ class BlastRadiusEngine:
         # Traverse downstream to find affected components up to max_depth
         affected_nodes = set()
         propagation_path = []
-        
+
         edges = nx.bfs_edges(self.graph, source=failed_node_id, depth_limit=max_depth)
-        
+
         distance = 0
         for u, v in edges:
             affected_nodes.add(v)
             edge_data = self.graph.get_edge_data(u, v)
-            rel = edge_data.get('relationship', 'CONNECTED_TO') if edge_data else 'CONNECTED_TO'
-            propagation_path.append({
-                "from": u,
-                "to": v,
-                "relationship": rel
-            })
-            distance += 1 # simplistic distance tracking for demo
+            rel = edge_data.get("relationship", "CONNECTED_TO") if edge_data else "CONNECTED_TO"
+            propagation_path.append({"from": u, "to": v, "relationship": rel})
+            distance += 1  # simplistic distance tracking for demo
 
-        severity = "CRITICAL" if len(affected_nodes) > 3 else "HIGH" if len(affected_nodes) > 1 else "MEDIUM"
-        
+        severity = (
+            "CRITICAL"
+            if len(affected_nodes) > 3
+            else "HIGH" if len(affected_nodes) > 1 else "MEDIUM"
+        )
+
         return BlastRadiusResponse(
             failed_asset=failed_node_id,
             affected_assets=list(affected_nodes),
             propagation_path=propagation_path,
             max_distance=max_depth,
-            severity=severity
+            severity=severity,
         )

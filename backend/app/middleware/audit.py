@@ -1,14 +1,17 @@
 from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
-from app.services.compliance.AuditLogService import AuditLogService
 from jose import jwt
-from app.core.auth import JWT_SECRET, JWT_ALGORITHM
+from starlette.middleware.base import BaseHTTPMiddleware
+
+from app.core.auth import JWT_ALGORITHM, JWT_SECRET
+from app.services.compliance.AuditLogService import AuditLogService
+
 
 class EnterpriseAuditMiddleware(BaseHTTPMiddleware):
     """
     Middleware that intercepts mutation requests (POST/PUT/DELETE)
     and logs actions, resources, users, and client IPs to the database.
     """
+
     async def dispatch(self, request: Request, call_next) -> Response:
         # 1. Determine user identity from headers
         username = "Anonymous"
@@ -30,13 +33,9 @@ class EnterpriseAuditMiddleware(BaseHTTPMiddleware):
 
         # 3. Log mutation operations (exclude GET/HEAD, focus on successful creations/modifications)
         if method in ["POST", "PUT", "DELETE"] and response.status_code in [200, 201, 204]:
-            action_map = {
-                "POST": "Create",
-                "PUT": "Update",
-                "DELETE": "Delete"
-            }
+            action_map = {"POST": "Create", "PUT": "Update", "DELETE": "Delete"}
             action = f"{action_map.get(method, 'Modify')} Resource"
-            
+
             # Refine action names based on path patterns
             if "auth/register" in path:
                 action = "User Creation"
@@ -61,7 +60,7 @@ class EnterpriseAuditMiddleware(BaseHTTPMiddleware):
                 action=action,
                 resource=path,
                 previous_value=None,
-                new_value={"status_code": response.status_code}
+                new_value={"status_code": response.status_code},
             )
 
         return response

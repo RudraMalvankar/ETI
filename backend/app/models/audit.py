@@ -1,6 +1,9 @@
-from sqlalchemy import Column, String, Integer, DateTime, JSON
 from datetime import datetime, timezone
+
+from sqlalchemy import JSON, Column, DateTime, Integer, String
+
 from app.database.session import Base
+
 
 class AuditLogModel(Base):
     __tablename__ = "audit_logs"

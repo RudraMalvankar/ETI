@@ -1,15 +1,18 @@
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import pytest
 from fastapi.testclient import TestClient
-from app.main import app
+
 from app.database.session import SessionLocal
+from app.main import app
 from app.models.audit import AuditLogModel
 from app.models.models import UserModel
 
 client = TestClient(app)
+
 
 @pytest.fixture(autouse=True)
 def clean_db():
@@ -19,7 +22,9 @@ def clean_db():
     db.commit()
     db.close()
 
+
 def test_enterprise_audit_log_capture():
+    from app.core.auth import create_access_token
     # 1. Trigger registration operation (mutation)
     reg_payload = {"username": "auditor_user", "password": "securepassword"}
     res = client.post("/api/v1/auth/register", json=reg_payload)
@@ -39,13 +44,12 @@ def test_enterprise_audit_log_capture():
         u = db.query(UserModel).filter(UserModel.username == "auditor_user").first()
         if u:
             u.role = "Auditor"
+            u.current_session_id = "test-session"
             db.commit()
     finally:
         db.close()
 
-    # 3. Retrieve auth token to request audit logs API
-    login_res = client.post("/api/v1/auth/login", json={"username": "auditor_user", "password": "securepassword"})
-    token = login_res.json()["access_token"]
+    token = create_access_token(data={"sub": "auditor_user", "role": "Auditor", "sid": "test-session"})
     headers = {"Authorization": f"Bearer {token}"}
 
     # 4. Fetch list of audit logs via API

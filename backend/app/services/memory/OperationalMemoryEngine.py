@@ -1,15 +1,18 @@
+from typing import Any, Dict, List
+
 from app.schemas.memory import IncidentMemory, StoreMemoryRequest
 from app.services.memory.IncidentHistoryStore import global_incident_store
+from app.services.memory.MemoryRetriever import MemoryRetriever
 from app.services.memory.MemorySerializer import MemorySerializer
 from app.services.memory.PatternMatcher import PatternMatcher
-from app.services.memory.MemoryRetriever import MemoryRetriever
 from app.services.memory.TrendAnalyzer import TrendAnalyzer
-from typing import Dict, Any, List
+
 
 class OperationalMemoryEngine:
     """
     Main orchestrator for Operational Memory Engine.
     """
+
     def __init__(self):
         self.serializer = MemorySerializer()
         self.matcher = PatternMatcher()

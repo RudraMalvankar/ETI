@@ -1,9 +1,11 @@
-from app.schemas.runbook import Runbook, FeedbackRequest
+from app.schemas.runbook import FeedbackRequest, Runbook
+
 
 class FeedbackProcessor:
     """
     Processes technician feedback for a specific step.
     """
+
     def process(self, runbook: Runbook, step_id: str, feedback: FeedbackRequest) -> bool:
         failed_step = False
         for step in runbook.steps:
@@ -11,7 +13,9 @@ class FeedbackProcessor:
                 step.status = feedback.status
                 if feedback.status == "failed":
                     failed_step = True
-                    runbook.update_history.append(f"Step {step_id} FAILED: {feedback.feedback_notes}")
+                    runbook.update_history.append(
+                        f"Step {step_id} FAILED: {feedback.feedback_notes}"
+                    )
                 else:
                     runbook.update_history.append(f"Step {step_id} completed.")
                 break

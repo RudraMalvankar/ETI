@@ -1,18 +1,20 @@
-from typing import List, Any
-from app.schemas.memory import IncidentMemory
-from app.database.session import SessionLocal
-from app.models.models import IncidentModel
 import datetime
+from typing import List, Optional
+
+from app.database.session import get_db_context
+from app.models.models import IncidentModel
+from app.schemas.memory import IncidentMemory
+
 
 class IncidentHistoryStore:
     """
     Production-ready persistent database store for incident history.
     Uses SQLAlchemy models to query and persist to PostgreSQL/SQLite.
     """
+
     @classmethod
     def save(cls, incident: IncidentMemory):
-        db = SessionLocal()
-        try:
+        with get_db_context() as db:
             # Parse ISO string back to datetime
             dt = datetime.datetime.fromisoformat(incident.timestamp)
             db_incident = IncidentModel(
@@ -26,17 +28,13 @@ class IncidentHistoryStore:
                 technician_feedback=incident.technician_feedback,
                 regenerated_runbooks=incident.regenerated_runbooks,
                 outcome=incident.outcome,
-                timestamp=dt
+                timestamp=dt,
             )
-            db.merge(db_incident) # merge will update or insert
-            db.commit()
-        finally:
-            db.close()
+            db.merge(db_incident)
 
     @classmethod
-    def get(cls, incident_id: str) -> IncidentMemory:
-        db = SessionLocal()
-        try:
+    def get(cls, incident_id: str) -> Optional[IncidentMemory]:
+        with get_db_context() as db:
             row = db.query(IncidentModel).filter(IncidentModel.incident_id == incident_id).first()
             if not row:
                 return None
@@ -51,15 +49,12 @@ class IncidentHistoryStore:
                 technician_feedback=row.technician_feedback or [],
                 regenerated_runbooks=row.regenerated_runbooks or [],
                 outcome=row.outcome,
-                timestamp=row.timestamp.isoformat()
+                timestamp=row.timestamp.isoformat(),
             )
-        finally:
-            db.close()
 
     @classmethod
     def get_all(cls) -> List[IncidentMemory]:
-        db = SessionLocal()
-        try:
+        with get_db_context() as db:
             rows = db.query(IncidentModel).order_by(IncidentModel.timestamp.desc()).all()
             return [
                 IncidentMemory(
@@ -73,12 +68,10 @@ class IncidentHistoryStore:
                     technician_feedback=row.technician_feedback or [],
                     regenerated_runbooks=row.regenerated_runbooks or [],
                     outcome=row.outcome,
-                    timestamp=row.timestamp.isoformat()
+                    timestamp=row.timestamp.isoformat(),
                 )
                 for row in rows
             ]
-        finally:
-            db.close()
+
 
 global_incident_store = IncidentHistoryStore()
-

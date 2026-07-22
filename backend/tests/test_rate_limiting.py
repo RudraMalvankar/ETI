@@ -1,28 +1,32 @@
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import pytest
 from fastapi.testclient import TestClient
-from app.main import app
+
 from app.database.session import SessionLocal
+from app.main import app
 from app.models.models import UserModel
 
 client = TestClient(app)
+
 
 @pytest.fixture(autouse=True)
 def setup_rate_limiting():
     # Force rate limiting active for this test suite
     from app.core.rate_limiter import limiter
+
     limiter.enabled = True
-    
+
     db = SessionLocal()
     db.query(UserModel).delete()
     db.commit()
     db.close()
-    
+
     yield
-    
+
     # Restore bypass defaults
     limiter.enabled = False
 

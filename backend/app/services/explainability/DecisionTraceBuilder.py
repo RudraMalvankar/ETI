@@ -1,10 +1,13 @@
+from typing import Any, Dict
+
 from app.schemas.explainability import ExtendedDecisionTrace
-from typing import Dict, Any, List
+
 
 class DecisionTraceBuilder:
     """
     Builds deterministic decision trace mapping back to exact engine outputs.
     """
+
     def build_trace(self, context: Dict[str, Any]) -> ExtendedDecisionTrace:
         docs = []
         raw_docs = context.get("documents", [])
@@ -16,7 +19,11 @@ class DecisionTraceBuilder:
                 docs.append(doc)
 
         scenarios = context.get("scenarios", [])
-        best_sc = scenarios[0] if (scenarios and isinstance(scenarios, list) and isinstance(scenarios[0], dict)) else {}
+        best_sc = (
+            scenarios[0]
+            if (scenarios and isinstance(scenarios, list) and isinstance(scenarios[0], dict))
+            else {}
+        )
 
         # Traversed nodes
         nodes = context.get("graph_nodes", [])
@@ -30,7 +37,9 @@ class DecisionTraceBuilder:
 
         sim_id = context.get("simulation_id", "sim-default")
         confidence = float(context.get("confidence", context.get("confidence_score", 90.0)))
-        selected_scenario = best_sc.get("name", context.get("selected_scenario", "Optimized Risk Isolation"))
+        selected_scenario = best_sc.get(
+            "name", context.get("selected_scenario", "Optimized Risk Isolation")
+        )
 
         return ExtendedDecisionTrace(
             documents_used=docs,
@@ -38,5 +47,5 @@ class DecisionTraceBuilder:
             selected_scenario=selected_scenario,
             simulation_id=sim_id,
             citations_verified=citations,
-            confidence=confidence
+            confidence=confidence,
         )

@@ -1,6 +1,8 @@
-from app.schemas.graph import GraphNode, GraphEdge
-from app.services.graph.GraphFactory import GraphFactory
 from typing import List
+
+from app.schemas.graph import GraphEdge, GraphNode
+from app.services.graph.GraphFactory import GraphFactory
+
 
 class GraphBuilder:
     def __init__(self):
@@ -21,9 +23,9 @@ class GraphBuilder:
                 criticality=node.criticality,
                 location=node.location,
                 telemetry_snapshot=node.telemetry_snapshot,
-                metadata=node.metadata
+                metadata=node.metadata,
             )
-            
+
         for e in edges:
             edge = GraphEdge(**e) if isinstance(e, dict) else e
             self.graph.add_edge(
@@ -32,5 +34,5 @@ class GraphBuilder:
                 edge_id=edge.edge_id,
                 relationship=edge.relationship,
                 weight=edge.weight,
-                risk_factor=edge.risk_factor
+                risk_factor=edge.risk_factor,
             )

@@ -1,15 +1,19 @@
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
+
 
 class DecisionRequest(BaseModel):
     failed_asset: str
     failure_type: str
     simulation_id: str
 
+
 class Citation(BaseModel):
     document_id: str
     chunk_id: str
     text_snippet: str
+
 
 class DecisionTrace(BaseModel):
     documents_used: int
@@ -17,6 +21,7 @@ class DecisionTrace(BaseModel):
     selected_scenario: str
     citations_verified: int
     confidence: float
+
 
 class DecisionResponse(BaseModel):
     recommended_strategy: str

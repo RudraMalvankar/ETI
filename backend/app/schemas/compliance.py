@@ -1,8 +1,11 @@
+from typing import Any, Dict, List
+
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
+
 
 class ComplianceReportRequest(BaseModel):
     incident_id: str
+
 
 class ComplianceReport(BaseModel):
     report_id: str
@@ -17,6 +20,7 @@ class ComplianceReport(BaseModel):
     technician_actions: List[Any] = Field(default_factory=list)
     compliance_checklist: List[str] = Field(default_factory=list)
     final_resolution: str = "Resolved"
+
 
 class ExportRequest(BaseModel):
     report_id: str

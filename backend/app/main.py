@@ -1,13 +1,16 @@
+import structlog
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+
 from app.api.v1.router import api_router
 from app.core.config import settings
-from app.middleware.logging import RequestLoggingMiddleware
-from app.core.websockets import global_connection_manager
+from app.core.error_handlers import register_exception_handlers
 from app.core.rate_limiter import limiter
-from slowapi.errors import RateLimitExceeded
-from slowapi import _rate_limit_exceeded_handler
-import structlog
+from app.core.websockets import global_connection_manager
+from app.middleware.audit import EnterpriseAuditMiddleware
+from app.middleware.logging import RequestLoggingMiddleware
 
 # Configure structured logging
 structlog.configure(
@@ -32,9 +35,7 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-
-from app.middleware.logging import RequestLoggingMiddleware
-from app.middleware.audit import EnterpriseAuditMiddleware
+register_exception_handlers(app)
 
 # CORS — uses configured origins from settings (never wildcard in production)
 app.add_middleware(
@@ -48,7 +49,6 @@ app.add_middleware(
 # Request / response structured logging and mutation auditing
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(EnterpriseAuditMiddleware)
-
 
 
 @app.on_event("startup")
@@ -82,6 +82,38 @@ def health_check():
         "ai_provider": settings.AI_PROVIDER,
     }
 
+
+@app.get("/live")
+def liveness_probe():
+    """Kubernetes/Docker liveness probe — always returns 200 if process is running."""
+    return {"status": "alive", "service": "apex-backend"}
+
+
+@app.get("/ready")
+def readiness_probe():
+    """Kubernetes/Docker readiness probe — checks DB connectivity before accepting traffic."""
+    from fastapi.responses import JSONResponse
+
+    from app.database.session import SessionLocal
+
+    checks: dict = {"database": "unknown", "status": "ok"}
+    all_ok = True
+
+    # Check database connectivity
+    try:
+        db = SessionLocal()
+        db.execute(__import__("sqlalchemy").text("SELECT 1"))
+        db.close()
+        checks["database"] = "ok"
+    except Exception as exc:
+        checks["database"] = f"error: {str(exc)[:80]}"
+        all_ok = False
+
+    status_code = 200 if all_ok else 503
+    checks["status"] = "ready" if all_ok else "not_ready"
+    return JSONResponse(content=checks, status_code=status_code)
+
+
 @app.websocket("/ws/simulation")
 async def ws_simulation_endpoint(websocket: WebSocket):
     await global_connection_manager.connect(websocket)
@@ -98,13 +130,11 @@ async def ws_simulation_endpoint(websocket: WebSocket):
 def metrics():
     """Endpoint exposing Prometheus metrics collected from registry."""
     from fastapi.responses import Response
-    from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+    from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+
     from app.core.metrics import metrics_registry
-    return Response(
-        content=generate_latest(metrics_registry),
-        media_type=CONTENT_TYPE_LATEST
-    )
+
+    return Response(content=generate_latest(metrics_registry), media_type=CONTENT_TYPE_LATEST)
+
 
 app.include_router(api_router, prefix="/api/v1")
-
-

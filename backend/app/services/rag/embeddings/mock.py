@@ -1,15 +1,19 @@
-from .base import EmbeddingProvider
 from typing import List
+
 import numpy as np
+
+from .base import EmbeddingProvider
+
 
 class MockEmbeddingProvider(EmbeddingProvider):
     """
     Generates deterministic pseudo-random vectors based on string hash.
     Useful for testing RAG pipelines without burning API credits.
     """
+
     def __init__(self, dim: int = 1536):
         self._dim = dim
-        
+
     def embed_text(self, text: str) -> List[float]:
         # Pseudo-random but deterministic based on hash for testing similarity
         seed = abs(hash(text)) % (2**32)

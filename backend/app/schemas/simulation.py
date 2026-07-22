@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Field
-from typing import Dict, Any, List, Optional
 from datetime import datetime, timezone
+from typing import Any, Dict, List
+
+from pydantic import BaseModel, Field
+
 
 class SimulationRequest(BaseModel):
     failed_asset: str
@@ -9,12 +11,14 @@ class SimulationRequest(BaseModel):
     timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     operating_mode: str = "normal"
 
+
 class RiskProfile(BaseModel):
     safety_risk: float
     operational_risk: float
     financial_risk: float
     environmental_risk: float
     overall_score: float
+
 
 class ScenarioResult(BaseModel):
     scenario_id: str
@@ -27,10 +31,12 @@ class ScenarioResult(BaseModel):
     safety_level: str
     system_state_snapshot: Dict[str, Any]
 
+
 class SimulationResponse(BaseModel):
     simulation_id: str
     request: SimulationRequest
     scenarios: List[ScenarioResult]
+
 
 class SimulationStatistics(BaseModel):
     total_simulations: int

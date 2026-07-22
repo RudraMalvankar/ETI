@@ -1,13 +1,16 @@
 from typing import List
-from app.schemas.document import DocumentChunk
+
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+from app.schemas.document import DocumentChunk
+
 
 class Chunker:
     def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 200):
         self.splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
-            separators=["\n\n", "\n", ".", " ", ""]
+            separators=["\n\n", "\n", ".", " ", ""],
         )
 
     def chunk_document(self, pages: List[DocumentChunk]) -> List[DocumentChunk]:
@@ -22,5 +25,5 @@ class Chunker:
                 new_chunk.chunk_id = f"{page.chunk_id}-{i}"
                 new_chunk.text = split
                 final_chunks.append(new_chunk)
-                
+
         return final_chunks

@@ -1,11 +1,14 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel
+
 
 class SearchRequest(BaseModel):
     query: str
     top_k: int = 5
     asset_id: Optional[str] = None
     document_id: Optional[str] = None
+
 
 class SearchResultChunk(BaseModel):
     chunk_id: str
@@ -15,6 +18,7 @@ class SearchResultChunk(BaseModel):
     text: str
     metadata: Dict[str, Any]
     score: float
+
 
 class SearchResponse(BaseModel):
     results: List[SearchResultChunk]

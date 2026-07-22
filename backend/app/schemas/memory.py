@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
 import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
+
 
 class IncidentMemory(BaseModel):
     incident_id: str
@@ -13,7 +15,10 @@ class IncidentMemory(BaseModel):
     technician_feedback: List[Any] = Field(default_factory=list)
     regenerated_runbooks: List[Dict[str, Any]] = Field(default_factory=list)
     outcome: str = "Resolved"
-    timestamp: str = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
+    timestamp: str = Field(
+        default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat()
+    )
+
 
 class StoreMemoryRequest(BaseModel):
     failed_asset: str
@@ -23,6 +28,7 @@ class StoreMemoryRequest(BaseModel):
     decision_data: Optional[Dict[str, Any]] = None
     outcome: Optional[str] = "Resolved"
     technician_feedback: Optional[List[Any]] = None
+
 
 class SearchMemoryRequest(BaseModel):
     query: str

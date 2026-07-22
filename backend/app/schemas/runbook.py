@@ -1,5 +1,7 @@
+from typing import Any, Dict, List
+
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
+
 
 class RunbookStep(BaseModel):
     step_id: str
@@ -11,12 +13,14 @@ class RunbookStep(BaseModel):
     safety_requirements: List[str] = Field(default_factory=list)
     required_tools: List[str] = Field(default_factory=list)
     document_citations: List[Dict[str, str]] = Field(default_factory=list)
-    status: str = "pending" # pending, completed, failed
+    status: str = "pending"  # pending, completed, failed
     prerequisites: List[str] = Field(default_factory=list)
+
 
 class RunbookRequest(BaseModel):
     decision_payload: Dict[str, Any]
     simulation_id: str
+
 
 class Runbook(BaseModel):
     runbook_id: str
@@ -29,9 +33,11 @@ class Runbook(BaseModel):
     total_estimated_duration: float
     update_history: List[str] = Field(default_factory=list)
 
+
 class FeedbackRequest(BaseModel):
     status: str
     feedback_notes: str
+
 
 class RunbookStatistics(BaseModel):
     total_runbooks: int

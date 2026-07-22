@@ -1,6 +1,9 @@
-from sqlalchemy import Column, String, DateTime
 from datetime import datetime, timezone
+
+from sqlalchemy import Column, DateTime, String
+
 from app.database.session import Base
+
 
 class BlacklistedToken(Base):
     __tablename__ = "blacklisted_tokens"

@@ -1,10 +1,13 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from app.services.memory.IncidentHistoryStore import global_incident_store
+
 
 class PatternMatcher:
     """
     Finds historical incidents similar to the search query with high performance (<100ms).
     """
+
     def search_similar(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
         results = []
         if not query:
@@ -30,5 +33,5 @@ class PatternMatcher:
             if score > 0:
                 results.append({"incident": inc, "score": score})
 
-        results.sort(key=lambda x: x["score"], reverse=True)
+        results.sort(key=lambda x: float(x["score"]), reverse=True)
         return [r["incident"].model_dump() for r in results[:top_k]]
