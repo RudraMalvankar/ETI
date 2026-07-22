@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import JSON, Column, DateTime, Integer, String
+from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String
 
 from app.database.session import Base
 
@@ -44,3 +44,24 @@ class IncidentModel(Base):
     regenerated_runbooks = Column(JSON, default=list)
     outcome = Column(String(100), default="Resolved")
     timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class PlatformSettingsModel(Base):
+    __tablename__ = "platform_settings"
+
+    id = Column(Integer, primary_key=True, default=1)
+    ai_provider = Column(String(50), nullable=False, default="gemini")
+    embedding_provider = Column(String(50), nullable=False, default="nim")
+    ocr_provider = Column(String(50), nullable=False, default="nim")
+    confidence_threshold = Column(Integer, nullable=False, default=85)
+    top_k = Column(Integer, nullable=False, default=10)
+    rerank_top_k = Column(Integer, nullable=False, default=5)
+    enable_reranking = Column(Boolean, nullable=False, default=True)
+    theme = Column(String(20), nullable=False, default="dark")
+    notifications_enabled = Column(Boolean, nullable=False, default=True)
+    api_base_url = Column(String(255), nullable=False, default="")
+    environment_status = Column(String(50), nullable=False, default="development")
+    notification_channels = Column(JSON, default=list)
+    provider_status = Column(JSON, default=dict)
+    updated_by = Column(String(100), nullable=True)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

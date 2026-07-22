@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   BrainCircuit,
   Send,
@@ -8,7 +8,9 @@ import {
   Sparkles,
   Network,
   ArrowRight,
+  AlertTriangle,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useApexStore } from '../store/useApexStore';
 import { evaluateDecision } from '../services/apexServices';
 import { DecisionResponse } from '../types/apex';
@@ -22,7 +24,12 @@ interface ChatMessage {
 }
 
 export const DecisionPage: React.FC = () => {
-  const { activeAssetId, activeFailureType, currentSimulation } = useApexStore();
+  const {
+    activeAssetId,
+    activeFailureType,
+    currentSimulation,
+    setCurrentDecision,
+  } = useApexStore();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -30,16 +37,17 @@ export const DecisionPage: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initial greeting
     setMessages([
       {
         id: 'msg-0',
         type: 'bot',
         content:
-          'Hello. I am the APEX Expert Knowledge Copilot. I have access to your live telemetry, knowledge graph, and all uploaded industrial manuals. How can I assist you with maintenance or operations today?',
+          currentSimulation?.simulation_id
+            ? `Operational context loaded for asset ${currentSimulation.request.failed_asset}. Ask for a recommendation and I will evaluate the current simulation, graph, and indexed evidence.`
+            : 'Run a live maintenance simulation first. Once a simulation is available, I can generate a grounded recommendation with citations and affected-asset context.',
       },
     ]);
-  }, []);
+  }, [currentSimulation?.request.failed_asset, currentSimulation?.simulation_id]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -48,60 +56,63 @@ export const DecisionPage: React.FC = () => {
   }, [messages]);
 
   const handleSend = async (text: string = inputValue) => {
-    if (!text.trim()) return;
+    if (!text.trim()) {
+      return;
+    }
 
     const userMsg: ChatMessage = { id: `user-${Date.now()}`, type: 'user', content: text };
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
-    setIsTyping(true);
 
-    // Simulate backend response based on query
-    setTimeout(async () => {
-      let botMsg: ChatMessage;
-
-      if (
-        text.toLowerCase().includes('p-101') ||
-        text.toLowerCase().includes('overheat') ||
-        text.toLowerCase().includes('failure')
-      ) {
-        // Trigger the actual decision evaluation logic for this demo
-        try {
-          const res = await evaluateDecision(
-            activeAssetId,
-            activeFailureType,
-            currentSimulation?.simulation_id || 'sim-demo'
-          );
-          botMsg = {
-            id: `bot-${Date.now()}`,
-            type: 'bot',
-            content: `I've analyzed the P-101 anomaly using the latest shadow simulation and RAG vectors. My primary recommendation is: **${res?.recommended_strategy || 'Isolate P-101'}**.`,
-            decisionContext: res,
-          };
-        } catch (e) {
-          botMsg = {
-            id: `bot-${Date.now()}`,
-            type: 'bot',
-            content:
-              'I encountered an error analyzing that specific asset. Please verify the asset ID.',
-          };
-        }
-      } else {
-        botMsg = {
+    if (!currentSimulation?.simulation_id) {
+      setMessages(prev => [
+        ...prev,
+        {
           id: `bot-${Date.now()}`,
           type: 'bot',
           content:
-            'Based on the current operational manuals, this procedure requires LOTO (Lock-Out Tag-Out) validation. Would you like me to generate an executable runbook for this?',
-        };
-      }
+            'No live simulation is attached to this session yet. Run a maintenance simulation first so I can ground the recommendation in an actual failure scenario.',
+        },
+      ]);
+      return;
+    }
 
-      setMessages(prev => [...prev, botMsg]);
+    setIsTyping(true);
+    try {
+      const res = await evaluateDecision(
+        activeAssetId,
+        activeFailureType,
+        currentSimulation.simulation_id
+      );
+      setCurrentDecision(res);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `bot-${Date.now()}`,
+          type: 'bot',
+          content: `Recommendation for ${activeAssetId}: **${res.recommended_strategy}**`,
+          decisionContext: res,
+        },
+      ]);
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.detail || error?.message || 'Decision evaluation failed.';
+      toast.error(message);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `bot-${Date.now()}`,
+          type: 'bot',
+          content: `I couldn't complete the live recommendation request. ${message}`,
+        },
+      ]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   return (
     <div className="flex flex-col h-full bg-[var(--bg-primary)] animate-in fade-in duration-500 rounded-3xl overflow-hidden border border-[var(--glass-border)] shadow-2xl relative">
-      {/* Header */}
       <div className="flex items-center gap-4 px-6 py-4 bg-[var(--bg-secondary)]/80 backdrop-blur-md border-b border-[var(--glass-border)] z-10">
         <div className="p-2.5 rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/20 shadow-[0_0_15px_rgba(14,165,233,0.3)]">
           <BrainCircuit className="w-6 h-6" />
@@ -111,12 +122,21 @@ export const DecisionPage: React.FC = () => {
             APEX Expert Copilot <Sparkles className="w-3.5 h-3.5 text-accent-emerald" />
           </h1>
           <p className="text-xs text-[var(--text-secondary)] font-medium">
-            Enterprise AI trained on your manuals & knowledge graph
+            Live recommendation engine over your current industrial context
           </p>
         </div>
       </div>
 
-      {/* Chat History */}
+      {!currentSimulation?.simulation_id && (
+        <div className="mx-6 mt-4 p-4 rounded-2xl border border-accent-amber/30 bg-accent-amber/10 text-accent-amber text-sm flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 mt-0.5 shrink-0" />
+          <div>
+            This copilot workflow depends on a live simulation. Run the Maintenance Intelligence flow
+            first, then come back here for a grounded recommendation.
+          </div>
+        </div>
+      )}
+
       <div
         className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth relative z-0"
         ref={scrollRef}
@@ -151,7 +171,6 @@ export const DecisionPage: React.FC = () => {
                 />
               </div>
 
-              {/* Complex Decision Context Render */}
               {msg.decisionContext && (
                 <div className="w-full bg-[var(--bg-elevated)] border border-[var(--border-strong)] p-5 rounded-lg shadow-sm">
                   <div className="flex items-center justify-between mb-4">
@@ -159,14 +178,18 @@ export const DecisionPage: React.FC = () => {
                       Confidence: {msg.decisionContext.confidence_score}%
                     </span>
                     <span className="text-xs text-[var(--text-secondary)] font-mono">
-                      Risk Red: -{msg.decisionContext.estimated_risk_reduction}%
+                      Risk Reduction: {msg.decisionContext.estimated_risk_reduction}%
                     </span>
                   </div>
 
+                  <div className="mb-4 p-3 bg-[var(--bg-primary)]/50 border border-[var(--glass-border)] rounded-xl text-xs text-[var(--text-primary)]">
+                    {msg.decisionContext.reasoning}
+                  </div>
+
                   <div className="space-y-3 mb-4">
-                    {msg.decisionContext.supporting_citations.map((cit, idx) => (
+                    {msg.decisionContext.supporting_citations.map(cit => (
                       <div
-                        key={idx}
+                        key={cit.chunk_id}
                         className="p-3 bg-[var(--bg-primary)]/50 border border-[var(--glass-border)] rounded-xl text-xs"
                       >
                         <div className="flex items-center gap-1.5 text-brand-400 font-mono mb-1">
@@ -181,7 +204,7 @@ export const DecisionPage: React.FC = () => {
                   <div className="flex items-center gap-2 p-3 bg-accent-purple/5 border border-accent-purple/20 rounded-xl text-xs mb-4">
                     <Network className="w-4 h-4 text-accent-purple" />
                     <span className="text-[var(--text-secondary)]">
-                      Graph Traversal:{' '}
+                      Affected assets:{' '}
                       <strong className="text-white">
                         {msg.decisionContext.affected_assets.join(', ')}
                       </strong>
@@ -212,29 +235,19 @@ export const DecisionPage: React.FC = () => {
               <Bot className="w-5 h-5" />
             </div>
             <div className="bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl rounded-tl-none p-4 flex items-center gap-2">
-              <div
-                className="w-2 h-2 rounded-full bg-brand-500 animate-bounce"
-                style={{ animationDelay: '0ms' }}
-              />
-              <div
-                className="w-2 h-2 rounded-full bg-brand-500 animate-bounce"
-                style={{ animationDelay: '150ms' }}
-              />
-              <div
-                className="w-2 h-2 rounded-full bg-brand-500 animate-bounce"
-                style={{ animationDelay: '300ms' }}
-              />
+              <div className="w-2 h-2 rounded-full bg-brand-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-2 h-2 rounded-full bg-brand-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <div className="w-2 h-2 rounded-full bg-brand-500 animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         )}
       </div>
 
-      {/* Suggested Prompts */}
       <div className="px-6 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar z-10">
         {[
-          'Analyze P-101 bearing overheat risk',
-          'What is the compliance impact of V-202 failure?',
-          'Show recent failures on HE-303',
+          'Analyze the current maintenance risk on this asset',
+          'Summarize the safest mitigation path',
+          'Which linked assets are most exposed?',
         ].map(prompt => (
           <button
             key={prompt}
@@ -246,7 +259,6 @@ export const DecisionPage: React.FC = () => {
         ))}
       </div>
 
-      {/* Input Area */}
       <div className="p-4 bg-[var(--bg-primary)] border-t border-[var(--glass-border)] z-10">
         <form
           onSubmit={e => {
@@ -259,7 +271,7 @@ export const DecisionPage: React.FC = () => {
             type="text"
             value={inputValue}
             onChange={e => setInputValue(e.target.value)}
-            placeholder="Ask the Expert Copilot about maintenance, risk, or compliance..."
+            placeholder="Ask for a grounded recommendation, impact summary, or mitigation plan..."
             className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl py-4 pl-5 pr-14 text-sm text-white placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-inner"
           />
           <button

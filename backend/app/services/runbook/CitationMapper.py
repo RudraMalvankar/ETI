@@ -9,15 +9,19 @@ class CitationMapper:
     """
 
     def map_citations(self, steps: List[RunbookStep], citations: List[dict]) -> List[RunbookStep]:
+        normalized_citations = [
+            {
+                "document_id": c.get("document_id", ""),
+                "chunk_id": c.get("chunk_id", ""),
+                "snippet": c.get("text_snippet", ""),
+            }
+            for c in citations
+        ]
+
+        if not normalized_citations:
+            return steps
+
         for step in steps:
-            if citations:
-                # For demonstration, attach the first citation to the primary strategy step
-                if step.priority == 2:
-                    step.document_citations = [
-                        {
-                            "document_id": c.get("document_id", ""),
-                            "snippet": c.get("text_snippet", ""),
-                        }
-                        for c in citations
-                    ]
+            if step.priority in {2, 3}:
+                step.document_citations = normalized_citations
         return steps

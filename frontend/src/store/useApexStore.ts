@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { API_BASE_URL } from '../services/apiClient';
+import { API_BASE_URL } from '../services/apiBase';
 import {
+  AuthProfile,
   DocumentResponse,
   SimulationResponse,
   DecisionResponse,
@@ -20,15 +21,48 @@ import {
   MOCK_COMPLIANCE,
   apexApi,
 } from '../services/api';
+import {
+  clearStoredAuth,
+  getStoredAccessToken,
+  getStoredRefreshToken,
+  getStoredUser,
+} from '../services/authStorage';
 
 export type BackendConnectionState = 'connected' | 'demo' | 'offline';
 
+const THEME_STORAGE_KEY = 'apex.theme.dark';
+const CONFIDENCE_STORAGE_KEY = 'apex.confidence.threshold';
+
+function getInitialTheme(): boolean {
+  const stored = localStorage.getItem(THEME_STORAGE_KEY);
+  return stored === null ? true : stored === 'true';
+}
+
+function getInitialConfidenceThreshold(): number {
+  const stored = localStorage.getItem(CONFIDENCE_STORAGE_KEY);
+  const parsed = stored ? Number(stored) : NaN;
+  return Number.isFinite(parsed) ? parsed : 85;
+}
+
 interface ApexState {
+  isAuthenticated: boolean;
+  currentUser: AuthProfile | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  setAuthSession: (payload: {
+    user: AuthProfile;
+    accessToken: string;
+    refreshToken: string;
+  }) => void;
+  setCurrentUser: (user: AuthProfile | null) => void;
+  clearAuthSession: () => void;
+
   // Navigation & Legacy Properties
   activeTab: string;
   setActiveTab: (tab: string) => void;
 
   isDarkMode: boolean;
+  setDarkMode: (value: boolean) => void;
   toggleTheme: () => void;
 
   connectionState: BackendConnectionState;
@@ -99,18 +133,52 @@ interface ApexState {
 }
 
 export const useApexStore = create<ApexState>(set => ({
+  isAuthenticated: Boolean(getStoredAccessToken()),
+  currentUser: getStoredUser(),
+  accessToken: getStoredAccessToken(),
+  refreshToken: getStoredRefreshToken(),
+  setAuthSession: ({ user, accessToken, refreshToken }) =>
+    set({
+      isAuthenticated: true,
+      currentUser: user,
+      accessToken,
+      refreshToken,
+    }),
+  setCurrentUser: currentUser => set({ currentUser }),
+  clearAuthSession: () => {
+    clearStoredAuth();
+    set({
+      isAuthenticated: false,
+      currentUser: null,
+      accessToken: null,
+      refreshToken: null,
+    });
+  },
+
   // Legacy Store State
   activeTab: 'dashboard',
   setActiveTab: tab => set({ activeTab: tab }),
 
-  isDarkMode: true,
-  toggleTheme: () => set(state => ({ isDarkMode: !state.isDarkMode })),
+  isDarkMode: getInitialTheme(),
+  setDarkMode: isDarkMode => {
+    localStorage.setItem(THEME_STORAGE_KEY, String(isDarkMode));
+    set({ isDarkMode });
+  },
+  toggleTheme: () =>
+    set(state => {
+      const next = !state.isDarkMode;
+      localStorage.setItem(THEME_STORAGE_KEY, String(next));
+      return { isDarkMode: next };
+    }),
 
   connectionState: 'connected',
   setConnectionState: connectionState => set({ connectionState }),
   apiBaseUrl: API_BASE_URL,
-  confidenceThreshold: 85,
-  setConfidenceThreshold: confidenceThreshold => set({ confidenceThreshold }),
+  confidenceThreshold: getInitialConfidenceThreshold(),
+  setConfidenceThreshold: confidenceThreshold => {
+    localStorage.setItem(CONFIDENCE_STORAGE_KEY, String(confidenceThreshold));
+    set({ confidenceThreshold });
+  },
 
   globalQuery: '',
   setGlobalQuery: globalQuery => set({ globalQuery }),

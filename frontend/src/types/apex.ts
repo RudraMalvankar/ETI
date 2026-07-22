@@ -2,8 +2,35 @@ export interface IngestedChunk {
   chunk_id: string;
   document_id: string;
   chunk_index: number;
+  page_number?: number | null;
+  asset_id?: string | null;
+  title?: string | null;
+  section?: string | null;
   text: string;
-  token_count: number;
+  token_count?: number;
+  metadata?: Record<string, any>;
+}
+
+export interface IngestedDocumentDetail {
+  document_id: string;
+  filename: string;
+  file_type: string;
+  status: string;
+  chunks: IngestedChunk[];
+  uploaded_at?: string;
+  error_message?: string | null;
+}
+
+export interface AuthProfile {
+  username: string;
+  role: string;
+}
+
+export interface AuthTokens {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  role: string;
 }
 
 export interface DocumentResponse {
@@ -45,21 +72,38 @@ export interface GraphData {
   edges: GraphEdge[];
 }
 
+export interface SimulationRequestPayload {
+  failed_asset: string;
+  failure_type: string;
+  initial_telemetry?: Record<string, any>;
+  timestamp?: string;
+  operating_mode?: string;
+}
+
+export interface SimulationRiskProfile {
+  safety_risk: number;
+  operational_risk: number;
+  financial_risk: number;
+  environmental_risk: number;
+  overall_score: number;
+}
+
 export interface Scenario {
+  scenario_id: string;
   name: string;
   affected_assets: string[];
+  system_state_snapshot: Record<string, any>;
+  safety_level: string;
+  risk_score: SimulationRiskProfile;
   estimated_downtime_hours: number;
   estimated_cost_usd: number;
-  risk_level: 'Low' | 'Medium' | 'High' | 'Critical';
-  propagation_path: string[];
+  propagation_path: Array<Record<string, string>>;
 }
 
 export interface SimulationResponse {
   simulation_id: string;
-  failed_asset: string;
-  failure_type: string;
+  request: SimulationRequestPayload;
   scenarios: Scenario[];
-  timestamp: string;
 }
 
 export interface DecisionCitation {
@@ -91,27 +135,28 @@ export interface DecisionResponse {
 
 export interface RunbookStep {
   step_id: string;
-  step_number: number;
   title: string;
-  action: string;
+  description: string;
   target_asset: string;
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  status: 'pending' | 'in_progress' | 'completed' | 'failed';
+  priority: number;
+  status: string;
   required_tools: string[];
   safety_requirements: string[];
-  citations: string[];
-  estimated_duration_minutes: number;
-  feedback_notes?: string;
+  document_citations: Array<Record<string, string>>;
+  estimated_duration: number;
+  prerequisites: string[];
 }
 
 export interface Runbook {
   runbook_id: string;
-  simulation_id: string;
-  status: 'active' | 'completed' | 'failed' | 'regenerated';
+  failed_asset: string;
+  failure_type: string;
+  status: string;
   steps: RunbookStep[];
+  affected_assets: string[];
+  total_estimated_duration: number;
   update_history: any[];
   is_regenerated: boolean;
-  timestamp: string;
 }
 
 export interface IncidentMemory {
@@ -165,4 +210,40 @@ export interface ComplianceReport {
   technician_actions: any[];
   compliance_checklist: string[];
   final_resolution: string;
+}
+
+export interface ProviderStatus {
+  ai_provider: string;
+  embedding_provider: string;
+  ocr_provider: string;
+  qdrant_mode: string;
+  environment: string;
+  app_mode: string;
+  telemetry_enabled: boolean;
+}
+
+export interface PlatformSettings {
+  ai_provider: string;
+  embedding_provider: string;
+  ocr_provider: string;
+  confidence_threshold: number;
+  top_k: number;
+  rerank_top_k: number;
+  enable_reranking: boolean;
+  theme: string;
+  notifications_enabled: boolean;
+  api_base_url: string;
+  environment_status: string;
+  notification_channels: string[];
+  provider_status: ProviderStatus;
+  updated_by?: string | null;
+  updated_at?: string | null;
+}
+
+export interface PlatformSettingsEnvelope {
+  settings: PlatformSettings;
+  available_ai_providers: string[];
+  available_embedding_providers: string[];
+  available_ocr_providers: string[];
+  effective_runtime: Record<string, string | number | boolean>;
 }

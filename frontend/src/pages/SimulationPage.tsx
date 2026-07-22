@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Play, Clock, Wrench, TrendingDown, ArrowRight } from 'lucide-react';
-import { XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import React, { useMemo, useState } from 'react';
+import { Play, Clock, Wrench, TrendingDown, ArrowRight, ShieldAlert, Network } from 'lucide-react';
+import { toast } from 'sonner';
 import { PageHeader } from '../components/common/PageHeader';
 import { SectionCard } from '../components/common/SectionCard';
 import { runSimulation } from '../services/apexServices';
@@ -8,146 +8,62 @@ import { SimulationResponse } from '../types/apex';
 import { useApexStore } from '../store/useApexStore';
 import { useNavigate } from 'react-router-dom';
 
+function getRiskLabel(score: number): 'Low' | 'Medium' | 'High' | 'Critical' {
+  if (score >= 8) return 'Critical';
+  if (score >= 6) return 'High';
+  if (score >= 3) return 'Medium';
+  return 'Low';
+}
+
 export const SimulationPage: React.FC = () => {
   const {
     activeAssetId,
     setActiveAssetId,
     activeFailureType,
     setActiveFailureType,
+    currentSimulation,
     setCurrentSimulation,
   } = useApexStore();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const [simulationResult, setSimulationResult] = useState<SimulationResponse>({
-    simulation_id: 'sim-demo-101',
-    failed_asset: activeAssetId,
-    failure_type: activeFailureType,
-    scenarios: [
-      {
-        name: 'Immediate Mitigation',
-        affected_assets: ['P-101', 'V-202'],
-        estimated_downtime_hours: 1.2,
-        estimated_cost_usd: 1800,
-        risk_level: 'Low',
-        propagation_path: ['P-101', 'V-202'],
-      },
-      {
-        name: 'Deferred Maintenance',
-        affected_assets: ['P-101', 'V-202', 'HE-303'],
-        estimated_downtime_hours: 4.5,
-        estimated_cost_usd: 8500,
-        risk_level: 'Medium',
-        propagation_path: ['P-101', 'V-202', 'HE-303'],
-      },
-      {
-        name: 'Run to Failure',
-        affected_assets: ['P-101', 'V-202', 'HE-303', 'PL-505'],
-        estimated_downtime_hours: 18.0,
-        estimated_cost_usd: 45000,
-        risk_level: 'Critical',
-        propagation_path: ['P-101', 'V-202', 'HE-303', 'PL-505'],
-      },
-    ],
-    timestamp: new Date().toISOString(),
-  });
+  const simulationResult: SimulationResponse | null = currentSimulation;
+
+  const highestRiskScenario = useMemo(() => {
+    if (!simulationResult?.scenarios.length) {
+      return null;
+    }
+
+    return [...simulationResult.scenarios].sort(
+      (a, b) => b.risk_score.overall_score - a.risk_score.overall_score
+    )[0];
+  }, [simulationResult]);
 
   const handleRunSim = async () => {
     setIsLoading(true);
     try {
       const res = await runSimulation(activeAssetId, activeFailureType);
-      if (res) {
-        setSimulationResult(res);
-        setCurrentSimulation(res);
-      }
-    } catch (e) {
-      // Keep state if offline
+      setCurrentSimulation(res);
+      toast.success(`Simulation ${res.simulation_id.slice(0, 8)} created.`);
+    } catch (error: any) {
+      const message = error?.response?.data?.detail || error?.message || 'Simulation failed.';
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const degradationData = [
-    { day: 'Day 1', health: 100 },
-    { day: 'Day 15', health: 98 },
-    { day: 'Day 30', health: 94 },
-    { day: 'Day 45', health: 85 },
-    { day: 'Day 60', health: 72 },
-    { day: 'Day 75', health: 55 },
-    { day: 'Day 90', health: 30 },
-  ];
-
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <PageHeader
         title="Maintenance Intelligence"
-        description="Predictive maintenance, remaining useful life (RUL), and AI-driven root cause analysis powered by Monte Carlo shadow simulation."
+        description="Run live failure propagation scenarios and inspect downtime, cost, and safety exposure from the backend simulation engine."
         icon={Wrench}
       />
 
-      {/* Asset Health Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="md:col-span-1 p-6 rounded-3xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] shadow-lg text-center flex flex-col items-center justify-center">
-          <div className="w-24 h-24 rounded-full border-4 border-accent-red flex items-center justify-center mb-4 relative shadow-[0_0_20px_rgba(239,68,68,0.3)]">
-            <span className="text-3xl font-extrabold text-white">
-              42<span className="text-sm">%</span>
-            </span>
-            <div className="absolute inset-0 rounded-full border-4 border-accent-red animate-ping opacity-20" />
-          </div>
-          <h3 className="text-sm font-bold text-[var(--text-primary)]">Remaining Useful Life</h3>
-          <p className="text-xs text-[var(--text-secondary)] mt-1">Critical threshold reached</p>
-        </div>
-
-        <div className="md:col-span-3">
-          <SectionCard
-            title="Predictive Degradation Curve"
-            subtitle="AI forecast based on current telemetry"
-          >
-            <div className="h-[180px] w-full pt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={degradationData}>
-                  <XAxis
-                    dataKey="day"
-                    stroke="#64748b"
-                    fontSize={10}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis
-                    stroke="#64748b"
-                    fontSize={10}
-                    tickLine={false}
-                    axisLine={false}
-                    domain={[0, 100]}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#0B0F17',
-                      borderColor: '#1E293B',
-                      borderRadius: '12px',
-                      fontSize: '12px',
-                    }}
-                    itemStyle={{ color: '#0EA5E9' }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="health"
-                    stroke="#0EA5E9"
-                    strokeWidth={3}
-                    dot={{ r: 4, fill: '#0EA5E9' }}
-                    activeDot={{ r: 6, fill: '#fff' }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </SectionCard>
-        </div>
-      </div>
-
-      {/* Control Panel */}
       <SectionCard
         title="Shadow Simulation Parameters"
-        subtitle="Configure Monte Carlo risk scenarios"
+        subtitle="Execute a live backend scenario for the selected asset and failure mode"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
@@ -197,83 +113,152 @@ export const SimulationPage: React.FC = () => {
         </div>
       </SectionCard>
 
-      {/* Scenario Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {simulationResult.scenarios.map((sc, idx) => (
-          <div
-            key={idx}
-            className={`p-6 rounded-3xl border backdrop-blur-xl transition-all duration-300 ${
-              idx === 0
-                ? 'bg-gradient-to-b from-accent-emerald/10 to-transparent border-accent-emerald/30 shadow-[0_4px_20px_rgba(16,185,129,0.1)]'
-                : idx === 1
-                  ? 'bg-gradient-to-b from-accent-amber/10 to-transparent border-accent-amber/30 shadow-[0_4px_20px_rgba(245,158,11,0.1)]'
-                  : 'bg-gradient-to-b from-accent-red/10 to-transparent border-accent-red/30 shadow-[0_4px_20px_rgba(239,68,68,0.1)]'
-            }`}
-          >
-            <div className="flex justify-between items-center mb-5">
-              <span className="text-sm font-bold text-white tracking-wide">{sc.name}</span>
-              <span
-                className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${
-                  idx === 0
-                    ? 'bg-accent-emerald/20 text-accent-emerald border-accent-emerald/30'
-                    : idx === 1
-                      ? 'bg-accent-amber/20 text-accent-amber border-accent-amber/30'
-                      : 'bg-accent-red/20 text-accent-red border-accent-red/30'
-                }`}
-              >
-                {sc.risk_level} Risk
+      {simulationResult ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="p-6 rounded-3xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] shadow-lg">
+              <span className="text-[10px] uppercase tracking-wider text-[var(--text-secondary)] font-bold block mb-2">
+                Simulation ID
               </span>
+              <p className="font-mono text-sm text-white break-all">{simulationResult.simulation_id}</p>
             </div>
 
-            <div className="space-y-3 text-xs">
-              <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
-                <span className="text-[var(--text-secondary)] flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-brand-400" /> Est. Downtime
-                </span>
-                <span className="font-mono font-bold text-white">
-                  {sc.estimated_downtime_hours} hrs
-                </span>
-              </div>
+            <div className="p-6 rounded-3xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] shadow-lg">
+              <span className="text-[10px] uppercase tracking-wider text-[var(--text-secondary)] font-bold block mb-2">
+                Failed Asset
+              </span>
+              <p className="text-lg font-bold text-white">{simulationResult.request.failed_asset}</p>
+            </div>
 
-              <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
-                <span className="text-[var(--text-secondary)] flex items-center gap-1.5">
-                  <TrendingDown className="w-3.5 h-3.5 text-accent-emerald" /> Financial Impact
-                </span>
-                <span className="font-mono font-bold text-white">
-                  ${sc.estimated_cost_usd.toLocaleString()}
-                </span>
-              </div>
+            <div className="p-6 rounded-3xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] shadow-lg">
+              <span className="text-[10px] uppercase tracking-wider text-[var(--text-secondary)] font-bold block mb-2">
+                Scenario Count
+              </span>
+              <p className="text-lg font-bold text-white">{simulationResult.scenarios.length}</p>
+            </div>
 
-              <div className="p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
-                <span className="text-[var(--text-secondary)] block mb-2">
-                  Failure Cascade Path
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {sc.propagation_path.map((node, nIdx) => (
-                    <span
-                      key={nIdx}
-                      className="px-2 py-1 rounded bg-[var(--bg-secondary)] border border-[var(--glass-border)] text-[10px] font-mono text-[var(--text-secondary)]"
-                    >
-                      {node}
-                    </span>
-                  ))}
-                </div>
-              </div>
+            <div className="p-6 rounded-3xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] shadow-lg">
+              <span className="text-[10px] uppercase tracking-wider text-[var(--text-secondary)] font-bold block mb-2">
+                Highest Risk
+              </span>
+              <p className="text-lg font-bold text-white">
+                {highestRiskScenario
+                  ? `${highestRiskScenario.risk_score.overall_score.toFixed(1)} / 10`
+                  : 'N/A'}
+              </p>
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* Action to proceed to Copilot */}
-      <div className="flex justify-end">
-        <button
-          onClick={() => navigate('/dashboard/decision')}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm shadow-[0_0_15px_rgba(14,165,233,0.3)] transition-all group"
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {simulationResult.scenarios.map(sc => {
+              const riskLabel = getRiskLabel(sc.risk_score.overall_score);
+              return (
+                <div
+                  key={sc.scenario_id}
+                  className="p-6 rounded-3xl border backdrop-blur-xl transition-all duration-300 bg-[var(--bg-secondary)] border-[var(--glass-border)] shadow-[0_4px_20px_rgba(15,23,42,0.18)]"
+                >
+                  <div className="flex justify-between items-center mb-5">
+                    <span className="text-sm font-bold text-white tracking-wide">{sc.name}</span>
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full border bg-brand-500/10 text-brand-300 border-brand-500/30">
+                      {riskLabel} Risk
+                    </span>
+                  </div>
+
+                  <div className="space-y-3 text-xs">
+                    <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                      <span className="text-[var(--text-secondary)] flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-brand-400" /> Est. Downtime
+                      </span>
+                      <span className="font-mono font-bold text-white">
+                        {sc.estimated_downtime_hours} hrs
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                      <span className="text-[var(--text-secondary)] flex items-center gap-1.5">
+                        <TrendingDown className="w-3.5 h-3.5 text-accent-emerald" /> Financial Impact
+                      </span>
+                      <span className="font-mono font-bold text-white">
+                        ${sc.estimated_cost_usd.toLocaleString()}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                      <span className="text-[var(--text-secondary)] flex items-center gap-1.5">
+                        <ShieldAlert className="w-3.5 h-3.5 text-accent-amber" /> Safety Level
+                      </span>
+                      <span className="font-mono font-bold text-white">{sc.safety_level}</span>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                      <span className="text-[var(--text-secondary)] block mb-2">
+                        Risk Profile
+                      </span>
+                      <div className="grid grid-cols-2 gap-2 text-[10px] text-[var(--text-secondary)]">
+                        <span>Overall: {sc.risk_score.overall_score.toFixed(1)}</span>
+                        <span>Safety: {sc.risk_score.safety_risk.toFixed(1)}</span>
+                        <span>Ops: {sc.risk_score.operational_risk.toFixed(1)}</span>
+                        <span>Financial: {sc.risk_score.financial_risk.toFixed(1)}</span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                      <span className="text-[var(--text-secondary)] block mb-2">
+                        Failure Cascade Path
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {sc.propagation_path.map((node, index) => (
+                          <span
+                            key={`${sc.scenario_id}-${index}`}
+                            className="px-2 py-1 rounded bg-[var(--bg-secondary)] border border-[var(--glass-border)] text-[10px] font-mono text-[var(--text-secondary)]"
+                          >
+                            {node.id || node.node_id || Object.values(node).join(' -> ')}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                      <span className="text-[var(--text-secondary)] block mb-2 flex items-center gap-1.5">
+                        <Network className="w-3.5 h-3.5 text-accent-purple" /> Affected Assets
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {sc.affected_assets.map(asset => (
+                          <span
+                            key={`${sc.scenario_id}-${asset}`}
+                            className="px-2 py-1 rounded bg-[var(--bg-secondary)] border border-[var(--glass-border)] text-[10px] font-mono text-[var(--text-secondary)]"
+                          >
+                            {asset}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              onClick={() => navigate('/dashboard/decision')}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm shadow-[0_0_15px_rgba(14,165,233,0.3)] transition-all group"
+            >
+              <span>Ask Copilot for Mitigation Plan</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
+        </>
+      ) : (
+        <SectionCard
+          title="No Live Simulation Yet"
+          subtitle="Run a scenario to populate maintenance intelligence from the backend"
         >
-          <span>Ask Copilot for Mitigation Plan</span>
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </button>
-      </div>
+          <div className="p-6 rounded-2xl border border-dashed border-[var(--border-strong)] text-sm text-[var(--text-secondary)]">
+            No simulation result is loaded for this session yet.
+          </div>
+        </SectionCard>
+      )}
     </div>
   );
 };

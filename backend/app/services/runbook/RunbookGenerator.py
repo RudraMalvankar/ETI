@@ -20,6 +20,7 @@ class RunbookGenerator:
 
     def generate(self, request: RunbookRequest) -> Runbook:
         payload = request.decision_payload
+        payload.setdefault("simulation_id", request.simulation_id)
 
         # 1. Plan Steps
         steps = self.planner.plan_steps(payload)
@@ -36,7 +37,7 @@ class RunbookGenerator:
 
         total_dur = sum(s.estimated_duration for s in steps)
         assets = payload.get("affected_assets", [])
-        failed_asset = payload.get("failed_asset", "P-101")
+        failed_asset = payload.get("failed_asset") or (assets[0] if assets else "Unknown")
         failure_type = payload.get("failure_type", "Operational Incident")
 
         return Runbook(
@@ -46,5 +47,8 @@ class RunbookGenerator:
             steps=steps,
             affected_assets=assets,
             total_estimated_duration=total_dur,
-            update_history=["Runbook generated."],
+            update_history=[
+                f"Runbook generated from simulation {request.simulation_id}.",
+                f"Primary asset scope: {', '.join(assets) if assets else failed_asset}.",
+            ],
         )
