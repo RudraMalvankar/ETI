@@ -8,15 +8,22 @@ import os
 from typing import List, Optional
 
 class VectorStoreService:
-    def __init__(self, collection_name: str = "apex_documents", embedding_provider: EmbeddingProvider = None):
-        self.collection_name = collection_name
+    def __init__(self, collection_name: str = None, embedding_provider: EmbeddingProvider = None):
+        self.collection_name = collection_name or os.environ.get("QDRANT_COLLECTION", "apex_documents")
         self.embedding_provider = embedding_provider or AdaptiveEmbeddingProvider()
         
-        # Use memory mode if QDRANT_HOST is not set for seamless dev experience
+        qdrant_url = os.environ.get("QDRANT_URL")
+        qdrant_api_key = os.environ.get("QDRANT_API_KEY")
         qdrant_host = os.environ.get("QDRANT_HOST")
-        if qdrant_host:
+        
+        if qdrant_url:
+            print(f"Connecting to Cloud Qdrant: {qdrant_url}")
+            self.client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
+        elif qdrant_host:
+            print(f"Connecting to Local Qdrant: {qdrant_host}:6333")
             self.client = QdrantClient(host=qdrant_host, port=6333)
         else:
+            print("Connecting to In-Memory Qdrant")
             self.client = QdrantClient(":memory:")
             
         self._init_collection()
@@ -42,7 +49,6 @@ class VectorStoreService:
         
         points = []
         for i, chunk in enumerate(chunks):
-            # Using chunk_id hash as point UUID
             import uuid
             point_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, chunk.chunk_id))
             
@@ -63,7 +69,6 @@ class VectorStoreService:
     def search(self, query: str, top_k: int = 5, asset_id: Optional[str] = None, document_id: Optional[str] = None) -> List[SearchResultChunk]:
         query_vector = self.embedding_provider.embed_text(query)
         
-        # Hybrid retrieval filter conditions
         must_conditions = []
         if asset_id:
             must_conditions.append(models.FieldCondition(key="asset_id", match=models.MatchValue(value=asset_id)))
