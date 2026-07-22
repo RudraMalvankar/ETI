@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     QDRANT_COLLECTION: str = "apex_documents"
 
     # ── Security / CORS ──────────────────────────────────────────────────────
+    JWT_SECRET_KEY: str = ""
     CORS_ORIGINS: List[str] = [
         "http://localhost:3000",
         "http://localhost:5173",

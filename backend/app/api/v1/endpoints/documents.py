@@ -8,17 +8,25 @@ from app.database.session import get_db
 from app.models.models import DocumentModel
 from app.services.rag.vector_store import global_vector_store
 from app.core.rate_limiter import limiter
+from app.core.auth import RoleChecker
 
 router = APIRouter()
 pipeline = IngestionPipeline()
+
+doc_read_check = RoleChecker(allowed_roles=["Operator", "Engineer", "Auditor", "Admin"])
+doc_write_check = RoleChecker(allowed_roles=["Engineer", "Admin"])
 
 class IndexRequest(BaseModel):
     document_id: str
 
 @router.post("/upload", response_model=DocumentResponse, status_code=status.HTTP_201_CREATED)
 @limiter.limit("10/minute")
-async def upload_document(request: Request, file: UploadFile = File(...), db: Session = Depends(get_db)):
-
+async def upload_document(
+    request: Request,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(doc_write_check)
+):
     """
     Upload and ingest an industrial document.
     Triggers Validation -> Parser -> OCR (if needed) -> Chunking.
@@ -53,7 +61,7 @@ async def upload_document(request: Request, file: UploadFile = File(...), db: Se
     )
 
 @router.get("/{document_id}", response_model=IngestedDocument)
-def get_document(document_id: str, db: Session = Depends(get_db)):
+def get_document(document_id: str, db: Session = Depends(get_db), current_user: dict = Depends(doc_read_check)):
     """Retrieve full structured JSON of an ingested document including all chunks."""
     doc = db.query(DocumentModel).filter(DocumentModel.document_id == document_id).first()
     if not doc:
@@ -71,7 +79,7 @@ def get_document(document_id: str, db: Session = Depends(get_db)):
     )
 
 @router.post("/index", status_code=status.HTTP_200_OK)
-def index_document(request: IndexRequest, db: Session = Depends(get_db)):
+def index_document(request: IndexRequest, db: Session = Depends(get_db), current_user: dict = Depends(doc_write_check)):
     """
     Index all chunks of a previously uploaded document into the Vector Store.
     """
@@ -89,7 +97,7 @@ def index_document(request: IndexRequest, db: Session = Depends(get_db)):
     return {"message": "Successfully indexed chunks", "chunk_count": len(chunks_list)}
 
 @router.get("/", response_model=List[DocumentResponse])
-def list_documents(db: Session = Depends(get_db)):
+def list_documents(db: Session = Depends(get_db), current_user: dict = Depends(doc_read_check)):
     """List all ingested documents."""
     docs = db.query(DocumentModel).all()
     return [
@@ -103,7 +111,7 @@ def list_documents(db: Session = Depends(get_db)):
     ]
 
 @router.delete("/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_document(document_id: str, db: Session = Depends(get_db)):
+def delete_document(document_id: str, db: Session = Depends(get_db), current_user: dict = Depends(doc_write_check)):
     """Delete a document from the system."""
     doc = db.query(DocumentModel).filter(DocumentModel.document_id == document_id).first()
     if not doc:

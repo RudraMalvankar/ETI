@@ -21,7 +21,7 @@ def clean_db():
 
 def test_enterprise_audit_log_capture():
     # 1. Trigger registration operation (mutation)
-    reg_payload = {"username": "auditor_user", "password": "securepassword", "role": "Auditor"}
+    reg_payload = {"username": "auditor_user", "password": "securepassword"}
     res = client.post("/api/v1/auth/register", json=reg_payload)
     assert res.status_code == 201
 
@@ -34,6 +34,12 @@ def test_enterprise_audit_log_capture():
         assert audit_entry.action == "User Creation"
         assert "/auth/register" in audit_entry.resource
         assert audit_entry.ip_address is not None
+
+        # Promote user to Auditor role in DB for step 4 audit logs API test
+        u = db.query(UserModel).filter(UserModel.username == "auditor_user").first()
+        if u:
+            u.role = "Auditor"
+            db.commit()
     finally:
         db.close()
 
@@ -46,5 +52,4 @@ def test_enterprise_audit_log_capture():
     api_res = client.get("/api/v1/audit/", headers=headers)
     assert api_res.status_code == 200
     res_data = api_res.json()
-    # There should be logs for registration, login, etc.
     assert len(res_data) >= 1

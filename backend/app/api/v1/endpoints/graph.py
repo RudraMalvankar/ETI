@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from pydantic import BaseModel
 from typing import List, Dict, Any
 from app.schemas.graph import GraphNode, GraphEdge, BlastRadiusResponse, GraphStatistics
@@ -8,9 +8,13 @@ from app.services.graph.BlastRadiusEngine import BlastRadiusEngine
 from app.services.graph.PathFinder import PathFinder
 from app.services.graph.GraphSerializer import GraphSerializer
 from app.services.graph.GraphFactory import GraphFactory
+from app.core.auth import RoleChecker
 import networkx as nx
 
 router = APIRouter()
+
+graph_read_check = RoleChecker(allowed_roles=["Operator", "Engineer", "Auditor", "Admin"])
+graph_write_check = RoleChecker(allowed_roles=["Engineer", "Admin"])
 
 class GraphBuildRequest(BaseModel):
     nodes: List[GraphNode]
@@ -20,31 +24,31 @@ class BlastRadiusRequest(BaseModel):
     failed_asset: str
 
 @router.post("/build", status_code=status.HTTP_201_CREATED)
-def build_graph(request: GraphBuildRequest):
+def build_graph(request: GraphBuildRequest, current_user: dict = Depends(graph_write_check)):
     builder = GraphBuilder()
     GraphFactory.reset()
     builder.build_from_lists(request.nodes, request.edges)
     return {"message": "Graph built successfully", "nodes": len(request.nodes), "edges": len(request.edges)}
 
 @router.get("/", response_model=Dict[str, Any])
-def get_graph_data():
+def get_graph_data(current_user: dict = Depends(graph_read_check)):
     serializer = GraphSerializer()
     return serializer.serialize()
 
 @router.get("/node/{node_id}")
-def get_node(node_id: str):
+def get_node(node_id: str, current_user: dict = Depends(graph_read_check)):
     graph = GraphFactory.get_graph()
     if not graph.has_node(node_id):
         raise HTTPException(status_code=404, detail="Node not found")
     return graph.get_node(node_id)
 
 @router.get("/neighbors/{node_id}")
-def get_neighbors(node_id: str):
+def get_neighbors(node_id: str, current_user: dict = Depends(graph_read_check)):
     traversal = GraphTraversal()
     return {"neighbors": traversal.get_neighbors(node_id)}
 
 @router.post("/blast-radius", response_model=BlastRadiusResponse)
-def blast_radius(request: BlastRadiusRequest):
+def blast_radius(request: BlastRadiusRequest, current_user: dict = Depends(graph_read_check)):
     engine = BlastRadiusEngine()
     try:
         return engine.compute_blast_radius(request.failed_asset)
@@ -52,7 +56,7 @@ def blast_radius(request: BlastRadiusRequest):
         raise HTTPException(status_code=404, detail=str(e))
 
 @router.get("/path")
-def get_path(source: str, target: str):
+def get_path(source: str, target: str, current_user: dict = Depends(graph_read_check)):
     finder = PathFinder()
     path = finder.shortest_path(source, target)
     if not path:
@@ -60,7 +64,7 @@ def get_path(source: str, target: str):
     return {"path": path}
 
 @router.get("/statistics", response_model=GraphStatistics)
-def get_statistics():
+def get_statistics(current_user: dict = Depends(graph_read_check)):
     graph = GraphFactory.get_graph().internal_graph
     return GraphStatistics(
         total_nodes=graph.number_of_nodes(),

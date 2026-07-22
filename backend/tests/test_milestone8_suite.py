@@ -6,10 +6,28 @@ import pytest
 import time
 from fastapi.testclient import TestClient
 from app.main import app
+from app.database.session import SessionLocal
+from app.models.models import UserModel
+from app.core.auth import get_password_hash
 
 client = TestClient(app)
 
-def test_operational_memory_lifecycle():
+@pytest.fixture
+def auth_headers():
+    """Helper fixture to create an Admin test user and generate Bearer auth headers."""
+    db = SessionLocal()
+    user = db.query(UserModel).filter(UserModel.username == "m8_admin").first()
+    if not user:
+        user = UserModel(username="m8_admin", hashed_password=get_password_hash("password123"), role="Admin")
+        db.add(user)
+        db.commit()
+    db.close()
+
+    login_res = client.post("/api/v1/auth/login", json={"username": "m8_admin", "password": "password123"})
+    token = login_res.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+def test_operational_memory_lifecycle(auth_headers):
     # 1. Store incident
     payload = {
         "failed_asset": "PUMP-101",
@@ -24,7 +42,7 @@ def test_operational_memory_lifecycle():
     }
     
     start_time = time.time()
-    res_store = client.post("/api/v1/memory/store", json=payload)
+    res_store = client.post("/api/v1/memory/store", json=payload, headers=auth_headers)
     assert res_store.status_code == 201
     data = res_store.json()
     incident_id = data["incident_id"]
@@ -32,32 +50,32 @@ def test_operational_memory_lifecycle():
     assert data["failure_type"] == "bearing_overheat"
     
     # 2. Get single incident
-    res_get = client.get(f"/api/v1/memory/{incident_id}")
+    res_get = client.get(f"/api/v1/memory/{incident_id}", headers=auth_headers)
     assert res_get.status_code == 200
     assert res_get.json()["incident_id"] == incident_id
 
     # 3. Get all incidents
-    res_all = client.get("/api/v1/memory/incidents")
+    res_all = client.get("/api/v1/memory/incidents", headers=auth_headers)
     assert res_all.status_code == 200
     assert len(res_all.json()) >= 1
 
     # 4. Similar incident search (<100ms requirement)
     start_search = time.time()
-    res_search = client.post("/api/v1/memory/search", json={"query": "PUMP-101 overheat", "top_k": 3})
+    res_search = client.post("/api/v1/memory/search", json={"query": "PUMP-101 overheat", "top_k": 3}, headers=auth_headers)
     search_latency_ms = (time.time() - start_search) * 1000
     assert res_search.status_code == 200
     assert len(res_search.json()) >= 1
     assert search_latency_ms < 100.0, f"Memory search latency {search_latency_ms:.2f}ms exceeded 100ms threshold"
 
     # 5. Get organizational trends
-    res_trends = client.get("/api/v1/memory/trends")
+    res_trends = client.get("/api/v1/memory/trends", headers=auth_headers)
     assert res_trends.status_code == 200
     trends = res_trends.json()
     assert "total_incidents" in trends
     assert "most_common_failure_type" in trends
     assert "most_vulnerable_asset" in trends
 
-def test_explainability_engine():
+def test_explainability_engine(auth_headers):
     explain_payload = {
         "simulation_id": "sim-test-101",
         "scenarios": [
@@ -78,7 +96,7 @@ def test_explainability_engine():
     }
 
     start_explain = time.time()
-    res_explain = client.post("/api/v1/explainability/explain", json=explain_payload)
+    res_explain = client.post("/api/v1/explainability/explain", json=explain_payload, headers=auth_headers)
     explain_latency_ms = (time.time() - start_explain) * 1000
     assert res_explain.status_code == 200
     explain_data = res_explain.json()
@@ -91,7 +109,7 @@ def test_explainability_engine():
     assert explain_data["decision_trace"]["confidence"] == 92.5
     assert explain_latency_ms < 200.0, f"Explainability latency {explain_latency_ms:.2f}ms exceeded 200ms threshold"
 
-def test_compliance_engine():
+def test_compliance_engine(auth_headers):
     # Store incident to generate compliance report from
     mem_payload = {
         "failed_asset": "COMPRESSOR-301",
@@ -100,12 +118,12 @@ def test_compliance_engine():
         "runbook_id": "rb-comp-301",
         "outcome": "Resolved"
     }
-    res_mem = client.post("/api/v1/memory/store", json=mem_payload)
+    res_mem = client.post("/api/v1/memory/store", json=mem_payload, headers=auth_headers)
     incident_id = res_mem.json()["incident_id"]
 
     # 1. Generate Compliance Report (<300ms requirement)
     start_comp = time.time()
-    res_report = client.post("/api/v1/compliance/report", json={"incident_id": incident_id})
+    res_report = client.post("/api/v1/compliance/report", json={"incident_id": incident_id}, headers=auth_headers)
     comp_latency_ms = (time.time() - start_comp) * 1000
     assert res_report.status_code == 201
     report = res_report.json()
@@ -124,18 +142,18 @@ def test_compliance_engine():
     assert comp_latency_ms < 300.0, f"Compliance report latency {comp_latency_ms:.2f}ms exceeded 300ms threshold"
 
     # 2. Get report by ID
-    res_get = client.get(f"/api/v1/compliance/{report_id}")
+    res_get = client.get(f"/api/v1/compliance/{report_id}", headers=auth_headers)
     assert res_get.status_code == 200
     assert res_get.json()["report_id"] == report_id
 
     # 3. Export PDF
-    res_pdf = client.post("/api/v1/compliance/export/pdf", json={"report_id": report_id})
+    res_pdf = client.post("/api/v1/compliance/export/pdf", json={"report_id": report_id}, headers=auth_headers)
     assert res_pdf.status_code == 200
     assert res_pdf.headers["content-type"] == "application/pdf"
     assert len(res_pdf.content) > 0
 
     # 4. Export DOCX
-    res_docx = client.post("/api/v1/compliance/export/docx", json={"report_id": report_id})
+    res_docx = client.post("/api/v1/compliance/export/docx", json={"report_id": report_id}, headers=auth_headers)
     assert res_docx.status_code == 200
     assert "wordprocessingml" in res_docx.headers["content-type"]
     assert len(res_docx.content) > 0

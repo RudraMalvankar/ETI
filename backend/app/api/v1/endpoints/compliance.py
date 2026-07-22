@@ -1,12 +1,15 @@
-from fastapi import APIRouter, HTTPException, status, Response
+from fastapi import APIRouter, HTTPException, status, Response, Depends
 from app.schemas.compliance import ComplianceReport, ComplianceReportRequest, ExportRequest
 from app.services.compliance.ComplianceEngine import ComplianceEngine
+from app.core.auth import RoleChecker
 
 router = APIRouter()
 engine = ComplianceEngine()
 
+compliance_check = RoleChecker(allowed_roles=["Auditor", "Admin"])
+
 @router.post("/report", response_model=ComplianceReport, status_code=status.HTTP_201_CREATED)
-def generate_report(request: ComplianceReportRequest):
+def generate_report(request: ComplianceReportRequest, current_user: dict = Depends(compliance_check)):
     try:
         report = engine.generate_report(request)
         return report
@@ -14,14 +17,14 @@ def generate_report(request: ComplianceReportRequest):
         raise HTTPException(status_code=404, detail=str(e))
 
 @router.get("/{report_id}", response_model=ComplianceReport)
-def get_report(report_id: str):
+def get_report(report_id: str, current_user: dict = Depends(compliance_check)):
     report = engine.get_report(report_id)
     if not report:
         raise HTTPException(status_code=404, detail="Compliance report not found.")
     return report
 
 @router.post("/export/pdf")
-def export_pdf(request: ExportRequest):
+def export_pdf(request: ExportRequest, current_user: dict = Depends(compliance_check)):
     report = engine.get_report(request.report_id)
     if not report:
         raise HTTPException(status_code=404, detail="Compliance report not found.")
@@ -33,7 +36,7 @@ def export_pdf(request: ExportRequest):
     )
 
 @router.post("/export/docx")
-def export_docx(request: ExportRequest):
+def export_docx(request: ExportRequest, current_user: dict = Depends(compliance_check)):
     report = engine.get_report(request.report_id)
     if not report:
         raise HTTPException(status_code=404, detail="Compliance report not found.")

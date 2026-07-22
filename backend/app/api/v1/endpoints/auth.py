@@ -26,7 +26,6 @@ LOCKOUT_MINUTES = 15
 class UserRegister(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
     password: str = Field(..., min_length=6)
-    role: str = Field(default="Operator")
 
 class UserLogin(BaseModel):
     username: str
@@ -46,7 +45,7 @@ class RefreshRequest(BaseModel):
     refresh_token: str
 
 class PasswordResetRequest(BaseModel):
-    username: str
+    old_password: str
     new_password: str = Field(..., min_length=6)
 
 @router.post("/register", response_model=UserProfile, status_code=status.HTTP_201_CREATED)
@@ -60,10 +59,12 @@ def register(request: UserRegister, db: Session = Depends(get_db)):
         )
     
     hashed_pwd = get_password_hash(request.password)
+    # SECURITY HARDENING: Self-registration strictly assigns default Operator role.
+    # Prevents privilege escalation attacks via user payload manipulation.
     user = UserModel(
         username=request.username,
         hashed_password=hashed_pwd,
-        role=request.role
+        role="Operator"
     )
     db.add(user)
     db.commit()
@@ -203,14 +204,25 @@ def logout(response: Response, payload: dict = Depends(get_current_user_payload)
     return {"message": "Logged out successfully"}
 
 @router.post("/reset-password")
-def reset_password(request: PasswordResetRequest, db: Session = Depends(get_db)):
-    """Password Reset workflow."""
-    user = db.query(UserModel).filter(UserModel.username == request.username).first()
+def reset_password(
+    request: PasswordResetRequest,
+    payload: dict = Depends(get_current_user_payload),
+    db: Session = Depends(get_db)
+):
+    """Authenticated Password Change workflow requiring verification of current password."""
+    username = payload.get("sub")
+    user = db.query(UserModel).filter(UserModel.username == username).first()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    if not verify_password(request.old_password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect current password"
+        )
 
     user.hashed_password = get_password_hash(request.new_password)
-    user.current_session_id = None  # Session Revocation on password change
+    user.current_session_id = None  # Force active session revocation
     db.commit()
     return {"message": "Password updated successfully and all active sessions revoked"}
 

@@ -1,12 +1,15 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from app.schemas.search import SearchRequest, SearchResponse
 from app.services.rag.vector_store import global_vector_store
+from app.core.auth import RoleChecker
 import time
 
 router = APIRouter()
 
+search_check = RoleChecker(allowed_roles=["Operator", "Engineer", "Auditor", "Admin"])
+
 @router.post("/", response_model=SearchResponse)
-def semantic_search(request: SearchRequest):
+def semantic_search(request: SearchRequest, current_user: dict = Depends(search_check)):
     """
     Perform hybrid semantic search.
     Returns the top-K chunks with similarity scores.

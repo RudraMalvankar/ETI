@@ -14,8 +14,11 @@ from app.models.blacklist import BlacklistedToken
 # Crypt Context for hashing passwords securely
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# JWT configuration settings
-JWT_SECRET = os.environ.get("JWT_SECRET", "super-secret-apex-key-for-jwt-signing-production-ready")
+# JWT configuration settings — MANDATE ENVIRONMENT VARIABLE LOADING (No hardcoded secrets)
+JWT_SECRET = os.environ.get("JWT_SECRET") or os.environ.get("JWT_SECRET_KEY") or settings.JWT_SECRET_KEY
+if not JWT_SECRET:
+    raise RuntimeError("CRITICAL SECURITY ERROR: JWT_SECRET or JWT_SECRET_KEY environment variable is not configured!")
+
 JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 REFRESH_TOKEN_EXPIRE_DAYS = 7

@@ -5,8 +5,8 @@ from app.core.auth import RoleChecker
 
 router = APIRouter()
 
-# Enforce Auditor role validation for checking security trails
-auditor_check = RoleChecker(allowed_roles=["Auditor", "Engineer"])
+# Enforce Auditor & Admin role validation for checking security trails
+auditor_check = RoleChecker(allowed_roles=["Auditor", "Admin"])
 
 @router.get("/", status_code=status.HTTP_200_OK)
 def list_audit_logs(
