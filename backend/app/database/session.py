@@ -1,11 +1,12 @@
-import os
 from contextlib import contextmanager
 from typing import Generator
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./apex.db")
+from app.core.config import settings
+
+DATABASE_URL = settings.DATABASE_URL
 
 # For SQLite, we must set connect_args={"check_same_thread": False}
 connect_args = {}

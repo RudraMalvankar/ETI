@@ -42,8 +42,15 @@ async def validation_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
     logger.warning("request_validation_error", errors=exc.errors())
+    messages = []
+    for err in exc.errors():
+        location = ".".join(str(part) for part in err.get("loc", []) if part != "body")
+        message = err.get("msg", "Invalid value")
+        messages.append(f"{location}: {message}" if location else message)
+
+    detail = "; ".join(messages[:3]) if messages else "Invalid request body or parameters."
     return build_error_response(
-        request, "ValidationError", "Invalid request body or parameters.", 422
+        request, "ValidationError", detail, 422
     )
 
 
