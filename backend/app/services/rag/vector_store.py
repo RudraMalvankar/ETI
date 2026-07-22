@@ -45,6 +45,7 @@ class VectorStoreService:
                     distance=models.Distance.COSINE,
                 ),
             )
+            self._ensure_payload_indexes()
             return
 
         vector_config = getattr(getattr(collection, "config", None), "params", None)
@@ -54,6 +55,7 @@ class VectorStoreService:
         points_count = getattr(collection, "points_count", 0) or 0
 
         if current_size == expected_size:
+            self._ensure_payload_indexes()
             return
 
         if points_count == 0:
@@ -71,6 +73,7 @@ class VectorStoreService:
                     distance=models.Distance.COSINE,
                 ),
             )
+            self._ensure_payload_indexes()
             return
 
         raise RuntimeError(
@@ -78,6 +81,22 @@ class VectorStoreService:
             f"{current_size}, but the active embedding provider requires {expected_size}. "
             "The collection is not empty, so it was not recreated automatically."
         )
+
+    def _ensure_payload_indexes(self):
+        for field_name in ("document_id", "asset_id", "chunk_id"):
+            try:
+                self.client.create_payload_index(
+                    collection_name=self.collection_name,
+                    field_name=field_name,
+                    field_schema=models.PayloadSchemaType.KEYWORD,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "qdrant_payload_index_ensure_failed",
+                    collection=self.collection_name,
+                    field=field_name,
+                    error=str(exc),
+                )
 
     def index_chunks(self, chunks: List[DocumentChunk]):
         if not chunks:
