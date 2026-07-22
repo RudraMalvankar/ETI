@@ -5,10 +5,13 @@ Centralized settings management using pydantic-settings.
 All configuration is loaded from environment variables or a .env file.
 """
 
+from pathlib import Path
 from typing import List
 
 from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+BACKEND_ROOT = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
@@ -18,7 +21,7 @@ class Settings(BaseSettings):
     """
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(BACKEND_ROOT / ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False,
@@ -60,6 +63,8 @@ class Settings(BaseSettings):
     )
 
     # Database / Vector Store
+    DATABASE_URL: str = "sqlite:///./apex.db"
+    REDIS_URL: str = ""
     QDRANT_URL: str = ""
     QDRANT_API_KEY: str = ""
     QDRANT_HOST: str = ""  # Empty = in-memory mode
