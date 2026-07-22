@@ -1,12 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.auth import RoleChecker
-from app.schemas.runbook import (
-    FeedbackRequest,
-    Runbook,
-    RunbookRequest,
-    RunbookStatistics,
-)
+from app.schemas.runbook import FeedbackRequest, Runbook, RunbookRequest, RunbookStatistics
 from app.services.runbook.RunbookEngine import RunbookEngine
 
 router = APIRouter()

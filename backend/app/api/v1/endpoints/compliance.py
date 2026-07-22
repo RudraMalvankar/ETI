@@ -1,11 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from app.core.auth import RoleChecker
-from app.schemas.compliance import (
-    ComplianceReport,
-    ComplianceReportRequest,
-    ExportRequest,
-)
+from app.schemas.compliance import ComplianceReport, ComplianceReportRequest, ExportRequest
 from app.services.compliance.ComplianceEngine import ComplianceEngine
 
 router = APIRouter()
