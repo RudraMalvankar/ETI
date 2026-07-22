@@ -1,6 +1,7 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { JSX, lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
+import { shallow } from 'zustand/shallow';
 import { Layout } from './components/layout/Layout';
 import { useApexStore } from './store/useApexStore';
 import { LoadingSkeleton } from './components/common/LoadingSkeleton';
@@ -54,6 +55,20 @@ const RegisterPage = lazy(() =>
     .catch(() => ({ default: () => <div>Register Page</div> }))
 );
 
+const ProtectedRoute = ({
+  isAuthenticated,
+  children,
+}: {
+  isAuthenticated: boolean;
+  children: JSX.Element;
+}) => {
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
 export function App() {
   const {
     isDarkMode,
@@ -62,7 +77,17 @@ export function App() {
     setCurrentUser,
     clearAuthSession,
     setConnectionState,
-  } = useApexStore();
+  } = useApexStore(
+    state => ({
+      isDarkMode: state.isDarkMode,
+      isAuthenticated: state.isAuthenticated,
+      currentUser: state.currentUser,
+      setCurrentUser: state.setCurrentUser,
+      clearAuthSession: state.clearAuthSession,
+      setConnectionState: state.setConnectionState,
+    }),
+    shallow
+  );
 
   useEffect(() => {
     if (isDarkMode) {
@@ -96,13 +121,6 @@ export function App() {
       });
   }, [setConnectionState]);
 
-  const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-    if (!isAuthenticated) {
-      return <Navigate to="/login" replace />;
-    }
-    return children;
-  };
-
   return (
     <BrowserRouter>
       <Suspense
@@ -120,7 +138,7 @@ export function App() {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Layout>
                   <DashboardPage />
                 </Layout>
@@ -130,7 +148,7 @@ export function App() {
           <Route
             path="/dashboard/documents"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Layout>
                   <DocumentsPage />
                 </Layout>
@@ -140,7 +158,7 @@ export function App() {
           <Route
             path="/dashboard/graph"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Layout>
                   <KnowledgeGraphPage />
                 </Layout>
@@ -150,7 +168,7 @@ export function App() {
           <Route
             path="/dashboard/simulation"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Layout>
                   <SimulationPage />
                 </Layout>
@@ -160,7 +178,7 @@ export function App() {
           <Route
             path="/dashboard/decision"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Layout>
                   <DecisionPage />
                 </Layout>
@@ -170,7 +188,7 @@ export function App() {
           <Route
             path="/dashboard/runbook"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Layout>
                   <RunbookPage />
                 </Layout>
@@ -180,7 +198,7 @@ export function App() {
           <Route
             path="/dashboard/memory"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Layout>
                   <MemoryPage />
                 </Layout>
@@ -190,7 +208,7 @@ export function App() {
           <Route
             path="/dashboard/compliance"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Layout>
                   <CompliancePage />
                 </Layout>
@@ -200,7 +218,7 @@ export function App() {
           <Route
             path="/dashboard/history"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Layout>
                   <IncidentHistoryPage />
                 </Layout>
@@ -210,7 +228,7 @@ export function App() {
           <Route
             path="/dashboard/settings"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Layout>
                   <SettingsPage />
                 </Layout>
