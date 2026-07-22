@@ -34,7 +34,11 @@ class SimulationSerializer:
             )
             if not row:
                 return None
-            from app.schemas.simulation import ScenarioResult, SimulationRequest, SimulationResponse
+            from app.schemas.simulation import (
+                ScenarioResult,
+                SimulationRequest,
+                SimulationResponse,
+            )
 
             sc_list = [ScenarioResult(**s) for s in row.scenarios] if row.scenarios else []
             sim_req = SimulationRequest(
@@ -47,7 +51,11 @@ class SimulationSerializer:
     def get_all(self):
         with get_db_context() as db:
             rows = db.query(SimulationModel).all()
-            from app.schemas.simulation import ScenarioResult, SimulationRequest, SimulationResponse
+            from app.schemas.simulation import (
+                ScenarioResult,
+                SimulationRequest,
+                SimulationResponse,
+            )
 
             res = []
             for row in rows:
@@ -57,7 +65,9 @@ class SimulationSerializer:
                 )
                 res.append(
                     SimulationResponse(
-                        simulation_id=row.simulation_id, request=sim_req, scenarios=sc_list
+                        simulation_id=row.simulation_id,
+                        request=sim_req,
+                        scenarios=sc_list,
                     )
                 )
             return res

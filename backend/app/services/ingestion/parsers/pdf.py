@@ -33,7 +33,10 @@ class PDFParser:
                 pix = page.get_pixmap()
                 img_bytes = pix.tobytes("png")
                 text = self.ocr_provider.extract_text(img_bytes)
-                metadata = {"source": "ocr", "provider": self.ocr_provider.__class__.__name__}
+                metadata = {
+                    "source": "ocr",
+                    "provider": self.ocr_provider.__class__.__name__,
+                }
             else:
                 # Direct PyMuPDF text extraction (Layout Analysis happens inherently via PyMuPDF dict)
                 text = page.get_text("text")

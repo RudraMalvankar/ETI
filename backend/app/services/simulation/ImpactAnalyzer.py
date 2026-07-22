@@ -33,4 +33,7 @@ class ImpactAnalyzer:
             else 1.0 if scenario_type == "Expected Case" else 2.0
         )
 
-        return {"downtime_hours": round(downtime * mod, 2), "cost_usd": round(cost * mod, 2)}
+        return {
+            "downtime_hours": round(downtime * mod, 2),
+            "cost_usd": round(cost * mod, 2),
+        }

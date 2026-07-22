@@ -4,7 +4,6 @@ Tests: Knowledge Graph API
 Covers build, get, node, neighbors, blast-radius, path, statistics.
 """
 
-
 GRAPH_PAYLOAD = {
     "nodes": [
         {

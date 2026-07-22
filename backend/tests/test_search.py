@@ -5,7 +5,6 @@ Covers semantic search endpoint, RBAC, edge cases.
 """
 
 
-
 class TestSemanticSearch:
     def test_search_returns_results(self, client, operator_headers):
         resp = client.post(
@@ -39,7 +38,11 @@ class TestSemanticSearch:
     def test_search_with_document_filter(self, client, operator_headers):
         resp = client.post(
             "/api/v1/search/",
-            json={"query": "maintenance procedure", "top_k": 3, "document_id": "doc_xyz"},
+            json={
+                "query": "maintenance procedure",
+                "top_k": 3,
+                "document_id": "doc_xyz",
+            },
             headers=operator_headers,
         )
         assert resp.status_code == 200

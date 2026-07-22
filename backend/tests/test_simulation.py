@@ -4,7 +4,6 @@ Tests: Simulation API
 Covers run, retrieve, scenarios, statistics.
 """
 
-
 SIM_PAYLOAD = {
     "failed_asset": "pump_A",
     "failure_type": "bearing_failure",

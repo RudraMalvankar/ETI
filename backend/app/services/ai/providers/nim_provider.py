@@ -69,7 +69,11 @@ class NIMProvider(AIProvider):
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
     def embed_batch(self, texts: List[str]) -> List[List[float]]:
         url = f"{self.base_url}/embeddings"
-        payload = {"input": texts, "model": "nvidia/embed-qa-4", "encoding_format": "float"}
+        payload = {
+            "input": texts,
+            "model": "nvidia/embed-qa-4",
+            "encoding_format": "float",
+        }
         try:
             response = self.client.post(url, json=payload)
             response.raise_for_status()

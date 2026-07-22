@@ -32,7 +32,11 @@ class EnterpriseAuditMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
 
         # 3. Log mutation operations (exclude GET/HEAD, focus on successful creations/modifications)
-        if method in ["POST", "PUT", "DELETE"] and response.status_code in [200, 201, 204]:
+        if method in ["POST", "PUT", "DELETE"] and response.status_code in [
+            200,
+            201,
+            204,
+        ]:
             action_map = {"POST": "Create", "PUT": "Update", "DELETE": "Delete"}
             action = f"{action_map.get(method, 'Modify')} Resource"
 

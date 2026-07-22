@@ -43,7 +43,8 @@ class VectorStoreService:
             self.client.create_collection(
                 collection_name=self.collection_name,
                 vectors_config=models.VectorParams(
-                    size=self.embedding_provider.dimension, distance=models.Distance.COSINE
+                    size=self.embedding_provider.dimension,
+                    distance=models.Distance.COSINE,
                 ),
             )
 

@@ -36,7 +36,11 @@ def run_stress_tests():
     res = requests.post(
         f"{BASE_URL}/documents/upload",
         files={
-            "file": ("corrupt.pdf", io.BytesIO(b"%PDF-1.4\ncorrupted content"), "application/pdf")
+            "file": (
+                "corrupt.pdf",
+                io.BytesIO(b"%PDF-1.4\ncorrupted content"),
+                "application/pdf",
+            )
         },
     )
     print_test("Corrupted PDF", res)
@@ -80,7 +84,11 @@ def run_stress_tests():
     print("\n--- Decision Engine Edge Cases ---")
     res = requests.post(
         f"{BASE_URL}/decision/recommend",
-        json={"failed_asset": "P-101", "failure_type": "break", "simulation_id": "invalid-sim-id"},
+        json={
+            "failed_asset": "P-101",
+            "failure_type": "break",
+            "simulation_id": "invalid-sim-id",
+        },
     )
     print_test("Decision on Missing Simulation", res)
 

@@ -12,7 +12,6 @@ Covers:
 """
 
 
-
 class TestRegistration:
     def test_register_success(self, client):
         resp = client.post(

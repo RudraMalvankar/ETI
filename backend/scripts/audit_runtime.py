@@ -22,14 +22,17 @@ try:
     admin = db.query(UserModel).filter(UserModel.username == "audit_admin").first()
     if not admin:
         admin = UserModel(
-            username="audit_admin", hashed_password=get_password_hash("password123"), role="Admin"
+            username="audit_admin",
+            hashed_password=get_password_hash("password123"),
+            role="Admin",
         )
         db.add(admin)
         db.commit()
     db.close()
 
     login_res = client.post(
-        "/api/v1/auth/login", json={"username": "audit_admin", "password": "password123"}
+        "/api/v1/auth/login",
+        json={"username": "audit_admin", "password": "password123"},
     )
     token = login_res.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
@@ -71,8 +74,18 @@ try:
     # 3. Graph
     graph_build_body = {
         "nodes": [
-            {"node_id": "PUMP-101", "name": "Main Pump", "type": "pump", "status": "active"},
-            {"node_id": "VALVE-202", "name": "Inlet Valve", "type": "valve", "status": "active"},
+            {
+                "node_id": "PUMP-101",
+                "name": "Main Pump",
+                "type": "pump",
+                "status": "active",
+            },
+            {
+                "node_id": "VALVE-202",
+                "name": "Inlet Valve",
+                "type": "valve",
+                "status": "active",
+            },
         ],
         "edges": [{"source": "VALVE-202", "target": "PUMP-101", "relationship_type": "feeds"}],
     }
@@ -86,11 +99,19 @@ try:
         json_body={"failed_asset": "PUMP-101"},
         expected_status=200,
     )
-    test_ep("GET", "/api/v1/graph/path?source=VALVE-202&target=PUMP-101", expected_status=200)
+    test_ep(
+        "GET",
+        "/api/v1/graph/path?source=VALVE-202&target=PUMP-101",
+        expected_status=200,
+    )
     test_ep("GET", "/api/v1/graph/statistics", expected_status=200)
 
     # 4. Simulation
-    sim_req = {"failed_asset": "PUMP-101", "failure_mode": "bearing_overheat", "severity": "high"}
+    sim_req = {
+        "failed_asset": "PUMP-101",
+        "failure_mode": "bearing_overheat",
+        "severity": "high",
+    }
     test_ep("POST", "/api/v1/simulation/run", json_body=sim_req, expected_status=201)
 
     # 5. Decision
@@ -133,7 +154,11 @@ try:
     exp_req = {
         "simulation_id": "sim-101",
         "scenarios": [
-            {"name": "Isolation", "affected_assets": ["PUMP-101"], "estimated_downtime_hours": 1.0}
+            {
+                "name": "Isolation",
+                "affected_assets": ["PUMP-101"],
+                "estimated_downtime_hours": 1.0,
+            }
         ],
         "documents": [],
         "confidence": 95.0,

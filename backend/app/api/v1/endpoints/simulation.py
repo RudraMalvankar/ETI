@@ -1,7 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.auth import RoleChecker
-from app.schemas.simulation import SimulationRequest, SimulationResponse, SimulationStatistics
+from app.schemas.simulation import (
+    SimulationRequest,
+    SimulationResponse,
+    SimulationStatistics,
+)
 from app.services.simulation.SimulationEngine import SimulationEngine
 from app.services.simulation.SimulationSerializer import global_simulation_db
 

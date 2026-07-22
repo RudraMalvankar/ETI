@@ -6,7 +6,6 @@ its declared response model schema.
 """
 
 
-
 class TestOpenAPISchema:
     def test_openapi_schema_accessible(self, client):
         resp = client.get("/openapi.json")
@@ -71,7 +70,12 @@ class TestResponseModels:
         assert resp.status_code == 200
         data = resp.json()
         # Must match Token model
-        assert set(data.keys()) >= {"access_token", "refresh_token", "token_type", "role"}
+        assert set(data.keys()) >= {
+            "access_token",
+            "refresh_token",
+            "token_type",
+            "role",
+        }
 
     def test_simulation_response_model(self, client, simulation_result, operator_headers):
         sim_id = simulation_result["simulation_id"]

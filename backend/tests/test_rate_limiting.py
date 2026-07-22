@@ -33,7 +33,11 @@ def setup_rate_limiting():
 
 def test_login_rate_limiting():
     # 1. Register test user
-    reg_payload = {"username": "limit_user", "password": "securepassword", "role": "Operator"}
+    reg_payload = {
+        "username": "limit_user",
+        "password": "securepassword",
+        "role": "Operator",
+    }
     res = client.post("/api/v1/auth/register", json=reg_payload)
     assert res.status_code == 201
 

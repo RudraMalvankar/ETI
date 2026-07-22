@@ -110,7 +110,9 @@ def decode_access_token(token: str) -> dict:
         )
 
 
-def get_current_user_payload(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
+def get_current_user_payload(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> dict:
     """FastAPI Dependency to enforce active authorized bearer token."""
     token = credentials.credentials
     payload = decode_access_token(token)

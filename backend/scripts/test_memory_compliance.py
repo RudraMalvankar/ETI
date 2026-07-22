@@ -33,13 +33,16 @@ def run_e2e_demo():
         "Procedure: In case of bearing overheat on P-101, isolate inlet valve V-202 immediately.",
     )
     c.drawString(
-        100, 600, "Safety Check: Verify electrical lock-out tag-out before opening housing."
+        100,
+        600,
+        "Safety Check: Verify electrical lock-out tag-out before opening housing.",
     )
     c.save()
 
     with open(sample_pdf_path, "rb") as f:
         res_doc = client.post(
-            "/api/v1/documents/upload", files={"file": ("sample_manual.pdf", f, "application/pdf")}
+            "/api/v1/documents/upload",
+            files={"file": ("sample_manual.pdf", f, "application/pdf")},
         )
 
     assert res_doc.status_code == 201
@@ -52,7 +55,8 @@ def run_e2e_demo():
     # STEP 2: Vector Search / Embedding Verification
     print("\n[2/13] RAG Vector Search Retrieval")
     res_search = client.post(
-        "/api/v1/search/", json={"query": "P-101 bearing overheat safety isolation", "top_k": 2}
+        "/api/v1/search/",
+        json={"query": "P-101 bearing overheat safety isolation", "top_k": 2},
     )
     print(
         f"  -> Search Status: HTTP {res_search.status_code} (Found {len(res_search.json().get('results', []))} matches)"
@@ -70,7 +74,8 @@ def run_e2e_demo():
     # STEP 4: Shadow Simulation Execution
     print("\n[4/13] Shadow Simulation Engine Execution")
     res_sim = client.post(
-        "/api/v1/simulation/run", json={"failed_asset": "P-101", "failure_type": "bearing_overheat"}
+        "/api/v1/simulation/run",
+        json={"failed_asset": "P-101", "failure_type": "bearing_overheat"},
     ).json()
     sim_id = res_sim.get("simulation_id", "sim-demo-01")
     print(f"  -> Simulation ID: {sim_id}")

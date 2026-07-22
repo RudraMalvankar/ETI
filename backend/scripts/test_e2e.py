@@ -40,7 +40,9 @@ def run_e2e():
     # 7. Semantic Retrieval
     print("\n[7] Semantic Retrieval...")
     res, lat = measure_latency(
-        requests.post, f"{BASE_URL}/search/", json={"query": "P-101 failure", "top_k": 2}
+        requests.post,
+        f"{BASE_URL}/search/",
+        json={"query": "P-101 failure", "top_k": 2},
     )
     print(f"  Search Latency: {lat:.2f}ms | Status: {res.status_code}")
     search_data = res.json()

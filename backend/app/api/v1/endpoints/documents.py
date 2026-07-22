@@ -54,7 +54,7 @@ async def upload_document(
         filename=ingested_doc.filename,
         file_type=ingested_doc.file_type,
         status=ingested_doc.status,
-        chunks=[c.model_dump() for c in ingested_doc.chunks] if ingested_doc.chunks else [],
+        chunks=([c.model_dump() for c in ingested_doc.chunks] if ingested_doc.chunks else []),
     )
     db.add(db_doc)
     db.commit()
@@ -69,7 +69,9 @@ async def upload_document(
 
 @router.get("/{document_id}", response_model=IngestedDocument)
 def get_document(
-    document_id: str, db: Session = Depends(get_db), current_user: dict = Depends(doc_read_check)
+    document_id: str,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(doc_read_check),
 ):
     """Retrieve full structured JSON of an ingested document including all chunks."""
     doc = db.query(DocumentModel).filter(DocumentModel.document_id == document_id).first()
@@ -130,7 +132,9 @@ def list_documents(db: Session = Depends(get_db), current_user: dict = Depends(d
 
 @router.delete("/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_document(
-    document_id: str, db: Session = Depends(get_db), current_user: dict = Depends(doc_write_check)
+    document_id: str,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(doc_write_check),
 ):
     """Delete a document from the system."""
     doc = db.query(DocumentModel).filter(DocumentModel.document_id == document_id).first()

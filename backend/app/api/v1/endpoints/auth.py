@@ -62,7 +62,8 @@ def register(request: UserRegister, db: Session = Depends(get_db)):
     existing_user = db.query(UserModel).filter(UserModel.username == request.username).first()
     if existing_user:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Username already registered"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already registered",
         )
 
     hashed_pwd = get_password_hash(request.password)
@@ -78,12 +79,16 @@ def register(request: UserRegister, db: Session = Depends(get_db)):
 @router.post("/login", response_model=Token)
 @limiter.limit("5/minute")
 def login(
-    request: Request, response: Response, request_body: UserLogin, db: Session = Depends(get_db)
+    request: Request,
+    response: Response,
+    request_body: UserLogin,
+    db: Session = Depends(get_db),
 ):
     user = db.query(UserModel).filter(UserModel.username == request_body.username).first()
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid username or password",
         )
 
     # Check for Account Lockout
@@ -112,7 +117,8 @@ def login(
             )
         db.commit()
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid username or password",
         )
 
     # Success: Reset failed attempts & generate sessions
@@ -141,7 +147,10 @@ def login(
     )
 
     return Token(
-        access_token=access_token, refresh_token=refresh_token, token_type="bearer", role=user.role
+        access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="bearer",
+        role=user.role,
     )
 
 
@@ -190,7 +199,10 @@ def refresh_token_rotation(
     )
 
     return Token(
-        access_token=new_access, refresh_token=new_refresh, token_type="bearer", role=user.role
+        access_token=new_access,
+        refresh_token=new_refresh,
+        token_type="bearer",
+        role=user.role,
     )
 
 
@@ -230,7 +242,8 @@ def reset_password(
 
     if not verify_password(request.old_password, user.hashed_password):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect current password"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect current password",
         )
 
     user.hashed_password = get_password_hash(request.new_password)

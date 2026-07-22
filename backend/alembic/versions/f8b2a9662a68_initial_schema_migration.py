@@ -29,7 +29,10 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("token"),
     )
     op.create_index(
-        op.f("ix_blacklisted_tokens_token"), "blacklisted_tokens", ["token"], unique=False
+        op.f("ix_blacklisted_tokens_token"),
+        "blacklisted_tokens",
+        ["token"],
+        unique=False,
     )
     op.create_table(
         "documents",
@@ -83,7 +86,10 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("simulation_id"),
     )
     op.create_index(
-        op.f("ix_simulations_simulation_id"), "simulations", ["simulation_id"], unique=False
+        op.f("ix_simulations_simulation_id"),
+        "simulations",
+        ["simulation_id"],
+        unique=False,
     )
     op.create_table(
         "users",

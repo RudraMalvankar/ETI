@@ -5,7 +5,6 @@ Covers recommend endpoint, error handling, RBAC.
 """
 
 
-
 class TestDecisionRecommend:
     def test_recommend_success(self, client, simulation_result, operator_headers):
         sim_id = simulation_result["simulation_id"]

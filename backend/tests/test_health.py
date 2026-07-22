@@ -3,7 +3,6 @@ Tests: Health, Readiness, and Liveness endpoints
 """
 
 
-
 class TestRootHealth:
     def test_root_health_returns_ok(self, client):
         resp = client.get("/health")

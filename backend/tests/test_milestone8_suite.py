@@ -25,7 +25,9 @@ def auth_headers():
     user = db.query(UserModel).filter(UserModel.username == "m8_admin").first()
     if not user:
         user = UserModel(
-            username="m8_admin", hashed_password=get_password_hash("password123"), role="Admin"
+            username="m8_admin",
+            hashed_password=get_password_hash("password123"),
+            role="Admin",
         )
         db.add(user)
         db.commit()
@@ -44,7 +46,10 @@ def test_operational_memory_lifecycle(auth_headers):
         "failure_type": "bearing_overheat",
         "simulation_id": "sim-test-101",
         "runbook_id": "rb-test-101",
-        "decision_data": {"recommended_strategy": "Isolate PUMP-101", "confidence_score": 95.0},
+        "decision_data": {
+            "recommended_strategy": "Isolate PUMP-101",
+            "confidence_score": 95.0,
+        },
         "outcome": "Resolved",
     }
 
@@ -142,7 +147,9 @@ def test_compliance_engine(auth_headers):
     # 1. Generate Compliance Report (<300ms requirement)
     start_comp = time.time()
     res_report = client.post(
-        "/api/v1/compliance/report", json={"incident_id": incident_id}, headers=auth_headers
+        "/api/v1/compliance/report",
+        json={"incident_id": incident_id},
+        headers=auth_headers,
     )
     comp_latency_ms = (time.time() - start_comp) * 1000
     assert res_report.status_code == 201
@@ -178,7 +185,9 @@ def test_compliance_engine(auth_headers):
 
     # 3. Export PDF
     res_pdf = client.post(
-        "/api/v1/compliance/export/pdf", json={"report_id": report_id}, headers=auth_headers
+        "/api/v1/compliance/export/pdf",
+        json={"report_id": report_id},
+        headers=auth_headers,
     )
     assert res_pdf.status_code == 200
     assert res_pdf.headers["content-type"] == "application/pdf"
@@ -186,7 +195,9 @@ def test_compliance_engine(auth_headers):
 
     # 4. Export DOCX
     res_docx = client.post(
-        "/api/v1/compliance/export/docx", json={"report_id": report_id}, headers=auth_headers
+        "/api/v1/compliance/export/docx",
+        json={"report_id": report_id},
+        headers=auth_headers,
     )
     assert res_docx.status_code == 200
     assert "wordprocessingml" in res_docx.headers["content-type"]

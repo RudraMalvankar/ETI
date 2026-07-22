@@ -166,7 +166,10 @@ class TestWorkflow2_IncidentToAuditLog:
 
         resp = client.put(
             f"/api/v1/runbook/{rb_id}/step/{step_id}",
-            json={"status": "completed", "feedback_notes": "Bearing replaced successfully"},
+            json={
+                "status": "completed",
+                "feedback_notes": "Bearing replaced successfully",
+            },
             headers=operator_headers,
         )
         assert resp.status_code == 200

@@ -28,7 +28,9 @@ def admin_headers():
     user = db.query(UserModel).filter(UserModel.username == "st_admin").first()
     if not user:
         user = UserModel(
-            username="st_admin", hashed_password=get_password_hash("password123"), role="Admin"
+            username="st_admin",
+            hashed_password=get_password_hash("password123"),
+            role="Admin",
         )
         db.add(user)
         db.commit()
@@ -77,7 +79,8 @@ def test_no_circular_imports_or_missing_classes():
         for file in files:
             if file.endswith(".py") and not file.startswith("__"):
                 rel_path = os.path.relpath(
-                    os.path.join(root, file), os.path.join(os.path.dirname(__file__), "..")
+                    os.path.join(root, file),
+                    os.path.join(os.path.dirname(__file__), ".."),
                 )
                 mod_name = rel_path.replace(".py", "").replace(os.sep, ".")
                 mod = importlib.import_module(mod_name)
@@ -111,7 +114,11 @@ def test_all_endpoints_runtime_stability(admin_headers):
     sim_id = res_sim.json()["simulation_id"]
 
     # Decision Recommendation
-    dec_payload = {"failed_asset": "COMP-301", "failure_type": "seal_leak", "simulation_id": sim_id}
+    dec_payload = {
+        "failed_asset": "COMP-301",
+        "failure_type": "seal_leak",
+        "simulation_id": sim_id,
+    }
     res_dec = client.post("/api/v1/decision/recommend", json=dec_payload, headers=admin_headers)
     assert res_dec.status_code == 200
     dec_data = res_dec.json()

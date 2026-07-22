@@ -24,7 +24,7 @@ class MemorySerializer:
         graph_snapshot = {
             "nodes_count": len(graph.all_nodes()),
             "edges_count": len(graph.all_edges()),
-            "failed_node": graph.get_node(failed_asset) if graph.has_node(failed_asset) else {},
+            "failed_node": (graph.get_node(failed_asset) if graph.has_node(failed_asset) else {}),
         }
 
         # 2. Simulation Data

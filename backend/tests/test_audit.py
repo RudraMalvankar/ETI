@@ -5,7 +5,6 @@ Covers audit log retrieval with RBAC enforcement.
 """
 
 
-
 class TestAuditLogs:
     def test_list_audit_logs_auditor(self, client, auditor_headers):
         resp = client.get("/api/v1/audit/", headers=auditor_headers)

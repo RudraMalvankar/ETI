@@ -69,7 +69,10 @@ def run_test():
     print("\n3. Technician marks Step 2 as FAILED (triggering dynamic regeneration)...")
     res = requests.put(
         f"{BASE_URL}/runbook/{rb_id}/step/{step_2_id}",
-        json={"status": "failed", "feedback_notes": "Valve is rusted shut, cannot isolate."},
+        json={
+            "status": "failed",
+            "feedback_notes": "Valve is rusted shut, cannot isolate.",
+        },
     )
     rb = res.json()
 

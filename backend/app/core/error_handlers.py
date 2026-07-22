@@ -7,9 +7,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.core.exceptions import (
-    APEXException,
-)
+from app.core.exceptions import APEXException
 
 logger = structlog.get_logger("apex.errors")
 
@@ -59,7 +57,10 @@ async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError) -
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     logger.critical("unhandled_global_exception", error=str(exc))
     return build_error_response(
-        request, "InternalServerError", "An unexpected internal server error occurred.", 500
+        request,
+        "InternalServerError",
+        "An unexpected internal server error occurred.",
+        500,
     )
 
 

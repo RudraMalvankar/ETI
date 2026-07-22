@@ -4,7 +4,6 @@ Tests: Explainability API
 Covers explain endpoint with RBAC.
 """
 
-
 EXPLAIN_CONTEXT = {
     "failed_asset": "pump_A",
     "failure_type": "bearing_failure",

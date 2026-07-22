@@ -16,7 +16,12 @@ class AuditTrail:
 
         buffer = BytesIO()
         doc = SimpleDocTemplate(
-            buffer, pagesize=letter, rightMargin=40, leftMargin=40, topMargin=40, bottomMargin=40
+            buffer,
+            pagesize=letter,
+            rightMargin=40,
+            leftMargin=40,
+            topMargin=40,
+            bottomMargin=40,
         )
 
         styles = getSampleStyleSheet()

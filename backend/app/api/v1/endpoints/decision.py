@@ -13,7 +13,9 @@ decision_check = RoleChecker(allowed_roles=["Operator", "Engineer", "Admin"])
 @router.post("/recommend", response_model=DecisionResponse, status_code=status.HTTP_200_OK)
 @limiter.limit("10/minute")
 def recommend_decision(
-    request: Request, request_body: DecisionRequest, current_user: dict = Depends(decision_check)
+    request: Request,
+    request_body: DecisionRequest,
+    current_user: dict = Depends(decision_check),
 ):
     engine = DecisionEngine()
     try:
