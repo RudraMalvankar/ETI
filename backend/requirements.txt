@@ -9,8 +9,8 @@ pydantic-settings>=2.3.0,<3.0.0
 python-multipart>=0.0.7,<1.0.0
 
 # Database & ORM
-sqlalchemy>=2.0.31,<3.0.0
-alembic>=1.13.2,<2.0.0
+sqlalchemy>=2.0.51,<3.0.0
+alembic>=1.18.5,<2.0.0
 psycopg2-binary>=2.9.9,<3.0.0
 
 # Cache & Task Queue
