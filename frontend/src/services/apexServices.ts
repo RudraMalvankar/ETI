@@ -1,6 +1,7 @@
 import { apiClient } from './apiClient';
 import {
   DocumentResponse,
+  IngestedDocumentDetail,
   SearchResponse,
   GraphData,
   SimulationResponse,
@@ -10,6 +11,8 @@ import {
   TrendAnalysis,
   ExplanationResponse,
   ComplianceReport,
+  PlatformSettings,
+  PlatformSettingsEnvelope,
 } from '../types/apex';
 
 // --- DOCUMENTS ---
@@ -34,6 +37,11 @@ export async function listDocuments(): Promise<DocumentResponse[]> {
   return res.data;
 }
 
+export async function getDocumentDetails(documentId: string): Promise<IngestedDocumentDetail> {
+  const res = await apiClient.get(`/documents/${documentId}`);
+  return res.data;
+}
+
 export async function vectorSearch(query: string, top_k: number = 5): Promise<SearchResponse> {
   const res = await apiClient.post('/search/', { query, top_k });
   return res.data;
@@ -52,11 +60,30 @@ export async function getGraph(): Promise<GraphData> {
   return res.data;
 }
 
-export async function getBlastRadius(
-  assetId: string,
-  depth: number = 2
-): Promise<{ failed_asset: string; blast_radius: string[]; risk_score: number }> {
-  const res = await apiClient.get(`/graph/blast-radius/${assetId}`, { params: { depth } });
+export async function getGraphNode(nodeId: string): Promise<Record<string, any>> {
+  const res = await apiClient.get(`/graph/node/${nodeId}`);
+  return res.data;
+}
+
+export async function getGraphStatistics(): Promise<{
+  total_nodes: number;
+  total_edges: number;
+  connected_components: number;
+  is_directed_acyclic_graph: boolean;
+  density: number;
+}> {
+  const res = await apiClient.get('/graph/statistics');
+  return res.data;
+}
+
+export async function getBlastRadius(assetId: string): Promise<{
+  failed_asset: string;
+  affected_assets: string[];
+  propagation_path: Array<Record<string, string>>;
+  max_distance: number;
+  severity: string;
+}> {
+  const res = await apiClient.post('/graph/blast-radius', { failed_asset: assetId });
   return res.data;
 }
 
@@ -75,7 +102,7 @@ export async function evaluateDecision(
   failure_type: string,
   simulation_id: string
 ): Promise<DecisionResponse> {
-  const res = await apiClient.post('/decision/evaluate', {
+  const res = await apiClient.post('/decision/recommend', {
     failed_asset,
     failure_type,
     simulation_id,
@@ -184,4 +211,17 @@ export async function exportComplianceDocx(report_id: string): Promise<Blob> {
   return new Blob([res.data], {
     type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   });
+}
+
+// --- PLATFORM SETTINGS ---
+export async function getPlatformSettings(): Promise<PlatformSettingsEnvelope> {
+  const res = await apiClient.get('/settings/');
+  return res.data;
+}
+
+export async function updatePlatformSettings(
+  payload: Omit<PlatformSettings, 'provider_status' | 'updated_by' | 'updated_at'>
+): Promise<PlatformSettingsEnvelope> {
+  const res = await apiClient.put('/settings/', payload);
+  return res.data;
 }

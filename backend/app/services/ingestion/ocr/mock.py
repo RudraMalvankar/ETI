@@ -17,3 +17,10 @@ class MockOCRProvider(OCRProvider):
 
     def extract_tables(self, image_bytes: bytes) -> List[Dict[str, Any]]:
         return [{"columns": ["Sensor", "Value"], "rows": [["Pressure", "150 PSI"]]}]
+
+    def get_last_result_metadata(self) -> Dict[str, Any]:
+        return {
+            "provider": "mock",
+            "ocr_confidence": 0.0,
+            "mode": "demo",
+        }

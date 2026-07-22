@@ -1,10 +1,10 @@
-import os
 from typing import List, Optional
 
 import structlog
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 
+from app.core.config import settings
 from app.schemas.document import DocumentChunk
 from app.schemas.search import SearchResultChunk
 from app.services.rag.embeddings.base import EmbeddingProvider
@@ -15,21 +15,19 @@ logger = structlog.get_logger("apex.vector_store")
 
 class VectorStoreService:
     def __init__(self, collection_name: str = None, embedding_provider: EmbeddingProvider = None):
-        self.collection_name = collection_name or os.environ.get(
-            "QDRANT_COLLECTION", "apex_documents"
-        )
+        self.collection_name = collection_name or settings.QDRANT_COLLECTION
         self.embedding_provider = embedding_provider or AdaptiveEmbeddingProvider()
 
-        qdrant_url = os.environ.get("QDRANT_URL")
-        qdrant_api_key = os.environ.get("QDRANT_API_KEY")
-        qdrant_host = os.environ.get("QDRANT_HOST")
+        qdrant_url = settings.QDRANT_URL
+        qdrant_api_key = settings.QDRANT_API_KEY
+        qdrant_host = settings.QDRANT_HOST
 
         if qdrant_url:
             logger.info("qdrant_connecting", mode="cloud", url=qdrant_url)
             self.client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
         elif qdrant_host:
             logger.info("qdrant_connecting", mode="local", host=qdrant_host)
-            self.client = QdrantClient(host=qdrant_host, port=6333)
+            self.client = QdrantClient(host=qdrant_host, port=settings.QDRANT_PORT)
         else:
             logger.info("qdrant_connecting", mode="in_memory")
             self.client = QdrantClient(":memory:")
@@ -38,7 +36,7 @@ class VectorStoreService:
 
     def _init_collection(self):
         try:
-            self.client.get_collection(self.collection_name)
+            collection = self.client.get_collection(self.collection_name)
         except Exception:
             self.client.create_collection(
                 collection_name=self.collection_name,
@@ -47,6 +45,39 @@ class VectorStoreService:
                     distance=models.Distance.COSINE,
                 ),
             )
+            return
+
+        vector_config = getattr(getattr(collection, "config", None), "params", None)
+        configured_vectors = getattr(vector_config, "vectors", None) if vector_config else None
+        current_size = getattr(configured_vectors, "size", None) if configured_vectors else None
+        expected_size = self.embedding_provider.dimension
+        points_count = getattr(collection, "points_count", 0) or 0
+
+        if current_size == expected_size:
+            return
+
+        if points_count == 0:
+            logger.warning(
+                "qdrant_collection_recreating_for_dimension_mismatch",
+                collection=self.collection_name,
+                current_size=current_size,
+                expected_size=expected_size,
+            )
+            self.client.delete_collection(self.collection_name)
+            self.client.create_collection(
+                collection_name=self.collection_name,
+                vectors_config=models.VectorParams(
+                    size=expected_size,
+                    distance=models.Distance.COSINE,
+                ),
+            )
+            return
+
+        raise RuntimeError(
+            f"Existing Qdrant collection '{self.collection_name}' uses vector size "
+            f"{current_size}, but the active embedding provider requires {expected_size}. "
+            "The collection is not empty, so it was not recreated automatically."
+        )
 
     def index_chunks(self, chunks: List[DocumentChunk]):
         if not chunks:

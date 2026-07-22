@@ -17,3 +17,7 @@ class OCRProvider(ABC):
     def extract_tables(self, image_bytes: bytes) -> List[Dict[str, Any]]:
         """Extract structured tables from an image."""
         pass
+
+    def get_last_result_metadata(self) -> Dict[str, Any]:
+        """Optional metadata about the last OCR operation, such as confidence or model details."""
+        return {}

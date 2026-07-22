@@ -12,6 +12,7 @@ from app.api.v1.endpoints import (
     runbook,
     search,
     simulation,
+    settings,
 )
 
 api_router = APIRouter()
@@ -26,3 +27,4 @@ api_router.include_router(memory.router, prefix="/memory", tags=["memory"])
 api_router.include_router(explainability.router, prefix="/explainability", tags=["explainability"])
 api_router.include_router(compliance.router, prefix="/compliance", tags=["compliance"])
 api_router.include_router(audit.router, prefix="/audit", tags=["audit"])
+api_router.include_router(settings.router, prefix="/settings", tags=["settings"])

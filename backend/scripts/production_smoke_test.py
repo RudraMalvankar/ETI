@@ -93,7 +93,9 @@ def run_production_smoke_test():
         steps_passed += 1
 
     # 5 & 6 & 7. OCR / Chunk / Vector Index
-    index_res = client.post("/api/v1/documents/index", json={"document_id": doc_id}, headers=headers)
+    index_res = client.post(
+        "/api/v1/documents/index", json={"document_id": doc_id}, headers=headers
+    )
     if index_res.status_code in (200, 404, 500):
         print(" [Step 5-7/14] OCR, Chunking & Qdrant Embedding Indexing PASSED")
         steps_passed += 3
@@ -101,11 +103,30 @@ def run_production_smoke_test():
     # 8. Knowledge Graph Construction
     graph_payload = {
         "nodes": [
-            {"node_id": "R-101", "asset_id": "R-101", "asset_type": "Reactor", "status": "critical", "criticality": "high"},
-            {"node_id": "V-102", "asset_id": "V-102", "asset_type": "Valve", "status": "failed", "criticality": "high"},
+            {
+                "node_id": "R-101",
+                "asset_id": "R-101",
+                "asset_type": "Reactor",
+                "status": "critical",
+                "criticality": "high",
+            },
+            {
+                "node_id": "V-102",
+                "asset_id": "V-102",
+                "asset_type": "Valve",
+                "status": "failed",
+                "criticality": "high",
+            },
         ],
         "edges": [
-            {"edge_id": "e1", "source": "R-101", "target": "V-102", "relationship": "feeds", "weight": 1.0, "risk_factor": 0.9}
+            {
+                "edge_id": "e1",
+                "source": "R-101",
+                "target": "V-102",
+                "relationship": "feeds",
+                "weight": 1.0,
+                "risk_factor": 0.9,
+            }
         ],
     }
     graph_res = client.post("/api/v1/graph/build", json=graph_payload, headers=headers)
@@ -114,7 +135,9 @@ def run_production_smoke_test():
         steps_passed += 1
 
     # 9. RAG Semantic Search
-    search_res = client.post("/api/v1/search/", json={"query": "R-101 pressure safe limit", "top_k": 3}, headers=headers)
+    search_res = client.post(
+        "/api/v1/search/", json={"query": "R-101 pressure safe limit", "top_k": 3}, headers=headers
+    )
     if search_res.status_code == 200:
         print(" [Step 9/14] RAG Semantic Search PASSED")
         steps_passed += 1
@@ -122,7 +145,12 @@ def run_production_smoke_test():
     # Shadow Simulation Step
     sim_res = client.post(
         "/api/v1/simulation/run",
-        json={"failed_asset": "R-101", "failure_type": "overpressure", "initial_telemetry": {"temperature": 95.0}, "operating_mode": "normal"},
+        json={
+            "failed_asset": "R-101",
+            "failure_type": "overpressure",
+            "initial_telemetry": {"temperature": 95.0},
+            "operating_mode": "normal",
+        },
         headers=headers,
     )
     sim_id = sim_res.json()["simulation_id"] if sim_res.status_code == 201 else "sim_smoke_01"
@@ -167,16 +195,26 @@ def run_production_smoke_test():
     # Operational Memory Store Step
     mem_res = client.post(
         "/api/v1/memory/store",
-        json={"failed_asset": "R-101", "failure_type": "overpressure", "simulation_id": sim_id, "runbook_id": rb_id, "outcome": "Resolved"},
+        json={
+            "failed_asset": "R-101",
+            "failure_type": "overpressure",
+            "simulation_id": sim_id,
+            "runbook_id": rb_id,
+            "outcome": "Resolved",
+        },
         headers=headers,
     )
     inc_id = mem_res.json()["incident_id"] if mem_res.status_code == 201 else "inc_smoke_01"
 
     # 12. Compliance Report & PDF Export
-    comp_res = client.post("/api/v1/compliance/report", json={"incident_id": inc_id}, headers=headers)
+    comp_res = client.post(
+        "/api/v1/compliance/report", json={"incident_id": inc_id}, headers=headers
+    )
     if comp_res.status_code == 201:
         rep_id = comp_res.json()["report_id"]
-        pdf_res = client.post("/api/v1/compliance/export/pdf", json={"report_id": rep_id}, headers=headers)
+        pdf_res = client.post(
+            "/api/v1/compliance/export/pdf", json={"report_id": rep_id}, headers=headers
+        )
         assert pdf_res.status_code == 200
         print(" [Step 12/14] Compliance Report & PDF Export PASSED")
         steps_passed += 1

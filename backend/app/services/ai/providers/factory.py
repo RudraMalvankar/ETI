@@ -27,8 +27,10 @@ class ProviderFactory:
             cls._cached_provider = GeminiProvider()
         elif provider_type == "nim":
             cls._cached_provider = NIMProvider()
-        else:
+        elif provider_type == "mock":
             cls._cached_provider = MockAIProvider()
+        else:
+            raise ValueError(f"Unsupported AI provider: {provider_type}")
 
         return cls._cached_provider
 

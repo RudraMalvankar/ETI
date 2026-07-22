@@ -4,6 +4,8 @@ import { Toaster } from 'sonner';
 import { Layout } from './components/layout/Layout';
 import { useApexStore } from './store/useApexStore';
 import { LoadingSkeleton } from './components/common/LoadingSkeleton';
+import { fetchCurrentUser } from './services/authServices';
+import { checkBackendHealth } from './services/apiClient';
 
 // Dashboard Pages
 const DashboardPage = lazy(() =>
@@ -53,7 +55,14 @@ const RegisterPage = lazy(() =>
 );
 
 export function App() {
-  const { isDarkMode } = useApexStore();
+  const {
+    isDarkMode,
+    isAuthenticated,
+    currentUser,
+    setCurrentUser,
+    clearAuthSession,
+    setConnectionState,
+  } = useApexStore();
 
   useEffect(() => {
     if (isDarkMode) {
@@ -62,6 +71,37 @@ export function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [isDarkMode]);
+
+  useEffect(() => {
+    if (!isAuthenticated || currentUser) {
+      return;
+    }
+
+    fetchCurrentUser()
+      .then(profile => {
+        setCurrentUser(profile);
+      })
+      .catch(() => {
+        clearAuthSession();
+      });
+  }, [clearAuthSession, currentUser, isAuthenticated, setCurrentUser]);
+
+  useEffect(() => {
+    checkBackendHealth()
+      .then(isHealthy => {
+        setConnectionState(isHealthy ? 'connected' : 'offline');
+      })
+      .catch(() => {
+        setConnectionState('offline');
+      });
+  }, [setConnectionState]);
+
+  const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+    if (!isAuthenticated) {
+      return <Navigate to="/login" replace />;
+    }
+    return children;
+  };
 
   return (
     <BrowserRouter>
@@ -80,81 +120,101 @@ export function App() {
           <Route
             path="/dashboard"
             element={
-              <Layout>
-                <DashboardPage />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <DashboardPage />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/dashboard/documents"
             element={
-              <Layout>
-                <DocumentsPage />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <DocumentsPage />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/dashboard/graph"
             element={
-              <Layout>
-                <KnowledgeGraphPage />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <KnowledgeGraphPage />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/dashboard/simulation"
             element={
-              <Layout>
-                <SimulationPage />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <SimulationPage />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/dashboard/decision"
             element={
-              <Layout>
-                <DecisionPage />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <DecisionPage />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/dashboard/runbook"
             element={
-              <Layout>
-                <RunbookPage />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <RunbookPage />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/dashboard/memory"
             element={
-              <Layout>
-                <MemoryPage />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <MemoryPage />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/dashboard/compliance"
             element={
-              <Layout>
-                <CompliancePage />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <CompliancePage />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/dashboard/history"
             element={
-              <Layout>
-                <IncidentHistoryPage />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <IncidentHistoryPage />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/dashboard/settings"
             element={
-              <Layout>
-                <SettingsPage />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <SettingsPage />
+                </Layout>
+              </ProtectedRoute>
             }
           />
 

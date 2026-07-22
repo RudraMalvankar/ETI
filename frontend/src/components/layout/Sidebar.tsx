@@ -18,11 +18,15 @@ import {
   ChevronsUpDown,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useApexStore } from '../../store/useApexStore';
+import { logoutUser } from '../../services/authServices';
+import { toast } from 'sonner';
 
 export const Sidebar: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { clearAuthSession } = useApexStore();
 
   const navGroups = [
     {
@@ -50,6 +54,17 @@ export const Sidebar: React.FC = () => {
       ],
     },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      clearAuthSession();
+      toast.success('Signed out successfully.');
+      navigate('/login');
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to sign out cleanly.');
+    }
+  };
 
   return (
     <aside
@@ -145,7 +160,7 @@ export const Sidebar: React.FC = () => {
           {!isCollapsed && <span>Settings</span>}
         </button>
         <button
-          onClick={() => navigate('/login')}
+          onClick={handleLogout}
           className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-[var(--text-secondary)] hover:text-accent-red hover:bg-accent-red/10 transition"
           title={isCollapsed ? 'Logout' : undefined}
         >
