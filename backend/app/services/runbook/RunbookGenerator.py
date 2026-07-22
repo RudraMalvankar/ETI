@@ -33,9 +33,13 @@ class RunbookGenerator:
         
         total_dur = sum(s.estimated_duration for s in steps)
         assets = payload.get("affected_assets", [])
+        failed_asset = payload.get("failed_asset", "P-101")
+        failure_type = payload.get("failure_type", "Operational Incident")
         
         return Runbook(
             runbook_id=str(uuid.uuid4()),
+            failed_asset=failed_asset,
+            failure_type=failure_type,
             steps=steps,
             affected_assets=assets,
             total_estimated_duration=total_dur,

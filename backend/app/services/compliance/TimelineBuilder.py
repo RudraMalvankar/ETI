@@ -12,7 +12,7 @@ class TimelineBuilder:
         try:
             t0 = datetime.datetime.fromisoformat(memory.timestamp)
         except Exception:
-            t0 = datetime.datetime.utcnow()
+            t0 = datetime.datetime.now(datetime.timezone.utc)
 
         t1 = t0 + datetime.timedelta(minutes=1)
         t2 = t0 + datetime.timedelta(minutes=3)

@@ -20,7 +20,10 @@ class RunbookRequest(BaseModel):
 
 class Runbook(BaseModel):
     runbook_id: str
+    failed_asset: str = "Unknown"
+    failure_type: str = "Unknown"
     status: str = "active"
+    is_regenerated: bool = False
     steps: List[RunbookStep]
     affected_assets: List[str]
     total_estimated_duration: float

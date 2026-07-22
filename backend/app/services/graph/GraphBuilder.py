@@ -11,7 +11,8 @@ class GraphBuilder:
         """
         Populate the Deterministic Knowledge Graph Engine.
         """
-        for node in nodes:
+        for n in nodes:
+            node = GraphNode(**n) if isinstance(n, dict) else n
             self.graph.add_node(
                 node.node_id,
                 asset_id=node.asset_id,
@@ -23,7 +24,8 @@ class GraphBuilder:
                 metadata=node.metadata
             )
             
-        for edge in edges:
+        for e in edges:
+            edge = GraphEdge(**e) if isinstance(e, dict) else e
             self.graph.add_edge(
                 edge.source,
                 edge.target,

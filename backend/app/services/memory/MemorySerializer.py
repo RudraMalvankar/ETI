@@ -64,5 +64,5 @@ class MemorySerializer:
             technician_feedback=technician_feedback,
             regenerated_runbooks=regenerated_runbooks,
             outcome=request.outcome or "Resolved",
-            timestamp=datetime.datetime.utcnow().isoformat()
+            timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
         )

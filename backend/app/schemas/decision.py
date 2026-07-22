@@ -28,4 +28,4 @@ class DecisionResponse(BaseModel):
     estimated_risk_reduction: float
     estimated_cost: float
     estimated_downtime: float
-    decision_trace: DecisionTrace
+    decision_trace: Optional[DecisionTrace] = None

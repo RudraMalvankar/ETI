@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 class DocumentChunk(BaseModel):
@@ -17,7 +17,7 @@ class IngestedDocument(BaseModel):
     document_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     filename: str
     file_type: str
-    uploaded_at: datetime = Field(default_factory=datetime.utcnow)
+    uploaded_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     chunks: List[DocumentChunk] = Field(default_factory=list)
     status: str = "processing"
     error_message: Optional[str] = None

@@ -1,12 +1,12 @@
 from pydantic import BaseModel, Field
 from typing import Dict, Any, List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 class SimulationRequest(BaseModel):
     failed_asset: str
     failure_type: str
     initial_telemetry: Dict[str, Any] = Field(default_factory=dict)
-    timestamp: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     operating_mode: str = "normal"
 
 class RiskProfile(BaseModel):

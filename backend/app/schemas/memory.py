@@ -13,7 +13,7 @@ class IncidentMemory(BaseModel):
     technician_feedback: List[Any] = Field(default_factory=list)
     regenerated_runbooks: List[Dict[str, Any]] = Field(default_factory=list)
     outcome: str = "Resolved"
-    timestamp: str = Field(default_factory=lambda: datetime.datetime.utcnow().isoformat())
+    timestamp: str = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
 
 class StoreMemoryRequest(BaseModel):
     failed_asset: str
