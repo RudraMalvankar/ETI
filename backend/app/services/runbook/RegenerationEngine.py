@@ -22,11 +22,24 @@ class RegenerationEngine:
         # Recalculate remaining workflow
         new_steps = []
         if failed_step:
+            evidence_summary = ""
+            if failed_step.document_citations:
+                cited_docs = sorted(
+                    {citation.get("document_id", "") for citation in failed_step.document_citations}
+                )
+                evidence_summary = (
+                    f" Re-check cited procedures and evidence from: {', '.join(doc for doc in cited_docs if doc)}."
+                )
+
             new_steps.append(
                 RunbookStep(
                     step_id=str(uuid.uuid4()),
-                    title=f"Mitigate Failure: {failed_step.title}",
-                    description="Investigate and mitigate the failed step. Apply alternative strategy.",
+                    title=f"Mitigate Failed Step: {failed_step.title}",
+                    description=(
+                        f"Investigate why '{failed_step.title}' failed on asset {failed_step.target_asset}. "
+                        "Stabilize the work area, capture technician findings, and execute the safest alternate intervention."
+                        f"{evidence_summary}"
+                    ),
                     target_asset=failed_step.target_asset,
                     priority=failed_step.priority,
                     estimated_duration=failed_step.estimated_duration * 1.5,
@@ -37,11 +50,15 @@ class RegenerationEngine:
             new_steps.append(
                 RunbookStep(
                     step_id=str(uuid.uuid4()),
-                    title="System Verification Post-Mitigation",
-                    description="Verify system stability.",
-                    target_asset="System",
+                    title="Verify Recovery After Regeneration",
+                    description=(
+                        "Confirm the mitigated asset is stable, validate upstream/downstream dependencies, "
+                        "and record the updated operational state before closure."
+                    ),
+                    target_asset=failed_step.target_asset,
                     priority=failed_step.priority + 1,
                     estimated_duration=1.0,
+                    document_citations=failed_step.document_citations,
                 )
             )
 

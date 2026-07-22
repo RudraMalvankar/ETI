@@ -3,18 +3,39 @@ import { AuthLayout } from '../components/auth/AuthLayout';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { useApexStore } from '../store/useApexStore';
+import { loginUser } from '../services/authServices';
+import { getStoredAccessToken, getStoredRefreshToken } from '../services/authStorage';
+import { toast } from 'sonner';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { setActiveTab } = useApexStore();
+  const { setActiveTab, setAuthSession } = useApexStore();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate login for hackathon demo
-    setActiveTab('dashboard'); // sync legacy state
-    navigate('/dashboard');
+    setIsSubmitting(true);
+    try {
+      const profile = await loginUser({ username: email, password });
+      const accessToken = getStoredAccessToken();
+      const refreshToken = getStoredRefreshToken();
+
+      if (!accessToken || !refreshToken) {
+        throw new Error('Session tokens were not stored correctly.');
+      }
+
+      setAuthSession({ user: profile, accessToken, refreshToken });
+      setActiveTab('dashboard');
+      toast.success(`Signed in as ${profile.username}`);
+      navigate('/dashboard');
+    } catch (error: any) {
+      const message = error?.response?.data?.detail || error?.message || 'Failed to sign in.';
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -65,10 +86,13 @@ export const LoginPage: React.FC = () => {
 
         <button
           type="submit"
+          disabled={isSubmitting}
           className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(14,165,233,0.3)] hover:shadow-[0_0_25px_rgba(14,165,233,0.5)] mt-6 group"
         >
-          Sign In
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          {isSubmitting ? 'Signing In...' : 'Sign In'}
+          {!isSubmitting && (
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          )}
         </button>
       </form>
 

@@ -1,250 +1,331 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Activity,
   AlertOctagon,
   FileText,
   ShieldCheck,
-  Play,
-  CheckCircle2,
-  AlertTriangle,
   ArrowRight,
-  BrainCircuit,
-  Zap,
   Clock,
-  Sparkles,
+  Database,
+  Network,
+  RefreshCw,
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import { StatCard } from '../components/common/StatCard';
 import { SectionCard } from '../components/common/SectionCard';
 import { Timeline } from '../components/common/Timeline';
-import { useNavigate } from 'react-router-dom';
+import { checkBackendHealth } from '../services/apiClient';
+import {
+  getGraphStatistics,
+  getIncidents,
+  getMemoryTrends,
+  listDocuments,
+} from '../services/apexServices';
+import { useApexStore } from '../store/useApexStore';
 
-// APEX Autopilot Feature Integrations
-import { CausalGraphView } from '../features/graph/CausalGraphView';
-import { ExecutableRunbookEngine } from '../features/runbook/ExecutableRunbookEngine';
-import { TagEntityInspector } from '../features/documents/TagEntityInspector';
-import { ExpertCopilotDrawer } from '../features/copilot/ExpertCopilotDrawer';
-import { ComplianceHubModal } from '../features/compliance/ComplianceHubModal';
+interface DashboardSnapshot {
+  health: boolean;
+  documents: number;
+  indexedChunks: number;
+  incidents: number;
+  resolutionRate: number;
+  criticalAsset: string;
+  commonFailure: string;
+  graphNodes: number;
+  graphEdges: number;
+}
+
+const EMPTY_SNAPSHOT: DashboardSnapshot = {
+  health: false,
+  documents: 0,
+  indexedChunks: 0,
+  incidents: 0,
+  resolutionRate: 0,
+  criticalAsset: 'N/A',
+  commonFailure: 'N/A',
+  graphNodes: 0,
+  graphEdges: 0,
+};
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  const [isSimulating, setIsSimulating] = useState(false);
+  const { currentSimulation, currentRunbook, currentUser } = useApexStore();
+  const [snapshot, setSnapshot] = useState<DashboardSnapshot>(EMPTY_SNAPSHOT);
+  const [timelineItems, setTimelineItems] = useState<Array<{ time: string; event: string }>>([]);
+  const [isRefreshing, setIsRefreshing] = useState(true);
 
-  const incidentTimeline = [
-    { time: '09:21', event: 'Sensor S-404 logged abnormal pressure & vibration spike (+4.2g)' },
-    {
-      time: '09:22',
-      event: 'Causal Shadow-Run mapped failure blast radius to Valve V-102 & Pump P-202A',
-    },
-    { time: '09:23', event: 'Shadow Simulation completed (94.5% confidence of cascading failure)' },
-    {
-      time: '09:24',
-      event: 'AI Decision Copilot generated LOTO recovery strategy with OISD-117 citations',
-    },
-    { time: '09:25', event: 'Executable Runbook pushed to field technician mobile devices' },
-  ];
+  const refreshDashboard = async () => {
+    setIsRefreshing(true);
+    try {
+      const [health, documents, incidents, trends, graphStats] = await Promise.all([
+        checkBackendHealth(),
+        listDocuments(),
+        getIncidents(),
+        getMemoryTrends(),
+        getGraphStatistics(),
+      ]);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.12 } },
-  };
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 280, damping: 22 } },
+      setSnapshot({
+        health,
+        documents: documents.length,
+        indexedChunks: documents.reduce((sum, doc) => sum + (doc.chunk_count || 0), 0),
+        incidents: incidents.length,
+        resolutionRate: trends?.resolution_rate || 0,
+        criticalAsset: trends?.most_vulnerable_asset || 'N/A',
+        commonFailure: trends?.most_common_failure_type || 'N/A',
+        graphNodes: graphStats?.total_nodes || 0,
+        graphEdges: graphStats?.total_edges || 0,
+      });
+
+      const latestIncidents = [...incidents]
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, 5)
+        .map(incident => ({
+          time: new Date(incident.timestamp).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+          event: `${incident.failed_asset} ${incident.failure_type.replace(/_/g, ' ')} -> ${incident.outcome}`,
+        }));
+      setTimelineItems(latestIncidents);
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.detail || error?.message || 'Failed to load dashboard snapshot.';
+      toast.error(message);
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
-  const handleRunSimulation = () => {
-    setIsSimulating(true);
-    setTimeout(() => {
-      setIsSimulating(false);
-      navigate('/dashboard/simulation');
-    }, 1500);
-  };
+  useEffect(() => {
+    refreshDashboard();
+  }, []);
+
+  const activeOperationSummary = useMemo(() => {
+    if (currentSimulation?.simulation_id) {
+      return {
+        title: `Live Simulation: ${currentSimulation.request.failed_asset}`,
+        body: `Failure mode ${currentSimulation.request.failure_type.replace(/_/g, ' ')} has ${currentSimulation.scenarios.length} backend scenarios available for analysis.`,
+        cta: 'Open Maintenance Intelligence',
+        href: '/dashboard/simulation',
+      };
+    }
+
+    if (currentRunbook?.runbook_id) {
+      return {
+        title: `Runbook Active for ${currentRunbook.failed_asset}`,
+        body: `${currentRunbook.steps.length} live runbook step(s) are available with backend status tracking.`,
+        cta: 'Open Runbook',
+        href: '/dashboard/runbook',
+      };
+    }
+
+    return {
+      title: 'No Active Incident Context',
+      body: 'Upload documents, run a simulation, or persist incidents to build a live operational picture.',
+      cta: 'Open Documents',
+      href: '/dashboard/documents',
+    };
+  }, [currentRunbook, currentSimulation]);
 
   return (
-    <div className="relative min-h-[calc(100vh-64px)] -m-4 md:-m-8 p-4 md:p-8 bg-[var(--bg-base)]">
-      {/* Operations Center Grid Overlay */}
-      <div className="absolute inset-0 ops-grid-bg opacity-30 pointer-events-none" />
-
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        className="relative z-10 space-y-6"
-      >
-        {/* Top Telemetry KPI Row */}
-        <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            title="Overall System Health"
-            value="82.4%"
-            icon={ShieldCheck}
-            change="-1.2% (1h)"
-            changeType="negative"
-            isLive
-            sparklineData={[90, 89, 91, 88, 86, 85, 83, 82.4]}
-          />
-          <StatCard
-            title="Active Critical Alarms"
-            value="1 Anomaly"
-            icon={AlertOctagon}
-            change="Reactor R-101"
-            changeType="negative"
-            isLive
-            sparklineData={[0, 0, 0, 0, 0, 1, 1, 1]}
-          />
-          <StatCard
-            title="Active Shadow Sims"
-            value="1,402"
-            icon={Activity}
-            change="Live Tracing"
-            changeType="neutral"
-            isLive
-            sparklineData={[1100, 1150, 1200, 1300, 1350, 1380, 1400, 1402]}
-          />
-          <StatCard
-            title="OISD/PESO Posture"
-            value="100% Audit"
-            icon={FileText}
-            change="Audit Ready"
-            changeType="positive"
-            sparklineData={[100, 100, 100, 100, 100, 100]}
-          />
-        </motion.div>
-
-        {/* Priority 1 Alarm Control Center Banner */}
-        <motion.div
-          variants={itemVariants}
-          className="bg-gradient-to-r from-red-950/60 via-[#111827] to-[#131B2B] border-2 border-red-500/50 rounded-2xl p-6 md:p-7 shadow-2xl shadow-red-500/10 relative overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 w-96 h-96 bg-red-500/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 border border-red-500/40 text-red-400 text-xs font-mono font-bold uppercase tracking-wider animate-pulse">
-                <AlertTriangle className="w-3.5 h-3.5" /> PRIORITY 1 ALARM ACTIVE
-              </span>
-              <span className="text-xs font-mono text-slate-400">INCIDENT ID: #INC-2026-9042</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-xs font-mono text-slate-300 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
-              <Clock className="w-4 h-4 text-emerald-400" />
-              <span>
-                Time Saved by APEX:{' '}
-                <strong className="text-emerald-400 font-bold">~45 Minutes</strong>
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            <div className="max-w-2xl">
-              <h1 className="text-2xl md:text-3xl font-bold text-white font-display tracking-tight mb-2">
-                Reactor R-101 Pressure Surge & Emergency Isolation Anomaly
-              </h1>
-              <p className="text-sm text-slate-300 leading-relaxed font-inter">
-                Telemetry sensor PT-401 indicates reactor pressure surging to{' '}
-                <span className="text-red-400 font-mono font-bold">18.4 Bar</span> (exceeding safe
-                operating limit of 15.0 Bar). Knowledge Graph projects high probability of failure
-                propagation within{' '}
-                <span className="text-red-400 font-bold font-mono">45 minutes</span>.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 shrink-0">
-              <button
-                onClick={() => navigate('/dashboard/runbook')}
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs shadow-lg shadow-red-500/20 transition-all hover:scale-102 flex items-center gap-2"
-              >
-                <span>Execute Field Runbook</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={handleRunSimulation}
-                disabled={isSimulating}
-                className="px-5 py-2.5 rounded-xl bg-[#1A2333] hover:bg-[#222E42] border border-slate-700 text-white font-semibold text-xs transition-all hover:scale-102 flex items-center gap-2 shadow-sm"
-              >
-                {isSimulating ? (
-                  <Activity className="w-4 h-4 animate-spin text-blue-400" />
-                ) : (
-                  <Play className="w-4 h-4 text-blue-400" />
-                )}
-                <span>{isSimulating ? 'Simulating...' : 'Run Shadow Simulator'}</span>
-              </button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Dual Core Engine Layout: Causal Failure Graph & Executable Runbook */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Causal Graph Panel */}
-          <div className="lg:col-span-7 flex flex-col h-[540px]">
-            <CausalGraphView />
-          </div>
-
-          {/* Executable Runbook Panel */}
-          <div className="lg:col-span-5 flex flex-col h-[540px]">
-            <ExecutableRunbookEngine />
-          </div>
-        </motion.div>
-
-        {/* Bottom Intelligence Row: AI Copilot Recommendations & Live Feed */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* AI Decision Copilot Card */}
-          <motion.div
-            variants={itemVariants}
-            className="bg-[#0D131F] border border-blue-500/30 rounded-2xl p-5 flex flex-col min-h-[260px] shadow-xl"
-          >
-            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800">
-              <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
-                <BrainCircuit className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-sm font-bold text-white font-display">
-                  AI Autopilot Recommendation
-                </h2>
-                <p className="text-[10px] text-slate-400 font-mono">
-                  LLM Strategy Engine • 94.5% Confidence
-                </p>
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto space-y-3">
-              <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30">
-                <span className="block text-[10px] uppercase font-bold text-emerald-400 tracking-wider mb-1 flex items-center gap-1.5 font-mono">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Optimal Mitigation Strategy
-                </span>
-                <p className="text-xs font-medium text-slate-200 leading-relaxed font-inter">
-                  Isolate feed valve V-102 via Lockout/Tagout (LOTO). If V-102 jams open, engage
-                  Bypass Valve V-108 to redirect relief stream directly to Flare Stack FS-01.
-                </p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-300">
-                <span className="text-blue-400 font-bold">Document Citation:</span> OEM Manual Sec
-                4.2 & OISD-STD-117 Clause 7.3 (Hazardous Energy Control).
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Command Center Chronolog Feed */}
-          <motion.div variants={itemVariants} className="lg:col-span-2 flex flex-col">
-            <SectionCard
-              title="Command Center Chronolog"
-              subtitle="Real-time telemetry event stream"
-              className="flex-1"
-            >
-              <div className="relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-px before:bg-slate-800">
-                <Timeline items={incidentTimeline} />
-              </div>
-            </SectionCard>
-          </motion.div>
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+            Unified Asset & Operations Brain
+          </h1>
+          <p className="text-sm text-[var(--text-secondary)] mt-2 max-w-3xl">
+            Live summary of backend health, document intelligence coverage, incident memory, and knowledge graph readiness for the signed-in role.
+          </p>
         </div>
 
-        {/* Global Drawers & Modals */}
-        <TagEntityInspector />
-        <ExpertCopilotDrawer />
-        <ComplianceHubModal />
-      </motion.div>
+        <button
+          onClick={refreshDashboard}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--bg-secondary)] hover:bg-[var(--glass-bg)] border border-[var(--glass-border)] text-white text-xs font-bold transition-all"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          title="Backend Health"
+          value={snapshot.health ? 'Connected' : 'Offline'}
+          icon={ShieldCheck}
+          change={currentUser?.role || 'Unknown Role'}
+          changeType={snapshot.health ? 'positive' : 'negative'}
+          isLive
+        />
+        <StatCard
+          title="Indexed Documents"
+          value={snapshot.documents}
+          icon={FileText}
+          change={`${snapshot.indexedChunks} chunks`}
+          changeType="neutral"
+          isLive
+        />
+        <StatCard
+          title="Stored Incidents"
+          value={snapshot.incidents}
+          icon={Database}
+          change={`${snapshot.resolutionRate}% resolved`}
+          changeType={snapshot.resolutionRate >= 80 ? 'positive' : 'neutral'}
+          isLive
+        />
+        <StatCard
+          title="Knowledge Graph"
+          value={snapshot.graphNodes}
+          icon={Network}
+          change={`${snapshot.graphEdges} edges`}
+          changeType="neutral"
+          isLive
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <SectionCard
+            title={activeOperationSummary.title}
+            subtitle="Live workflow state from the current session"
+            action={
+              <button
+                onClick={() => navigate(activeOperationSummary.href)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition-all"
+              >
+                <span>{activeOperationSummary.cta}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            }
+          >
+            <p className="text-sm text-[var(--text-primary)] leading-relaxed">
+              {activeOperationSummary.body}
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <div className="p-4 rounded-2xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                <span className="text-[10px] uppercase tracking-wider text-[var(--text-secondary)] font-bold block mb-2">
+                  Most Vulnerable Asset
+                </span>
+                <p className="text-lg font-bold text-white">{snapshot.criticalAsset}</p>
+              </div>
+              <div className="p-4 rounded-2xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                <span className="text-[10px] uppercase tracking-wider text-[var(--text-secondary)] font-bold block mb-2">
+                  Common Failure Type
+                </span>
+                <p className="text-lg font-bold text-white capitalize">
+                  {snapshot.commonFailure.replace(/_/g, ' ')}
+                </p>
+              </div>
+              <div className="p-4 rounded-2xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                <span className="text-[10px] uppercase tracking-wider text-[var(--text-secondary)] font-bold block mb-2">
+                  Simulation Scenarios
+                </span>
+                <p className="text-lg font-bold text-white">
+                  {currentSimulation?.scenarios.length || 0}
+                </p>
+              </div>
+            </div>
+          </SectionCard>
+        </div>
+
+        <div>
+          <SectionCard title="Current Focus" subtitle="Recommended next workflow">
+            <div className="space-y-3">
+              <button
+                onClick={() => navigate('/dashboard/documents')}
+                className="w-full flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-primary)] border border-[var(--glass-border)] text-left hover:border-brand-500/40 transition"
+              >
+                <div>
+                  <p className="text-sm font-bold text-white">Document Intelligence</p>
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    Upload and index manuals, SOPs, and logs
+                  </p>
+                </div>
+                <FileText className="w-4 h-4 text-brand-400" />
+              </button>
+
+              <button
+                onClick={() => navigate('/dashboard/simulation')}
+                className="w-full flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-primary)] border border-[var(--glass-border)] text-left hover:border-brand-500/40 transition"
+              >
+                <div>
+                  <p className="text-sm font-bold text-white">Maintenance Intelligence</p>
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    Run propagation scenarios from real graph context
+                  </p>
+                </div>
+                <Activity className="w-4 h-4 text-brand-400" />
+              </button>
+
+              <button
+                onClick={() => navigate('/dashboard/memory')}
+                className="w-full flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-primary)] border border-[var(--glass-border)] text-left hover:border-brand-500/40 transition"
+              >
+                <div>
+                  <p className="text-sm font-bold text-white">Lessons Learned</p>
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    Review stored incidents and organizational memory
+                  </p>
+                </div>
+                <Clock className="w-4 h-4 text-brand-400" />
+              </button>
+            </div>
+          </SectionCard>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <SectionCard title="Recent Incident Chronology" subtitle="Latest stored operational events from backend memory">
+            {timelineItems.length ? (
+              <Timeline items={timelineItems} />
+            ) : (
+              <div className="p-6 rounded-2xl border border-dashed border-[var(--border-strong)] text-sm text-[var(--text-secondary)]">
+                No stored incidents are available yet.
+              </div>
+            )}
+          </SectionCard>
+        </div>
+
+        <div className="space-y-6">
+          <SectionCard title="Platform Signals" subtitle="Backend-derived operational posture">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                <span className="text-[var(--text-secondary)] text-xs">Critical Asset Exposure</span>
+                <span className="text-sm font-bold text-white">{snapshot.criticalAsset}</span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                <span className="text-[var(--text-secondary)] text-xs">Common Failure Mode</span>
+                <span className="text-sm font-bold text-white capitalize">
+                  {snapshot.commonFailure.replace(/_/g, ' ')}
+                </span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                <span className="text-[var(--text-secondary)] text-xs">Connection State</span>
+                <span className={`text-sm font-bold ${snapshot.health ? 'text-accent-emerald' : 'text-accent-red'}`}>
+                  {snapshot.health ? 'Healthy' : 'Unavailable'}
+                </span>
+              </div>
+            </div>
+          </SectionCard>
+
+          <SectionCard title="Attention Queue" subtitle="What still needs enterprise follow-through">
+            <div className="space-y-3 text-xs text-[var(--text-secondary)]">
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                <AlertOctagon className="w-4 h-4 text-accent-amber mt-0.5 shrink-0" />
+                <span>Dashboard values now come from backend APIs, but notifications and some shell chrome still need real event sources.</span>
+              </div>
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--glass-border)]">
+                <Activity className="w-4 h-4 text-brand-400 mt-0.5 shrink-0" />
+                <span>Live validation against the actual backend services configured in `.env` is still needed beyond build-time checks.</span>
+              </div>
+            </div>
+          </SectionCard>
+        </div>
+      </div>
     </div>
   );
 };

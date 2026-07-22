@@ -6,11 +6,14 @@ from slowapi.errors import RateLimitExceeded
 
 from app.api.v1.router import api_router
 from app.core.config import settings
+from app.database.session import Base, engine
 from app.core.error_handlers import register_exception_handlers
 from app.core.rate_limiter import limiter
 from app.core.websockets import global_connection_manager
 from app.middleware.audit import EnterpriseAuditMiddleware
 from app.middleware.logging import RequestLoggingMiddleware
+from app.models import blacklist as _blacklist_models  # noqa: F401
+from app.models import models as _core_models  # noqa: F401
 
 # Configure structured logging
 structlog.configure(
@@ -53,11 +56,12 @@ app.add_middleware(EnterpriseAuditMiddleware)
 
 @app.on_event("startup")
 async def on_startup():
+    Base.metadata.create_all(bind=engine)
     logger.info(
         "apex_startup",
         environment=settings.ENVIRONMENT,
         ai_provider=settings.AI_PROVIDER,
-        qdrant_host=settings.QDRANT_HOST or "in-memory",
+        qdrant_mode=settings.qdrant_mode,
     )
 
 
@@ -69,6 +73,7 @@ def root_health_check():
         "service": "apex-backend",
         "environment": settings.ENVIRONMENT,
         "ai_provider": settings.AI_PROVIDER,
+        "qdrant_mode": settings.qdrant_mode,
     }
 
 
@@ -80,6 +85,7 @@ def health_check():
         "service": "apex-backend",
         "environment": settings.ENVIRONMENT,
         "ai_provider": settings.AI_PROVIDER,
+        "qdrant_mode": settings.qdrant_mode,
     }
 
 
