@@ -35,7 +35,7 @@ async def upload_document(
     Upload and ingest an industrial document.
     Triggers Validation -> Parser -> OCR (if needed) -> Chunking.
     """
-    if file.content_type != "application/pdf":
+    if file.content_type not in ["application/pdf", "text/csv", "application/json"]:
         raise HTTPException(status_code=400, detail="Unsupported file type.")
 
     content = await file.read()
