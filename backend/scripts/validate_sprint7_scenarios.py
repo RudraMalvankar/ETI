@@ -13,16 +13,17 @@ Executes 10 realistic industrial failure scenarios against the APEX FastAPI back
 10. Pipeline pressure drop (PL-902)
 """
 
-import sys
-import os
 import json
+import os
+import sys
 import time
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from fastapi.testclient import TestClient
+
+from app.database.session import Base, SessionLocal, engine
 from app.main import app
-from app.database.session import Base, engine, SessionLocal
 from app.models.models import UserModel
 
 SCENARIOS = [

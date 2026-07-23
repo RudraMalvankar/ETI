@@ -11,8 +11,8 @@ from app.api.v1.endpoints import (
     memory,
     runbook,
     search,
-    simulation,
     settings,
+    simulation,
 )
 
 api_router = APIRouter()
