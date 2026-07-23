@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from app.core.auth import RoleChecker, get_current_user_payload
+from app.core.auth import RoleChecker
 from app.database.session import get_db
 from app.schemas.settings import PlatformSettingsEnvelope, PlatformSettingsUpdate
 from app.services.settings_service import SettingsService

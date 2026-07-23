@@ -12,12 +12,8 @@ Executes 10 realistic industrial failure scenarios against the APEX FastAPI back
 9. Conveyor motor overload (CV-701)
 10. Pipeline pressure drop (PL-902)
 """
-
-import json
 import os
 import sys
-import time
-
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from fastapi.testclient import TestClient
@@ -131,7 +127,7 @@ def run_validation_suite():
     client = TestClient(app, raise_server_exceptions=True)
 
     # 1. Login & Token Setup with Engineer role
-    reg_resp = client.post(
+    client.post(
         "/api/v1/auth/register",
         json={"username": "s7_engineer", "password": "Eng1neer2026!"},
     )
@@ -144,7 +140,7 @@ def run_validation_suite():
     headers = {"Authorization": f"Bearer {token}"}
 
     # Create Admin & Auditor tokens for RBAC endpoints
-    reg_admin = client.post(
+    client.post(
         "/api/v1/auth/register", json={"username": "s7_admin_user", "password": "Adm1n2026!Pass"}
     )
     login_admin = client.post(
@@ -153,7 +149,7 @@ def run_validation_suite():
     admin_token = login_admin.json()["access_token"]
     admin_headers = {"Authorization": f"Bearer {admin_token}"}
 
-    reg_auditor = client.post(
+    client.post(
         "/api/v1/auth/register",
         json={"username": "s7_auditor_user", "password": "Aud1tor2026!Pass"},
     )
