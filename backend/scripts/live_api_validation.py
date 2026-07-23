@@ -101,9 +101,7 @@ def run_validation() -> None:
             json={"username": username, "password": password},
         )
         if login_response.status_code != 200:
-            raise RuntimeError(
-                f"Login failed: {login_response.status_code} {login_response.text}"
-            )
+            raise RuntimeError(f"Login failed: {login_response.status_code} {login_response.text}")
         token = login_response.json()["access_token"]
         headers = {"Authorization": f"Bearer {token}"}
 
