@@ -12,8 +12,10 @@ Executes 10 realistic industrial failure scenarios against the APEX FastAPI back
 9. Conveyor motor overload (CV-701)
 10. Pipeline pressure drop (PL-902)
 """
+
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from fastapi.testclient import TestClient
