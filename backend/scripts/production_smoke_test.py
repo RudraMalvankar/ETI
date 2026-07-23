@@ -17,15 +17,16 @@ Executes a complete 14-step automated production smoke test:
 14. Logout & Token Invalidation
 """
 
-import sys
-import os
 import io
+import os
+import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from fastapi.testclient import TestClient
+
+from app.database.session import Base, SessionLocal, engine
 from app.main import app
-from app.database.session import Base, engine, SessionLocal
 from app.models.models import UserModel
 
 MINIMAL_PDF = b"%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\nxref\n0 1\n0000000000 65535 f \ntrailer\n<< /Size 1 /Root 1 0 R >>\nstartxref\n9\n%%EOF"

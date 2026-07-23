@@ -6,10 +6,10 @@ from slowapi.errors import RateLimitExceeded
 
 from app.api.v1.router import api_router
 from app.core.config import settings
-from app.database.session import Base, engine
 from app.core.error_handlers import register_exception_handlers
 from app.core.rate_limiter import limiter
 from app.core.websockets import global_connection_manager
+from app.database.session import Base, engine
 from app.middleware.audit import EnterpriseAuditMiddleware
 from app.middleware.logging import RequestLoggingMiddleware
 from app.models import blacklist as _blacklist_models  # noqa: F401
