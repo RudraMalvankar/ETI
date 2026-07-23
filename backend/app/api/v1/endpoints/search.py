@@ -20,7 +20,7 @@ def semantic_search(request: SearchRequest, current_user: dict = Depends(search_
     start = time.time()
     if not request.query.strip():
         raise HTTPException(status_code=422, detail="Query cannot be empty")
-        
+
     try:
         results = global_vector_store.search(
             query=request.query,
