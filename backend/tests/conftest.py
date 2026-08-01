@@ -19,6 +19,7 @@ os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-for-pytest-suite-only")
 os.environ.setdefault("JWT_SECRET", "test-secret-key-for-pytest-suite-only")
 os.environ.setdefault("ENVIRONMENT", "development")
 os.environ.setdefault("AI_PROVIDER", "mock")
+os.environ.setdefault("EMBEDDING_PROVIDER", "mock")
 
 import pytest
 from fastapi.testclient import TestClient

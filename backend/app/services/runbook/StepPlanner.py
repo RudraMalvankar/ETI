@@ -70,9 +70,7 @@ class StepPlanner:
             RunbookStep(
                 step_id=str(uuid.uuid4()),
                 title="Execute Recommended Intervention",
-                description=(
-                    f"Apply the primary strategy for {asset_scope}: {strategy_text}"
-                ),
+                description=(f"Apply the primary strategy for {asset_scope}: {strategy_text}"),
                 target_asset=primary_asset,
                 priority=3,
                 estimated_duration=2.0,

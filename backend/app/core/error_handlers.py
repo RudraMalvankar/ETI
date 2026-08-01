@@ -49,9 +49,7 @@ async def validation_exception_handler(
         messages.append(f"{location}: {message}" if location else message)
 
     detail = "; ".join(messages[:3]) if messages else "Invalid request body or parameters."
-    return build_error_response(
-        request, "ValidationError", detail, 422
-    )
+    return build_error_response(request, "ValidationError", detail, 422)
 
 
 async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError) -> JSONResponse:
