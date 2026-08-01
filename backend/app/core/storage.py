@@ -13,7 +13,20 @@ class StorageManager:
 
     def save_file(self, filename: str, content: bytes) -> str:
         """Save raw binary file data and return storage path."""
-        target_path = os.path.join(self.upload_dir, filename)
+        # SECURITY: Strip directory components to prevent path traversal attacks.
+        # A malicious filename like "../../etc/passwd" would write outside upload_dir.
+        safe_filename = os.path.basename(filename)
+        if not safe_filename:
+            raise ValueError("Invalid filename: must not be empty after sanitization")
+
+        target_path = os.path.join(self.upload_dir, safe_filename)
+
+        # Double-check: resolved path must stay within upload_dir
+        upload_dir_resolved = os.path.realpath(self.upload_dir)
+        target_resolved = os.path.realpath(target_path)
+        if not target_resolved.startswith(upload_dir_resolved + os.sep) and target_resolved != upload_dir_resolved:
+            raise ValueError(f"Path traversal detected: resolved path escapes upload directory")
+
         with open(target_path, "wb") as f:
             f.write(content)
         return target_path
