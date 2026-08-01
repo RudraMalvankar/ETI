@@ -24,8 +24,11 @@ class StorageManager:
         # Double-check: resolved path must stay within upload_dir
         upload_dir_resolved = os.path.realpath(self.upload_dir)
         target_resolved = os.path.realpath(target_path)
-        if not target_resolved.startswith(upload_dir_resolved + os.sep) and target_resolved != upload_dir_resolved:
-            raise ValueError(f"Path traversal detected: resolved path escapes upload directory")
+        if (
+            not target_resolved.startswith(upload_dir_resolved + os.sep)
+            and target_resolved != upload_dir_resolved
+        ):
+            raise ValueError("Path traversal detected: resolved path escapes upload directory")
 
         with open(target_path, "wb") as f:
             f.write(content)
