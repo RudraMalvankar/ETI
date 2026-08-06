@@ -21,7 +21,7 @@ class SettingsService:
     def _runtime_status() -> ProviderStatus:
         return ProviderStatus(
             ai_provider=settings.AI_PROVIDER,
-            embedding_provider=settings.AI_PROVIDER,
+            embedding_provider=settings.EMBEDDING_PROVIDER,
             ocr_provider=settings.OCR_PROVIDER,
             qdrant_mode=settings.qdrant_mode,
             environment=settings.ENVIRONMENT,

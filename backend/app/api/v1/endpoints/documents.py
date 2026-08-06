@@ -25,7 +25,7 @@ class IndexRequest(BaseModel):
 
 @router.post("/upload", response_model=DocumentResponse, status_code=status.HTTP_201_CREATED)
 @limiter.limit("10/minute")
-async def upload_document(
+def upload_document(
     request: Request,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
@@ -38,7 +38,7 @@ async def upload_document(
     if file.content_type not in ["application/pdf", "text/csv", "application/json"]:
         raise HTTPException(status_code=400, detail="Unsupported file type.")
 
-    content = await file.read()
+    content = file.file.read()
 
     # Process synchronously for demo
     ingested_doc = pipeline.process_file(file.filename, content, file.content_type)
