@@ -140,5 +140,26 @@ def delete_document(
     doc = db.query(DocumentModel).filter(DocumentModel.document_id == document_id).first()
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
+
+    # Remove vectors from Qdrant before deleting the DB record
+    try:
+        from qdrant_client.http import models as qdrant_models
+
+        global_vector_store.client.delete(
+            collection_name=global_vector_store.collection_name,
+            points_selector=qdrant_models.FilterSelector(
+                filter=qdrant_models.Filter(
+                    must=[
+                        qdrant_models.FieldCondition(
+                            key="document_id",
+                            match=qdrant_models.MatchValue(value=document_id),
+                        )
+                    ]
+                )
+            ),
+        )
+    except Exception:
+        pass  # Best-effort vector cleanup; DB record is still deleted
+
     db.delete(doc)
     db.commit()

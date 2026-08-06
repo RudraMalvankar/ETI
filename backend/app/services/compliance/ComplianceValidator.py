@@ -23,7 +23,7 @@ class ComplianceValidator:
             )
         else:
             checklist.append(
-                "[PASS] Safety Protocols: Standard equipment containment procedures applied."
+                "[WARN] Safety Protocols: No isolation or safety steps found in runbook history."
             )
 
         # Check Graph Verification
@@ -48,9 +48,7 @@ class ComplianceValidator:
                 "[PASS] Technician Audit Trail: Feedback and step updates recorded by operational technician."
             )
         else:
-            checklist.append(
-                "[PASS] Technician Audit Trail: Operational logs recorded automatically."
-            )
+            checklist.append("[WARN] Technician Audit Trail: No technician feedback recorded.")
 
         # Check Final Resolution
         checklist.append(
