@@ -1,5 +1,4 @@
 import json
-from typing import List
 
 import numpy as np
 
@@ -55,7 +54,7 @@ class MockAIProvider(AIProvider):
             {"response": "Deterministic mock completion response for non-decision tasks."}
         )
 
-    def embed(self, text: str) -> List[float]:
+    def embed(self, text: str) -> list[float]:
         # Pseudo-random but deterministic based on hash
         seed = abs(hash(text)) % (2**32)
         np.random.seed(seed)
@@ -63,5 +62,5 @@ class MockAIProvider(AIProvider):
         vec = vec / np.linalg.norm(vec)
         return vec.tolist()
 
-    def embed_batch(self, texts: List[str]) -> List[List[float]]:
+    def embed_batch(self, texts: list[str]) -> list[list[float]]:
         return [self.embed(t) for t in texts]

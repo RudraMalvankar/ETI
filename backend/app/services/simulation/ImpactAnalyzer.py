@@ -1,14 +1,11 @@
-from typing import Dict, List
-
-
 class ImpactAnalyzer:
     """
     Computes deterministic downtime and cost based on graph data and scenario modifiers.
     """
 
     def compute_impact(
-        self, affected_assets: List[Dict[str, str]], scenario_type: str
-    ) -> Dict[str, float]:
+        self, affected_assets: list[dict[str, str]], scenario_type: str
+    ) -> dict[str, float]:
         downtime = 0.0
         cost = 0.0
 
@@ -30,7 +27,9 @@ class ImpactAnalyzer:
         mod = (
             0.5
             if scenario_type == "Best Case"
-            else 1.0 if scenario_type == "Expected Case" else 2.0
+            else 1.0
+            if scenario_type == "Expected Case"
+            else 2.0
         )
 
         return {

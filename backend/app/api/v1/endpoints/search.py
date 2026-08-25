@@ -29,7 +29,7 @@ def semantic_search(request: SearchRequest, current_user: dict = Depends(search_
             document_id=request.document_id,
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Search failed: {e!s}")
 
     duration = int((time.time() - start) * 1000)
     return SearchResponse(results=results, query_time_ms=duration)

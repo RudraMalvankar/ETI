@@ -1,5 +1,4 @@
 import datetime
-from typing import List, Optional
 
 from app.database.session import get_db_context
 from app.models.models import IncidentModel
@@ -33,7 +32,7 @@ class IncidentHistoryStore:
             db.merge(db_incident)
 
     @classmethod
-    def get(cls, incident_id: str) -> Optional[IncidentMemory]:
+    def get(cls, incident_id: str) -> IncidentMemory | None:
         with get_db_context() as db:
             row = db.query(IncidentModel).filter(IncidentModel.incident_id == incident_id).first()
             if not row:
@@ -53,7 +52,7 @@ class IncidentHistoryStore:
             )
 
     @classmethod
-    def get_all(cls) -> List[IncidentMemory]:
+    def get_all(cls) -> list[IncidentMemory]:
         with get_db_context() as db:
             rows = db.query(IncidentModel).order_by(IncidentModel.timestamp.desc()).all()
             return [

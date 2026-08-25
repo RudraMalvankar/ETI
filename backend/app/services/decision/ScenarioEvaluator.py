@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict
+from typing import Any
 
 from app.services.ai.providers.factory import ProviderFactory
 
@@ -10,7 +10,7 @@ class ScenarioEvaluator:
     Returns provider output and fails loudly when live generation is unavailable.
     """
 
-    def evaluate(self, prompt: str, context: Dict[str, Any]) -> str:
+    def evaluate(self, prompt: str, context: dict[str, Any]) -> str:
         provider = ProviderFactory.get_provider()
 
         system_prompt = (

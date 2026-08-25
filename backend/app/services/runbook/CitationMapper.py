@@ -1,5 +1,3 @@
-from typing import List
-
 from app.schemas.runbook import RunbookStep
 
 
@@ -8,7 +6,7 @@ class CitationMapper:
     Maps citations from the decision payload to applicable steps.
     """
 
-    def map_citations(self, steps: List[RunbookStep], citations: List[dict]) -> List[RunbookStep]:
+    def map_citations(self, steps: list[RunbookStep], citations: list[dict]) -> list[RunbookStep]:
         normalized_citations = [
             {
                 "document_id": c.get("document_id", ""),

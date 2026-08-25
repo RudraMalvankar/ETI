@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy.orm import Session
 
@@ -71,7 +71,7 @@ class SettingsService:
             environment_status=defaults.environment_status,
             notification_channels=defaults.notification_channels,
             provider_status=defaults.provider_status.model_dump(),
-            updated_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(UTC),
         )
         db.add(record)
         db.commit()
@@ -137,7 +137,7 @@ class SettingsService:
         record.notification_channels = payload.notification_channels
         record.provider_status = cls._runtime_status().model_dump()
         record.updated_by = updated_by
-        record.updated_at = datetime.now(timezone.utc)
+        record.updated_at = datetime.now(UTC)
 
         db.add(record)
         db.commit()

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from app.schemas.explainability import ExplanationResponse
 from app.services.explainability.DecisionTraceBuilder import DecisionTraceBuilder
@@ -16,7 +16,7 @@ class ExplanationEngine:
         self.trace_builder = DecisionTraceBuilder()
         self.reason_fmt = ReasoningFormatter()
 
-    def generate_explanation(self, context: Dict[str, Any]) -> ExplanationResponse:
+    def generate_explanation(self, context: dict[str, Any]) -> ExplanationResponse:
         g_ev = self.evidence_fmt.format_graph_evidence(context)
         s_ev = self.evidence_fmt.format_simulation_evidence(context)
         d_ev = self.evidence_fmt.format_document_evidence(context)

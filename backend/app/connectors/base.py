@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List
 
 
 class BaseConnector(ABC):
@@ -8,7 +7,7 @@ class BaseConnector(ABC):
     """
 
     @abstractmethod
-    def fetch_documents(self) -> List[bytes]:
+    def fetch_documents(self) -> list[bytes]:
         pass
 
     @abstractmethod

@@ -1,5 +1,3 @@
-from typing import List
-
 from app.schemas.graph import GraphEdge, GraphNode
 from app.services.graph.GraphFactory import GraphFactory
 
@@ -9,7 +7,7 @@ class GraphBuilder:
         self.apex_graph = GraphFactory.get_graph()
         self.graph = self.apex_graph.internal_graph
 
-    def build_from_lists(self, nodes: List[GraphNode], edges: List[GraphEdge]):
+    def build_from_lists(self, nodes: list[GraphNode], edges: list[GraphEdge]):
         """
         Populate the Deterministic Knowledge Graph Engine.
         """

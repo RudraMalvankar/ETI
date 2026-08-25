@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from app.services.graph.GraphFactory import GraphFactory
 from app.services.simulation.SimulationSerializer import global_simulation_db
@@ -10,8 +10,8 @@ class ContextBuilder:
     """
 
     def build_context(
-        self, failed_asset: str, simulation_id: str, retrieved_chunks: List[Any]
-    ) -> Dict[str, Any]:
+        self, failed_asset: str, simulation_id: str, retrieved_chunks: list[Any]
+    ) -> dict[str, Any]:
         # Get graph data
         graph = GraphFactory.get_graph()
         asset_info = graph.get_node(failed_asset) if graph.has_node(failed_asset) else {}

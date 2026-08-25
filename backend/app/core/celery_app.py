@@ -46,4 +46,4 @@ def process_document_async(document_id: str):
             if doc:
                 doc.status = "failed"
                 doc.error_message = str(e)
-        return f"Failed: {str(e)}"
+        return f"Failed: {e!s}"

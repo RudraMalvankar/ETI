@@ -1,5 +1,4 @@
 import os
-from typing import List
 
 import google.generativeai as genai
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -36,7 +35,7 @@ class GeminiProvider(AIProvider):
         return response.text
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-    def embed(self, text: str) -> List[float]:
+    def embed(self, text: str) -> list[float]:
         result = genai.embed_content(
             model=self.embedding_model_name,
             content=text,
@@ -45,11 +44,11 @@ class GeminiProvider(AIProvider):
         return result["embedding"]
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-    def embed_batch(self, texts: List[str]) -> List[List[float]]:
+    def embed_batch(self, texts: list[str]) -> list[list[float]]:
         result = genai.embed_content(
             model=self.embedding_model_name,
             content=texts,
             task_type="retrieval_document",
         )
-        embeddings: List[List[float]] = result["embedding"]
+        embeddings: list[list[float]] = result["embedding"]
         return embeddings

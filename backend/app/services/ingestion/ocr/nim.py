@@ -1,6 +1,6 @@
 import base64
 import json
-from typing import Any, Dict, List
+from typing import Any
 
 import httpx
 
@@ -20,7 +20,7 @@ class NIMOCRProvider(OCRProvider):
             headers={"Authorization": f"Bearer {settings.NIM_API_KEY}"},
             timeout=60.0,
         )
-        self._last_metadata: Dict[str, Any] = {
+        self._last_metadata: dict[str, Any] = {
             "provider": "nim",
             "model": self.model,
             "ocr_confidence": None,
@@ -68,7 +68,7 @@ class NIMOCRProvider(OCRProvider):
             ),
         )
 
-    def extract_tables(self, image_bytes: bytes) -> List[Dict[str, Any]]:
+    def extract_tables(self, image_bytes: bytes) -> list[dict[str, Any]]:
         raw = self._send_prompt(
             image_bytes,
             (
@@ -90,5 +90,5 @@ class NIMOCRProvider(OCRProvider):
         except json.JSONDecodeError:
             return []
 
-    def get_last_result_metadata(self) -> Dict[str, Any]:
+    def get_last_result_metadata(self) -> dict[str, Any]:
         return self._last_metadata

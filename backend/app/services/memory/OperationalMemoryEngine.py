@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from app.schemas.memory import IncidentMemory, StoreMemoryRequest
 from app.services.memory.IncidentHistoryStore import global_incident_store
@@ -27,11 +27,11 @@ class OperationalMemoryEngine:
     def get_incident(self, incident_id: str) -> IncidentMemory:
         return self.retriever.retrieve(incident_id)
 
-    def get_all_incidents(self) -> List[IncidentMemory]:
+    def get_all_incidents(self) -> list[IncidentMemory]:
         return self.retriever.retrieve_all()
 
-    def search_similar(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
+    def search_similar(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
         return self.matcher.search_similar(query, top_k)
 
-    def get_trends(self) -> Dict[str, Any]:
+    def get_trends(self) -> dict[str, Any]:
         return self.analyzer.analyze_trends()

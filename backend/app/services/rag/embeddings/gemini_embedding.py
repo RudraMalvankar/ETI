@@ -1,5 +1,3 @@
-from typing import List
-
 from app.core.config import settings
 from app.services.ai.providers.gemini_provider import GeminiProvider
 from app.services.ai.providers.mock_provider import MockAIProvider
@@ -35,11 +33,11 @@ class AdaptiveEmbeddingProvider(EmbeddingProvider):
             return f"nvidia/{model_name}"
         return model_name
 
-    def embed_text(self, text: str) -> List[float]:
+    def embed_text(self, text: str) -> list[float]:
         provider = self._get_embedding_provider()
         return provider.embed(text)
 
-    def embed_batch(self, texts: List[str]) -> List[List[float]]:
+    def embed_batch(self, texts: list[str]) -> list[list[float]]:
         provider = self._get_embedding_provider()
         return provider.embed_batch(texts)
 

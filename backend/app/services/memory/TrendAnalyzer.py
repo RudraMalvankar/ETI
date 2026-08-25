@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from app.services.memory.IncidentHistoryStore import global_incident_store
 
@@ -8,7 +8,7 @@ class TrendAnalyzer:
     Analyzes stored incidents to generate organizational trends and failure statistics.
     """
 
-    def analyze_trends(self) -> Dict[str, Any]:
+    def analyze_trends(self) -> dict[str, Any]:
         incidents = global_incident_store.get_all()
 
         total = len(incidents)
@@ -23,9 +23,9 @@ class TrendAnalyzer:
                 "message": "No historical data to analyze trends.",
             }
 
-        failure_types: Dict[str, int] = {}
-        affected_assets: Dict[str, int] = {}
-        outcomes: Dict[str, int] = {}
+        failure_types: dict[str, int] = {}
+        affected_assets: dict[str, int] = {}
+        outcomes: dict[str, int] = {}
 
         for inc in incidents:
             failure_types[inc.failure_type] = failure_types.get(inc.failure_type, 0) + 1
