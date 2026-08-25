@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -18,7 +18,7 @@ def store_incident(request: StoreMemoryRequest, current_user: dict = Depends(mem
     return engine.store_incident(request)
 
 
-@router.get("/incidents", response_model=List[IncidentMemory])
+@router.get("/incidents", response_model=list[IncidentMemory])
 def get_incidents(current_user: dict = Depends(mem_read_check)):
     return engine.get_all_incidents()
 
@@ -36,6 +36,6 @@ def get_incident(incident_id: str, current_user: dict = Depends(mem_read_check))
     return inc
 
 
-@router.post("/search", response_model=List[Dict[str, Any]])
+@router.post("/search", response_model=list[dict[str, Any]])
 def search_incidents(request: SearchMemoryRequest, current_user: dict = Depends(mem_read_check)):
     return engine.search_similar(request.query, request.top_k)

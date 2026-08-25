@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from app.schemas.explainability import ExtendedDecisionTrace
 
@@ -8,7 +8,7 @@ class DecisionTraceBuilder:
     Builds deterministic decision trace mapping back to exact engine outputs.
     """
 
-    def build_trace(self, context: Dict[str, Any]) -> ExtendedDecisionTrace:
+    def build_trace(self, context: dict[str, Any]) -> ExtendedDecisionTrace:
         docs = []
         raw_docs = context.get("documents", [])
         for doc in raw_docs:

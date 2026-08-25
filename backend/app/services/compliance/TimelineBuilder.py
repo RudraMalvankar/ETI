@@ -1,5 +1,4 @@
 import datetime
-from typing import Dict, List
 
 from app.schemas.memory import IncidentMemory
 
@@ -9,13 +8,13 @@ class TimelineBuilder:
     Builds an auditable chronological timeline of the incident.
     """
 
-    def build_timeline(self, memory: IncidentMemory) -> List[Dict[str, str]]:
+    def build_timeline(self, memory: IncidentMemory) -> list[dict[str, str]]:
         timeline = []
 
         try:
             t0 = datetime.datetime.fromisoformat(memory.timestamp)
         except Exception:
-            t0 = datetime.datetime.now(datetime.timezone.utc)
+            t0 = datetime.datetime.now(datetime.UTC)
 
         t1 = t0 + datetime.timedelta(minutes=1)
         t2 = t0 + datetime.timedelta(minutes=3)
@@ -56,12 +55,12 @@ class TimelineBuilder:
 
         for idx, step in enumerate(memory.runbook_history):
             t_step = t3 + datetime.timedelta(minutes=5 + (idx * 10))
-            title = step.get("title") or step.get("action") or f"Step {idx+1}"
+            title = step.get("title") or step.get("action") or f"Step {idx + 1}"
             status = step.get("status", "executed")
             timeline.append(
                 {
                     "time": t_step.isoformat(),
-                    "event": f"Runbook Step {idx+1} '{title}' executed with status: {status}",
+                    "event": f"Runbook Step {idx + 1} '{title}' executed with status: {status}",
                 }
             )
 

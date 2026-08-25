@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import JSON, Boolean, Column, DateTime, String
 
@@ -15,7 +15,7 @@ class RunbookModel(Base):
     status = Column(String(50), default="active")
     is_regenerated = Column(Boolean, default=False)
     update_history = Column(JSON, default=list)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
 
 
 class SimulationModel(Base):
@@ -25,4 +25,4 @@ class SimulationModel(Base):
     failed_asset = Column(String(100), nullable=False)
     failure_type = Column(String(100), nullable=False)
     scenarios = Column(JSON, default=list)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))

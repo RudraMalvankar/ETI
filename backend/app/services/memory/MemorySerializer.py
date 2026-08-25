@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from typing import Any, Dict
+from typing import Any
 
 from app.schemas.memory import IncidentMemory, StoreMemoryRequest
 from app.services.graph.GraphFactory import GraphFactory
@@ -28,7 +28,7 @@ class MemorySerializer:
         }
 
         # 2. Simulation Data
-        sim_data: Dict[str, Any] = {}
+        sim_data: dict[str, Any] = {}
         if sim_id:
             sim = global_simulation_db.get(sim_id)
             if sim:
@@ -67,5 +67,5 @@ class MemorySerializer:
             technician_feedback=technician_feedback,
             regenerated_runbooks=regenerated_runbooks,
             outcome=request.outcome or "Resolved",
-            timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            timestamp=datetime.datetime.now(datetime.UTC).isoformat(),
         )

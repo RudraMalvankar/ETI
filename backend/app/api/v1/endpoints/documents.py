@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -110,12 +108,12 @@ def index_document(
         chunks_list = [DocumentChunk(**c) for c in doc.chunks] if doc.chunks else []
         global_vector_store.index_chunks(chunks_list)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to index: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to index: {e!s}")
 
     return {"message": "Successfully indexed chunks", "chunk_count": len(chunks_list)}
 
 
-@router.get("/", response_model=List[DocumentResponse])
+@router.get("/", response_model=list[DocumentResponse])
 def list_documents(db: Session = Depends(get_db), current_user: dict = Depends(doc_read_check)):
     """List all ingested documents."""
     docs = db.query(DocumentModel).all()

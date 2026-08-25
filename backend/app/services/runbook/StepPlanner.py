@@ -1,5 +1,4 @@
 import uuid
-from typing import List
 
 from app.schemas.runbook import RunbookStep
 
@@ -11,7 +10,7 @@ class StepPlanner:
     """
 
     @staticmethod
-    def _normalize_assets(decision_payload: dict) -> List[str]:
+    def _normalize_assets(decision_payload: dict) -> list[str]:
         assets = decision_payload.get("affected_assets", []) or []
         if not assets:
             failed_asset = decision_payload.get("failed_asset")
@@ -19,7 +18,7 @@ class StepPlanner:
                 assets = [failed_asset]
         return [asset for asset in assets if asset]
 
-    def plan_steps(self, decision_payload: dict) -> List[RunbookStep]:
+    def plan_steps(self, decision_payload: dict) -> list[RunbookStep]:
         strategy = decision_payload.get("recommended_strategy", "").strip()
         reasoning = decision_payload.get("reasoning", "").strip()
         alternatives = decision_payload.get("alternative_strategies", []) or []

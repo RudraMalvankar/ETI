@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict
+from typing import Any
 
 
 class PromptBuilder:
@@ -7,7 +7,7 @@ class PromptBuilder:
     Generates structured prompt for the LLM.
     """
 
-    def build_prompt(self, context: Dict[str, Any]) -> str:
+    def build_prompt(self, context: dict[str, Any]) -> str:
         prompt = (
             "You are an AI Decision Engine for an industrial plant.\n"
             "Analyze the following deterministic inputs and recommend the best mitigation strategy.\n"

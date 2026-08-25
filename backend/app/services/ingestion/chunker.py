@@ -1,5 +1,3 @@
-from typing import List
-
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from app.schemas.document import DocumentChunk
@@ -13,7 +11,7 @@ class Chunker:
             separators=["\n\n", "\n", ".", " ", ""],
         )
 
-    def chunk_document(self, pages: List[DocumentChunk]) -> List[DocumentChunk]:
+    def chunk_document(self, pages: list[DocumentChunk]) -> list[DocumentChunk]:
         """
         Takes page-level chunks and breaks them down into smaller, semantic chunks suitable for RAG.
         """

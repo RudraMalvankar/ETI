@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import structlog
 from fastapi import FastAPI, HTTPException, Request
@@ -22,7 +22,7 @@ def build_error_response(
         "detail": details,
         "details": details,
         "request_id": request_id,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
     return JSONResponse(status_code=status_code, content=payload)
 

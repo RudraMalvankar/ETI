@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, Depends
 
@@ -13,5 +13,5 @@ explain_check = RoleChecker(allowed_roles=["Operator", "Engineer", "Auditor", "A
 
 
 @router.post("/explain", response_model=ExplanationResponse)
-def explain_decision(context: Dict[str, Any], current_user: dict = Depends(explain_check)):
+def explain_decision(context: dict[str, Any], current_user: dict = Depends(explain_check)):
     return engine.generate_explanation(context)

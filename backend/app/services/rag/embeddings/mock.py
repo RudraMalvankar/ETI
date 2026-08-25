@@ -1,5 +1,3 @@
-from typing import List
-
 import numpy as np
 
 from .base import EmbeddingProvider
@@ -14,7 +12,7 @@ class MockEmbeddingProvider(EmbeddingProvider):
     def __init__(self, dim: int = 1536):
         self._dim = dim
 
-    def embed_text(self, text: str) -> List[float]:
+    def embed_text(self, text: str) -> list[float]:
         # Pseudo-random but deterministic based on hash for testing similarity
         seed = abs(hash(text)) % (2**32)
         np.random.seed(seed)
@@ -22,7 +20,7 @@ class MockEmbeddingProvider(EmbeddingProvider):
         vec = vec / np.linalg.norm(vec)
         return vec.tolist()
 
-    def embed_batch(self, texts: List[str]) -> List[List[float]]:
+    def embed_batch(self, texts: list[str]) -> list[list[float]]:
         return [self.embed_text(t) for t in texts]
 
     @property

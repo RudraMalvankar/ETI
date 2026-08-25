@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import Column, DateTime, String
 
@@ -9,4 +9,4 @@ class BlacklistedToken(Base):
     __tablename__ = "blacklisted_tokens"
 
     token = Column(String(500), primary_key=True, index=True)
-    blacklisted_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    blacklisted_at = Column(DateTime, default=lambda: datetime.now(UTC))
