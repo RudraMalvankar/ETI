@@ -1,0 +1,49 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+repos:
+  # ── General hooks ──────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  # ── Backend: Ruff (linter + formatter) ────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.0
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        files: ^backend/
+      - id: ruff-format
+        files: ^backend/
+
+  # ── Frontend: Prettier ────────────────────────────────────────
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.3.3
+    hooks:
+      - id: prettier
+        types_or: [ts, tsx, css, json]
+        files: ^frontend/src/
+
+  # ── Frontend: ESLint ──────────────────────────────────────────
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v9.5.0
+    hooks:
+      - id: eslint
+        files: ^frontend/src/.*\.(ts|tsx)$
+        types: [file]
+        additional_dependencies:
+          - eslint@10.7.0
+          - eslint-plugin-react-hooks@7.1.1
+          - eslint-plugin-react-refresh@0.5.3
+          - typescript-eslint@8.65.0
+          - globals@17.7.0
+          - typescript@5.9.3
