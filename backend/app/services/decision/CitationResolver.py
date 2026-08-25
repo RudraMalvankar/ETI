@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 
 class CitationResolver:
@@ -8,8 +8,8 @@ class CitationResolver:
     """
 
     def resolve_citations(
-        self, llm_citations: List[Dict[str, Any]], retrieved_chunks: List[Any]
-    ) -> List[Dict[str, Any]]:
+        self, llm_citations: list[dict[str, Any]], retrieved_chunks: list[Any]
+    ) -> list[dict[str, Any]]:
         valid_citations = []
         valid_chunk_ids = {c.chunk_id: c for c in retrieved_chunks}
 

@@ -1,5 +1,5 @@
-from datetime import datetime, timezone
-from typing import Any, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 from app.database.session import get_db_context
 from app.models.audit import AuditLogModel
@@ -16,9 +16,9 @@ class AuditLogService:
         action: str,
         resource: str,
         username: str = "Anonymous",
-        ip_address: Optional[str] = None,
-        previous_value: Optional[Any] = None,
-        new_value: Optional[Any] = None,
+        ip_address: str | None = None,
+        previous_value: Any | None = None,
+        new_value: Any | None = None,
     ) -> AuditLogModel:
         with get_db_context() as db:
             entry = AuditLogModel(
@@ -28,7 +28,7 @@ class AuditLogService:
                 resource=resource,
                 previous_value=previous_value,
                 new_value=new_value,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
             )
             db.add(entry)
             db.flush()
@@ -37,7 +37,7 @@ class AuditLogService:
             return entry
 
     @classmethod
-    def get_logs(cls, limit: int = 100, skip: int = 0) -> List[AuditLogModel]:
+    def get_logs(cls, limit: int = 100, skip: int = 0) -> list[AuditLogModel]:
         with get_db_context() as db:
             logs = (
                 db.query(AuditLogModel)

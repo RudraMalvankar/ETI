@@ -1,5 +1,3 @@
-from typing import List
-
 from app.schemas.memory import IncidentMemory
 
 
@@ -8,7 +6,7 @@ class ComplianceValidator:
     Validates that incident response complied with enterprise safety and audit policies.
     """
 
-    def validate(self, memory: IncidentMemory) -> List[str]:
+    def validate(self, memory: IncidentMemory) -> list[str]:
         checklist = []
 
         # Check Safety Injections

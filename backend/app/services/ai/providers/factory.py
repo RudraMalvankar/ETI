@@ -1,5 +1,3 @@
-from typing import Optional
-
 from app.core.config import settings
 
 from .base import AIProvider
@@ -14,7 +12,7 @@ class ProviderFactory:
     Determined dynamically by settings.AI_PROVIDER.
     """
 
-    _cached_provider: Optional[AIProvider] = None
+    _cached_provider: AIProvider | None = None
 
     @classmethod
     def get_provider(cls) -> AIProvider:

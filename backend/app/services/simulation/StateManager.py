@@ -1,5 +1,5 @@
 import copy
-from typing import Any, Dict
+from typing import Any
 
 from app.services.graph.GraphFactory import GraphFactory
 
@@ -23,5 +23,5 @@ class StateManager:
             self.scenario_state[node_id]["status"] = new_status
             self.scenario_state[node_id]["simulated_risk"] = risk_factor
 
-    def get_state_snapshot(self) -> Dict[str, Any]:
+    def get_state_snapshot(self) -> dict[str, Any]:
         return copy.deepcopy(self.scenario_state)

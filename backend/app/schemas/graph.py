@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -9,9 +9,9 @@ class GraphNode(BaseModel):
     asset_type: str
     status: str = "operational"
     criticality: str = "medium"
-    location: Optional[str] = None
-    telemetry_snapshot: Dict[str, Any] = Field(default_factory=dict)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    location: str | None = None
+    telemetry_snapshot: dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class GraphEdge(BaseModel):
@@ -26,8 +26,8 @@ class GraphEdge(BaseModel):
 
 class BlastRadiusResponse(BaseModel):
     failed_asset: str
-    affected_assets: List[str]
-    propagation_path: List[Dict[str, str]]
+    affected_assets: list[str]
+    propagation_path: list[dict[str, str]]
     max_distance: int
     severity: str
 

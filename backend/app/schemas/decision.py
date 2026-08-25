@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from pydantic import BaseModel, Field
 
 
@@ -25,12 +23,12 @@ class DecisionTrace(BaseModel):
 
 class DecisionResponse(BaseModel):
     recommended_strategy: str
-    alternative_strategies: List[str]
+    alternative_strategies: list[str]
     reasoning: str
-    supporting_citations: List[Citation]
+    supporting_citations: list[Citation]
     confidence_score: float = Field(..., ge=0.0, le=100.0)
-    affected_assets: List[str]
+    affected_assets: list[str]
     estimated_risk_reduction: float
     estimated_cost: float
     estimated_downtime: float
-    decision_trace: Optional[DecisionTrace] = None
+    decision_trace: DecisionTrace | None = None

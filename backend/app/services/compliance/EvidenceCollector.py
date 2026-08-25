@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from app.schemas.memory import IncidentMemory
 
@@ -8,7 +8,7 @@ class EvidenceCollector:
     Collects and packages all deterministic evidence for enterprise audit compliance.
     """
 
-    def collect(self, memory: IncidentMemory) -> List[Dict[str, Any]]:
+    def collect(self, memory: IncidentMemory) -> list[dict[str, Any]]:
         evidence = []
 
         # 1. Graph Evidence

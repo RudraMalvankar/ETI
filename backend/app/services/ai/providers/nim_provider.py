@@ -1,5 +1,4 @@
 import os
-from typing import List
 
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -56,7 +55,7 @@ class NIMProvider(AIProvider):
         return res_data["choices"][0]["message"]["content"]
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-    def embed(self, text: str) -> List[float]:
+    def embed(self, text: str) -> list[float]:
         url = f"{self.base_url}/embeddings"
         payload = {
             "input": [text],
@@ -71,7 +70,7 @@ class NIMProvider(AIProvider):
         return res_data["data"][0]["embedding"]
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-    def embed_batch(self, texts: List[str]) -> List[List[float]]:
+    def embed_batch(self, texts: list[str]) -> list[list[float]]:
         url = f"{self.base_url}/embeddings"
         payload = {
             "input": texts,

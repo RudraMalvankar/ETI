@@ -1,5 +1,5 @@
 import time
-from typing import Any, Dict, List
+from typing import Any
 
 from .base import OCRProvider
 
@@ -15,10 +15,10 @@ class MockOCRProvider(OCRProvider):
         time.sleep(0.5)
         return "MOCK_OCR_TEXT: ⚠️ CAUTION: High Pressure Valve V-102 operating parameters exceeded limits during Q3 inspection."
 
-    def extract_tables(self, image_bytes: bytes) -> List[Dict[str, Any]]:
+    def extract_tables(self, image_bytes: bytes) -> list[dict[str, Any]]:
         return [{"columns": ["Sensor", "Value"], "rows": [["Pressure", "150 PSI"]]}]
 
-    def get_last_result_metadata(self) -> Dict[str, Any]:
+    def get_last_result_metadata(self) -> dict[str, Any]:
         return {
             "provider": "mock",
             "ocr_confidence": 0.0,

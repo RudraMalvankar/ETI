@@ -84,6 +84,18 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
+      - name: Run Ruff Linter
+        run: ruff check app/ --output-format=github
+        continue-on-error: true
+
+      - name: Run Ruff Formatter Check
+        run: ruff format --check app/
+        continue-on-error: true
+
+      - name: Run mypy Type Checker
+        run: mypy app/ --ignore-missing-imports
+        continue-on-error: true
+
       - name: Run Pytest with Coverage
         run: |
           pytest tests/ \

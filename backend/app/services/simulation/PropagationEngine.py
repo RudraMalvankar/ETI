@@ -1,5 +1,3 @@
-from typing import Dict, List, Tuple
-
 import networkx as nx
 
 from app.services.graph.GraphFactory import GraphFactory
@@ -15,7 +13,7 @@ class PropagationEngine:
 
     def simulate_propagation(
         self, failed_asset: str, max_depth: int
-    ) -> Tuple[List[str], List[Dict[str, str]]]:
+    ) -> tuple[list[str], list[dict[str, str]]]:
         if not self.graph.has_node(failed_asset):
             return [], []
 

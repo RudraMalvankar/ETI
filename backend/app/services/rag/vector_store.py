@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 import structlog
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
@@ -14,7 +12,11 @@ logger = structlog.get_logger("apex.vector_store")
 
 
 class VectorStoreService:
-    def __init__(self, collection_name: str = None, embedding_provider: EmbeddingProvider = None):
+    def __init__(
+        self,
+        collection_name: str | None = None,
+        embedding_provider: EmbeddingProvider | None = None,
+    ):
         self.collection_name = collection_name or settings.QDRANT_COLLECTION
         self.embedding_provider = embedding_provider or AdaptiveEmbeddingProvider()
 
@@ -98,7 +100,7 @@ class VectorStoreService:
                     error=str(exc),
                 )
 
-    def index_chunks(self, chunks: List[DocumentChunk]):
+    def index_chunks(self, chunks: list[DocumentChunk]):
         if not chunks:
             return
 
@@ -120,9 +122,9 @@ class VectorStoreService:
         self,
         query: str,
         top_k: int = 5,
-        asset_id: Optional[str] = None,
-        document_id: Optional[str] = None,
-    ) -> List[SearchResultChunk]:
+        asset_id: str | None = None,
+        document_id: str | None = None,
+    ) -> list[SearchResultChunk]:
         query_vector = self.embedding_provider.embed_text(query)
 
         must_conditions = []

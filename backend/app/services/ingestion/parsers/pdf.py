@@ -1,5 +1,3 @@
-from typing import List
-
 import fitz  # PyMuPDF
 
 from app.core.config import settings
@@ -23,7 +21,7 @@ class PDFParser:
         images = page.get_images(full=True)
         return len(text) < 50 and len(images) > 0
 
-    def parse(self, file_bytes: bytes, document_id: str) -> List[DocumentChunk]:
+    def parse(self, file_bytes: bytes, document_id: str) -> list[DocumentChunk]:
         doc = fitz.open(stream=file_bytes, filetype="pdf")
         chunks = []
 

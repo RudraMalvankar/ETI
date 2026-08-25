@@ -1,5 +1,3 @@
-from typing import List
-
 from app.connectors.base import BaseConnector
 
 
@@ -11,6 +9,6 @@ class PDFConnector(BaseConnector):
     def connect(self) -> bool:
         return True
 
-    def fetch_documents(self) -> List[bytes]:
+    def fetch_documents(self) -> list[bytes]:
         # Implement fetching from AWS S3 or Blob Storage
         return []
