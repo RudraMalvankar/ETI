@@ -139,15 +139,15 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
-        run: npx eslint src/ --ext .ts,.tsx --max-warnings 50
+        run: npm run lint
         continue-on-error: true
 
       - name: Run Prettier Check
-        run: npx prettier --check "src/**/*.{ts,tsx,css}"
+        run: npm run format:check
         continue-on-error: true
 
       - name: TypeScript Type Check
-        run: npx tsc --noEmit
+        run: npm run typecheck
         continue-on-error: true
 
       - name: Build Frontend
