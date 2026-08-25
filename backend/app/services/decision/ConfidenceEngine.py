@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 
 class ConfidenceEngine:
@@ -7,7 +7,7 @@ class ConfidenceEngine:
     and alignment of the LLM output with deterministic realities.
     """
 
-    def compute_confidence(self, context: Dict[str, Any], valid_citations_count: int) -> float:
+    def compute_confidence(self, context: dict[str, Any], valid_citations_count: int) -> float:
         score = 60.0  # Base confidence
 
         # Boost confidence based on available document citations

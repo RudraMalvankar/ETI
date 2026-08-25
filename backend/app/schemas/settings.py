@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Dict, List
 
 from pydantic import BaseModel, Field
 
@@ -26,7 +25,7 @@ class PlatformSettingsBase(BaseModel):
     notifications_enabled: bool
     api_base_url: str = Field(..., min_length=1, max_length=255)
     environment_status: str = Field(..., min_length=3, max_length=50)
-    notification_channels: List[str] = Field(default_factory=list)
+    notification_channels: list[str] = Field(default_factory=list)
 
 
 class PlatformSettingsUpdate(PlatformSettingsBase):
@@ -41,7 +40,7 @@ class PlatformSettingsResponse(PlatformSettingsBase):
 
 class PlatformSettingsEnvelope(BaseModel):
     settings: PlatformSettingsResponse
-    available_ai_providers: List[str]
-    available_embedding_providers: List[str]
-    available_ocr_providers: List[str]
-    effective_runtime: Dict[str, str | bool | int]
+    available_ai_providers: list[str]
+    available_embedding_providers: list[str]
+    available_ocr_providers: list[str]
+    effective_runtime: dict[str, str | bool | int]

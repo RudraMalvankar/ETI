@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from typing import Any
 
 
 class OCRProvider(ABC):
@@ -14,10 +14,10 @@ class OCRProvider(ABC):
         pass
 
     @abstractmethod
-    def extract_tables(self, image_bytes: bytes) -> List[Dict[str, Any]]:
+    def extract_tables(self, image_bytes: bytes) -> list[dict[str, Any]]:
         """Extract structured tables from an image."""
         pass
 
-    def get_last_result_metadata(self) -> Dict[str, Any]:
+    def get_last_result_metadata(self) -> dict[str, Any]:
         """Optional metadata about the last OCR operation, such as confidence or model details."""
         return {}

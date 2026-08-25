@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict
+from typing import Any
 
 from pydantic import ValidationError
 
@@ -11,7 +11,7 @@ class JSONValidator:
     Validates LLM output against the expected Pydantic JSON schema.
     """
 
-    def validate_and_parse(self, raw_llm_output: str) -> Dict[str, Any]:
+    def validate_and_parse(self, raw_llm_output: str) -> dict[str, Any]:
         try:
             # Simple extraction in case LLM wrapped in markdown blocks
             if "```json" in raw_llm_output:
@@ -24,6 +24,6 @@ class JSONValidator:
             _ = DecisionResponse(**data)
             return data
         except json.JSONDecodeError as e:
-            raise ValueError(f"LLM did not return valid JSON: {str(e)}")
+            raise ValueError(f"LLM did not return valid JSON: {e!s}")
         except ValidationError as e:
-            raise ValueError(f"LLM JSON output does not match schema: {str(e)}")
+            raise ValueError(f"LLM JSON output does not match schema: {e!s}")

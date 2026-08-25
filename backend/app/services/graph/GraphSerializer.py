@@ -18,7 +18,7 @@ class GraphSerializer:
             json.dump(data, f, indent=2)
 
     def load_from_file(self, filepath: str):
-        with open(filepath, "r") as f:
+        with open(filepath) as f:
             data = json.load(f)
         self.apex_graph.clear()
         new_graph = json_graph.node_link_graph(data)

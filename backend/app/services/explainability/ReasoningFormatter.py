@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any
 
 
 class ReasoningFormatter:
@@ -7,7 +7,7 @@ class ReasoningFormatter:
     """
 
     def format_summary(
-        self, decision_trace: Any, graph_ev: List, sim_ev: List, doc_ev: List
+        self, decision_trace: Any, graph_ev: list, sim_ev: list, doc_ev: list
     ) -> str:
         summary_lines = ["Based on purely deterministic system outputs:"]
 

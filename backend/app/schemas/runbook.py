@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -10,15 +10,15 @@ class RunbookStep(BaseModel):
     target_asset: str
     priority: int
     estimated_duration: float
-    safety_requirements: List[str] = Field(default_factory=list)
-    required_tools: List[str] = Field(default_factory=list)
-    document_citations: List[Dict[str, str]] = Field(default_factory=list)
+    safety_requirements: list[str] = Field(default_factory=list)
+    required_tools: list[str] = Field(default_factory=list)
+    document_citations: list[dict[str, str]] = Field(default_factory=list)
     status: str = "pending"  # pending, completed, failed
-    prerequisites: List[str] = Field(default_factory=list)
+    prerequisites: list[str] = Field(default_factory=list)
 
 
 class RunbookRequest(BaseModel):
-    decision_payload: Dict[str, Any]
+    decision_payload: dict[str, Any]
     simulation_id: str
 
 
@@ -28,10 +28,10 @@ class Runbook(BaseModel):
     failure_type: str = "Unknown"
     status: str = "active"
     is_regenerated: bool = False
-    steps: List[RunbookStep]
-    affected_assets: List[str]
+    steps: list[RunbookStep]
+    affected_assets: list[str]
     total_estimated_duration: float
-    update_history: List[str] = Field(default_factory=list)
+    update_history: list[str] = Field(default_factory=list)
 
 
 class FeedbackRequest(BaseModel):

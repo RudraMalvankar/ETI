@@ -1,5 +1,3 @@
-from typing import Dict, Optional
-
 from app.schemas.compliance import ComplianceReport, ComplianceReportRequest
 from app.services.compliance.AuditTrail import AuditTrail
 from app.services.compliance.ReportGenerator import ReportGenerator
@@ -11,7 +9,7 @@ class ComplianceEngine:
     Main orchestrator for Compliance & Audit Engine.
     """
 
-    _report_cache: Dict[str, ComplianceReport] = {}
+    _report_cache: dict[str, ComplianceReport] = {}
 
     def __init__(self):
         self.generator = ReportGenerator()
@@ -27,7 +25,7 @@ class ComplianceEngine:
         ComplianceEngine._report_cache[report.report_id] = report
         return report
 
-    def get_report(self, report_id: str) -> Optional[ComplianceReport]:
+    def get_report(self, report_id: str) -> ComplianceReport | None:
         return ComplianceEngine._report_cache.get(report_id)
 
     def export_pdf(self, report: ComplianceReport) -> bytes:

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 import networkx as nx
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -20,8 +20,8 @@ graph_write_check = RoleChecker(allowed_roles=["Engineer", "Admin"])
 
 
 class GraphBuildRequest(BaseModel):
-    nodes: List[GraphNode]
-    edges: List[GraphEdge]
+    nodes: list[GraphNode]
+    edges: list[GraphEdge]
 
 
 class BlastRadiusRequest(BaseModel):
@@ -40,7 +40,7 @@ def build_graph(request: GraphBuildRequest, current_user: dict = Depends(graph_w
     }
 
 
-@router.get("/", response_model=Dict[str, Any])
+@router.get("/", response_model=dict[str, Any])
 def get_graph_data(current_user: dict = Depends(graph_read_check)):
     serializer = GraphSerializer()
     return serializer.serialize()

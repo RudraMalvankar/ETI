@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String
 
@@ -15,7 +15,7 @@ class UserModel(Base):
     failed_login_attempts = Column(Integer, default=0, nullable=False)
     locked_until = Column(DateTime, nullable=True)
     current_session_id = Column(String(100), nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
 
 
 class DocumentModel(Base):
@@ -27,7 +27,7 @@ class DocumentModel(Base):
     status = Column(String(50), default="pending")
     chunks = Column(JSON, default=list)  # Store structured parsed chunks
     error_message = Column(String(500), nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
 
 
 class IncidentModel(Base):
@@ -43,7 +43,7 @@ class IncidentModel(Base):
     technician_feedback = Column(JSON, default=list)
     regenerated_runbooks = Column(JSON, default=list)
     outcome = Column(String(100), default="Resolved")
-    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    timestamp = Column(DateTime, default=lambda: datetime.now(UTC))
 
 
 class PlatformSettingsModel(Base):
@@ -64,4 +64,4 @@ class PlatformSettingsModel(Base):
     notification_channels = Column(JSON, default=list)
     provider_status = Column(JSON, default=dict)
     updated_by = Column(String(100), nullable=True)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=lambda: datetime.now(UTC))

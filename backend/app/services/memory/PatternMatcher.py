@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from app.services.memory.IncidentHistoryStore import global_incident_store
 
@@ -8,7 +8,7 @@ class PatternMatcher:
     Finds historical incidents similar to the search query with high performance (<100ms).
     """
 
-    def search_similar(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
+    def search_similar(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
         results = []
         if not query:
             incidents = global_incident_store.get_all()

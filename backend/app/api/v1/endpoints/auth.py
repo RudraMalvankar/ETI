@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
@@ -92,12 +92,12 @@ def login(
         )
 
     # Check for Account Lockout
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     if user.locked_until:
         # Check if locked_until has a timezone, if not localize or compare properly
         locked_until_utc = user.locked_until
         if locked_until_utc.tzinfo is None:
-            locked_until_utc = locked_until_utc.replace(tzinfo=timezone.utc)
+            locked_until_utc = locked_until_utc.replace(tzinfo=UTC)
         if now < locked_until_utc:
             minutes_left = int((locked_until_utc - now).total_seconds() / 60) + 1
             raise HTTPException(

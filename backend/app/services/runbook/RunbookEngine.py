@@ -1,5 +1,3 @@
-from typing import Optional
-
 from app.database.session import get_db_context
 from app.models.simulation_runbook import RunbookModel
 from app.schemas.runbook import FeedbackRequest, Runbook, RunbookRequest
@@ -43,7 +41,7 @@ class RunbookEngine:
             return rb
         raise ValueError("Generated runbook is invalid.")
 
-    def get_runbook(self, rb_id: str) -> Optional[Runbook]:
+    def get_runbook(self, rb_id: str) -> Runbook | None:
         with get_db_context() as db:
             row = db.query(RunbookModel).filter(RunbookModel.runbook_id == rb_id).first()
             if not row:

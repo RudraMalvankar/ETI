@@ -6,8 +6,8 @@ from .nim_provider import NIMProvider
 
 __all__ = [
     "AIProvider",
-    "ProviderFactory",
-    "MockAIProvider",
     "GeminiProvider",
+    "MockAIProvider",
     "NIMProvider",
+    "ProviderFactory",
 ]

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import JSON, Column, DateTime, Integer, String
 
@@ -15,4 +15,4 @@ class AuditLogModel(Base):
     resource = Column(String(200), nullable=False)
     previous_value = Column(JSON, nullable=True)
     new_value = Column(JSON, nullable=True)
-    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    timestamp = Column(DateTime, default=lambda: datetime.now(UTC))

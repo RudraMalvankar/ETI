@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import networkx as nx
 
@@ -19,7 +19,7 @@ class APEXGraph:
     def clear(self):
         self._graph.clear()
 
-    def get_node(self, node_id: str) -> Dict[str, Any]:
+    def get_node(self, node_id: str) -> dict[str, Any]:
         return self._graph.nodes.get(node_id)
 
     def has_node(self, node_id: str) -> bool:

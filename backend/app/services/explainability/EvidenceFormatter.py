@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 
 class EvidenceFormatter:
@@ -6,7 +6,7 @@ class EvidenceFormatter:
     Formats deterministic evidence from graph, simulation, and document ingestion contexts.
     """
 
-    def format_graph_evidence(self, context: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def format_graph_evidence(self, context: dict[str, Any]) -> list[dict[str, Any]]:
         evidence = []
         scenarios = context.get("scenarios", [])
         best_sc = scenarios[0] if (scenarios and isinstance(scenarios[0], dict)) else {}
@@ -30,7 +30,7 @@ class EvidenceFormatter:
             )
         return evidence
 
-    def format_simulation_evidence(self, context: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def format_simulation_evidence(self, context: dict[str, Any]) -> list[dict[str, Any]]:
         evidence = []
         scenarios = context.get("scenarios", [])
         if scenarios and isinstance(scenarios[0], dict):
@@ -52,7 +52,7 @@ class EvidenceFormatter:
             )
         return evidence
 
-    def format_document_evidence(self, context: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def format_document_evidence(self, context: dict[str, Any]) -> list[dict[str, Any]]:
         docs = context.get("documents", [])
         evidence = []
         for idx, doc in enumerate(docs):
@@ -61,12 +61,12 @@ class EvidenceFormatter:
                     doc.get("text")
                     or doc.get("text_snippet")
                     or doc.get("content")
-                    or f"Document chunk {idx+1}"
+                    or f"Document chunk {idx + 1}"
                 )
-                doc_id = doc.get("document_id") or doc.get("chunk_id") or f"doc-{idx+1}"
+                doc_id = doc.get("document_id") or doc.get("chunk_id") or f"doc-{idx + 1}"
             else:
                 text_snippet = str(doc)
-                doc_id = f"doc-{idx+1}"
+                doc_id = f"doc-{idx + 1}"
 
             evidence.append(
                 {
