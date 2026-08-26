@@ -61,11 +61,11 @@ export const Navbar: React.FC = () => {
 
   useEffect(() => {
     getIncidents()
-      .then(incidents => {
+      .then((incidents) => {
         const latest = [...incidents]
           .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
           .slice(0, 3)
-          .map(incident => ({
+          .map((incident) => ({
             id: incident.incident_id,
             title: `${incident.failed_asset} ${incident.failure_type.replace(/_/g, ' ')}`,
             time: new Date(incident.timestamp).toLocaleTimeString([], {
@@ -122,8 +122,8 @@ export const Navbar: React.FC = () => {
           <input
             type="text"
             value={globalQuery}
-            onChange={e => setGlobalQuery(e.target.value)}
-            onKeyDown={e => {
+            onChange={(e) => setGlobalQuery(e.target.value)}
+            onKeyDown={(e) => {
               if (e.key === 'Enter') setActiveTab('documents');
             }}
             placeholder="Search assets, P&IDs, tags, SOPs... (⌘K)"
@@ -137,28 +137,31 @@ export const Navbar: React.FC = () => {
         {/* Feature Triggers */}
         <button
           onClick={() => toggleTagInspector()}
+          aria-label="Equipment Tag and Entity Inspector"
           className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-mono font-semibold transition-all shadow-sm active:scale-95"
           title="Equipment Tag & Entity Inspector"
         >
-          <Tag className="w-3.5 h-3.5 text-indigo-400" />
+          <Tag className="w-3.5 h-3.5 text-indigo-400" aria-hidden="true" />
           <span>Tags</span>
         </button>
 
         <button
           onClick={() => toggleCopilot()}
+          aria-label="Expert RAG Knowledge Copilot"
           className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-mono font-semibold transition-all shadow-sm active:scale-95"
           title="Expert RAG Knowledge Copilot"
         >
-          <Bot className="w-3.5 h-3.5 text-blue-400" />
+          <Bot className="w-3.5 h-3.5 text-blue-400" aria-hidden="true" />
           <span>Copilot</span>
         </button>
 
         <button
           onClick={() => toggleComplianceModal()}
+          aria-label="OISD/PESO Compliance Hub"
           className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-mono font-semibold transition-all shadow-sm active:scale-95"
           title="OISD/PESO Compliance Hub"
         >
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
           <span className="hidden sm:inline">Compliance</span>
         </button>
 
@@ -187,6 +190,8 @@ export const Navbar: React.FC = () => {
               setShowNotifications(!showNotifications);
               setShowUserProfile(false);
             }}
+            aria-label="Notifications and Alarm Feed"
+            aria-expanded={showNotifications}
             className={`p-2 rounded-xl transition relative border ${
               showNotifications
                 ? 'bg-blue-500/20 border-blue-500/40 text-blue-400'
@@ -221,7 +226,7 @@ export const Navbar: React.FC = () => {
 
                 <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
                   {notifications.length ? (
-                    notifications.map(notif => (
+                    notifications.map((notif) => (
                       <div
                         key={notif.id}
                         className="p-2.5 rounded-xl bg-[#151D2A] border border-slate-800 hover:border-slate-700 transition-all text-xs"
@@ -263,11 +268,13 @@ export const Navbar: React.FC = () => {
               setShowUserProfile(!showUserProfile);
               setShowNotifications(false);
             }}
+            aria-label="User Profile and Plant Role"
+            aria-expanded={showUserProfile}
             className="flex items-center gap-2 pl-2 cursor-pointer transition-opacity"
             title="User Profile & Plant Role"
           >
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md border border-blue-400/30">
-              <User className="w-4 h-4" />
+              <User className="w-4 h-4" aria-hidden="true" />
             </div>
           </motion.button>
 

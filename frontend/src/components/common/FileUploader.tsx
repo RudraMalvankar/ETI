@@ -36,13 +36,21 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
 
   return (
     <div
-      onDragOver={e => {
+      onDragOver={(e) => {
         e.preventDefault();
         setIsDragOver(true);
       }}
       onDragLeave={() => setIsDragOver(false)}
       onDrop={handleDrop}
       onClick={() => fileInputRef.current?.click()}
+      role="button"
+      tabIndex={0}
+      aria-label="Upload file by clicking or dragging"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          fileInputRef.current?.click();
+        }
+      }}
       className={`relative cursor-pointer p-8 rounded-2xl border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center text-center ${
         isDragOver
           ? 'border-blue-400 bg-blue-500/10 scale-[1.01]'
@@ -54,6 +62,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         type="file"
         accept={acceptedFormats}
         onChange={handleFileChange}
+        aria-label="File upload input"
         className="hidden"
       />
       <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-500/10 text-blue-400 border border-blue-500/20 mb-3">

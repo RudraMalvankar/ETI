@@ -89,6 +89,7 @@ export const Sidebar: React.FC = () => {
           </div>
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
+            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition"
           >
             {isCollapsed ? (
@@ -119,7 +120,7 @@ export const Sidebar: React.FC = () => {
               </h3>
             )}
             <div className="space-y-0.5">
-              {group.items.map(item => {
+              {group.items.map((item) => {
                 const Icon = item.icon;
                 const isActive =
                   location.pathname.includes(item.id) ||
@@ -130,6 +131,8 @@ export const Sidebar: React.FC = () => {
                     whileTap={{ scale: 0.98 }}
                     key={item.id}
                     onClick={() => navigate(`/dashboard/${item.id === 'dashboard' ? '' : item.id}`)}
+                    aria-label={item.label}
+                    aria-current={isActive ? 'page' : undefined}
                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                       isActive
                         ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border-strong)] shadow-sm'
@@ -153,18 +156,20 @@ export const Sidebar: React.FC = () => {
       <div className="p-3 border-t border-[var(--border-muted)] space-y-1">
         <button
           onClick={() => navigate('/dashboard/settings')}
+          aria-label="Settings"
           className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition"
           title={isCollapsed ? 'Settings' : undefined}
         >
-          <Settings className="shrink-0 w-4 h-4 text-[var(--text-muted)]" />
+          <Settings className="shrink-0 w-4 h-4 text-[var(--text-muted)]" aria-hidden="true" />
           {!isCollapsed && <span>Settings</span>}
         </button>
         <button
           onClick={handleLogout}
+          aria-label="Logout"
           className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-[var(--text-secondary)] hover:text-accent-red hover:bg-accent-red/10 transition"
           title={isCollapsed ? 'Logout' : undefined}
         >
-          <LogOut className="shrink-0 w-4 h-4 text-accent-red/70" />
+          <LogOut className="shrink-0 w-4 h-4 text-accent-red/70" aria-hidden="true" />
           {!isCollapsed && <span>Logout</span>}
         </button>
       </div>
