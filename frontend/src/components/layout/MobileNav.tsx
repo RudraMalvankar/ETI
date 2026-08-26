@@ -16,7 +16,7 @@ export const MobileNav: React.FC = () => {
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-[var(--bg-surface)] border-t border-[var(--border-muted)] z-50 flex items-center justify-around px-2 pb-safe">
-      {navItems.map(item => {
+      {navItems.map((item) => {
         const Icon = item.icon;
         const isActive =
           location.pathname.includes(item.id) ||
