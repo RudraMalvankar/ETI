@@ -23,22 +23,24 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <div className={`relative flex items-center w-full ${className}`}>
-      <Search className="absolute left-3.5 w-4 h-4 text-slate-400" />
+    <div className={`relative flex items-center w-full ${className}`} role="search">
+      <Search className="absolute left-3.5 w-4 h-4 text-slate-400" aria-hidden="true" />
       <input
         type="text"
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
+        aria-label="Search assets, documents, incidents"
         className="w-full pl-10 pr-9 py-2.5 bg-slate-900/60 text-white placeholder-slate-500 text-xs rounded-xl border border-slate-800 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all"
       />
       {value && (
         <button
           onClick={() => onChange('')}
+          aria-label="Clear search"
           className="absolute right-3 p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
         >
-          <X className="w-3.5 h-3.5" />
+          <X className="w-3.5 h-3.5" aria-hidden="true" />
         </button>
       )}
     </div>
