@@ -20,6 +20,31 @@ os.environ.setdefault("JWT_SECRET", "test-secret-key-for-pytest-suite-only")
 os.environ.setdefault("ENVIRONMENT", "development")
 os.environ.setdefault("AI_PROVIDER", "mock")
 os.environ.setdefault("EMBEDDING_PROVIDER", "mock")
+os.environ.setdefault("QDRANT_URL", "http://localhost:6333")
+os.environ.setdefault("QDRANT_COLLECTION", "test_collection")
+
+# Mock Qdrant client to prevent connection errors during tests
+import unittest.mock as _mock
+
+_qdrant_client_mock = _mock.MagicMock()
+_qdrant_client_mock.search.return_value = []
+_qdrant_client_mock.get_collections.return_value = _mock.MagicMock(collections=[])
+_qdrant_client_mock.collection_exists.return_value = False  # Force recreation
+_qdrant_client_mock.create_collection.return_value = True
+_qdrant_client_mock.upsert.return_value = True
+_qdrant_client_mock.delete.return_value = True
+_qdrant_client_mock.get_collection.return_value = _mock.MagicMock(
+    config=_mock.MagicMock(
+        params=_mock.MagicMock(
+            vectors=_mock.MagicMock(size=4096)
+        )
+    ),
+    points_count=0
+)
+
+# Patch QdrantClient in the qdrant_client module
+import qdrant_client
+qdrant_client.QdrantClient = _mock.MagicMock(return_value=_qdrant_client_mock)
 
 import pytest
 from fastapi.testclient import TestClient
