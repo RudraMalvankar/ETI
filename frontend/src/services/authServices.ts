@@ -1,11 +1,7 @@
-import axios from 'axios';
 import { apiClient } from './apiClient';
 import {
   clearStoredAuth,
-  getStoredRefreshToken,
   storeAuthSession,
-  updateStoredAccessToken,
-  updateStoredRefreshToken,
 } from './authStorage';
 import { AuthProfile, AuthTokens } from '../types/apex';
 
@@ -42,27 +38,5 @@ export async function logoutUser(): Promise<void> {
     await apiClient.post('/auth/logout');
   } finally {
     clearStoredAuth();
-  }
-}
-
-export async function refreshAccessToken(): Promise<string | null> {
-  const refreshToken = getStoredRefreshToken();
-  if (!refreshToken) {
-    clearStoredAuth();
-    return null;
-  }
-
-  try {
-    const res = await axios.post<AuthTokens>(
-      `${apiClient.defaults.baseURL}/auth/refresh`,
-      { refresh_token: refreshToken },
-      { timeout: 10000 }
-    );
-    updateStoredAccessToken(res.data.access_token);
-    updateStoredRefreshToken(res.data.refresh_token);
-    return res.data.access_token;
-  } catch {
-    clearStoredAuth();
-    return null;
   }
 }
