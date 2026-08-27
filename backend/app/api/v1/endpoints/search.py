@@ -1,3 +1,4 @@
+import logging
 import time
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -5,6 +6,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.core.auth import RoleChecker
 from app.schemas.search import SearchRequest, SearchResponse
 from app.services.rag.vector_store import global_vector_store
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -28,8 +31,9 @@ def semantic_search(request: SearchRequest, current_user: dict = Depends(search_
             asset_id=request.asset_id,
             document_id=request.document_id,
         )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Search failed: {e!s}")
+    except Exception:
+        logger.error("search_error", query=request.query, exc_info=True)
+        raise HTTPException(status_code=500, detail="Search failed. Please try again.")
 
     duration = int((time.time() - start) * 1000)
     return SearchResponse(results=results, query_time_ms=duration)

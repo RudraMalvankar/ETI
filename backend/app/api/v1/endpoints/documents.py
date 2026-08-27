@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -9,6 +11,8 @@ from app.models.models import DocumentModel
 from app.schemas.document import DocumentResponse, IngestedDocument
 from app.services.ingestion.pipeline import IngestionPipeline
 from app.services.rag.vector_store import global_vector_store
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 pipeline = IngestionPipeline()
@@ -107,8 +111,9 @@ def index_document(
 
         chunks_list = [DocumentChunk(**c) for c in doc.chunks] if doc.chunks else []
         global_vector_store.index_chunks(chunks_list)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to index: {e!s}")
+    except Exception:
+        logger.error("document_index_error", document_id=request.document_id, exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to index document. Please try again.")
 
     return {"message": "Successfully indexed chunks", "chunk_count": len(chunks_list)}
 
