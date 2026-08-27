@@ -1,9 +1,13 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from app.core.auth import RoleChecker
 from app.core.rate_limiter import limiter
 from app.schemas.decision import DecisionRequest, DecisionResponse
 from app.services.decision.DecisionEngine import DecisionEngine
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -22,5 +26,6 @@ def recommend_decision(
         return engine.make_decision(request_body)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Internal Server Error: {e!s}")
+    except Exception:
+        logger.error("decision_error", exc_info=True)
+        raise HTTPException(status_code=500, detail="An internal error occurred. Please try again.")
