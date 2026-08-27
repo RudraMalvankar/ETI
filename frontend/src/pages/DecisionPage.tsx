@@ -24,12 +24,8 @@ interface ChatMessage {
 }
 
 export const DecisionPage: React.FC = () => {
-  const {
-    activeAssetId,
-    activeFailureType,
-    currentSimulation,
-    setCurrentDecision,
-  } = useApexStore();
+  const { activeAssetId, activeFailureType, currentSimulation, setCurrentDecision } =
+    useApexStore();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -41,10 +37,9 @@ export const DecisionPage: React.FC = () => {
       {
         id: 'msg-0',
         type: 'bot',
-        content:
-          currentSimulation?.simulation_id
-            ? `Operational context loaded for asset ${currentSimulation.request.failed_asset}. Ask for a recommendation and I will evaluate the current simulation, graph, and indexed evidence.`
-            : 'Run a live maintenance simulation first. Once a simulation is available, I can generate a grounded recommendation with citations and affected-asset context.',
+        content: currentSimulation?.simulation_id
+          ? `Operational context loaded for asset ${currentSimulation.request.failed_asset}. Ask for a recommendation and I will evaluate the current simulation, graph, and indexed evidence.`
+          : 'Run a live maintenance simulation first. Once a simulation is available, I can generate a grounded recommendation with citations and affected-asset context.',
       },
     ]);
   }, [currentSimulation?.request.failed_asset, currentSimulation?.simulation_id]);
@@ -61,11 +56,11 @@ export const DecisionPage: React.FC = () => {
     }
 
     const userMsg: ChatMessage = { id: `user-${Date.now()}`, type: 'user', content: text };
-    setMessages(prev => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     setInputValue('');
 
     if (!currentSimulation?.simulation_id) {
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           id: `bot-${Date.now()}`,
@@ -82,10 +77,10 @@ export const DecisionPage: React.FC = () => {
       const res = await evaluateDecision(
         activeAssetId,
         activeFailureType,
-        currentSimulation.simulation_id
+        currentSimulation.simulation_id,
       );
       setCurrentDecision(res);
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           id: `bot-${Date.now()}`,
@@ -98,7 +93,7 @@ export const DecisionPage: React.FC = () => {
       const message =
         error?.response?.data?.detail || error?.message || 'Decision evaluation failed.';
       toast.error(message);
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           id: `bot-${Date.now()}`,
@@ -131,8 +126,8 @@ export const DecisionPage: React.FC = () => {
         <div className="mx-6 mt-4 p-4 rounded-2xl border border-accent-amber/30 bg-accent-amber/10 text-accent-amber text-sm flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 mt-0.5 shrink-0" />
           <div>
-            This copilot workflow depends on a live simulation. Run the Maintenance Intelligence flow
-            first, then come back here for a grounded recommendation.
+            This copilot workflow depends on a live simulation. Run the Maintenance Intelligence
+            flow first, then come back here for a grounded recommendation.
           </div>
         </div>
       )}
@@ -143,7 +138,7 @@ export const DecisionPage: React.FC = () => {
       >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-500/5 rounded-full blur-[100px] pointer-events-none" />
 
-        {messages.map(msg => (
+        {messages.map((msg) => (
           <div
             key={msg.id}
             className={`flex gap-4 ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
@@ -164,11 +159,15 @@ export const DecisionPage: React.FC = () => {
                     : 'bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--glass-border)] rounded-tl-none shadow-xl shadow-black/20'
                 }`}
               >
-                <p
-                  dangerouslySetInnerHTML={{
-                    __html: msg.content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'),
-                  }}
-                />
+                <p>
+                  {msg.content.split(/(\*\*.*?\*\*)/).map((part, i) =>
+                    part.startsWith('**') && part.endsWith('**') ? (
+                      <strong key={i}>{part.slice(2, -2)}</strong>
+                    ) : (
+                      part
+                    ),
+                  )}
+                </p>
               </div>
 
               {msg.decisionContext && (
@@ -187,7 +186,7 @@ export const DecisionPage: React.FC = () => {
                   </div>
 
                   <div className="space-y-3 mb-4">
-                    {msg.decisionContext.supporting_citations.map(cit => (
+                    {msg.decisionContext.supporting_citations.map((cit) => (
                       <div
                         key={cit.chunk_id}
                         className="p-3 bg-[var(--bg-primary)]/50 border border-[var(--glass-border)] rounded-xl text-xs"
@@ -235,9 +234,18 @@ export const DecisionPage: React.FC = () => {
               <Bot className="w-5 h-5" />
             </div>
             <div className="bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl rounded-tl-none p-4 flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-brand-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-2 h-2 rounded-full bg-brand-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-2 h-2 rounded-full bg-brand-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div
+                className="w-2 h-2 rounded-full bg-brand-500 animate-bounce"
+                style={{ animationDelay: '0ms' }}
+              />
+              <div
+                className="w-2 h-2 rounded-full bg-brand-500 animate-bounce"
+                style={{ animationDelay: '150ms' }}
+              />
+              <div
+                className="w-2 h-2 rounded-full bg-brand-500 animate-bounce"
+                style={{ animationDelay: '300ms' }}
+              />
             </div>
           </div>
         )}
@@ -248,7 +256,7 @@ export const DecisionPage: React.FC = () => {
           'Analyze the current maintenance risk on this asset',
           'Summarize the safest mitigation path',
           'Which linked assets are most exposed?',
-        ].map(prompt => (
+        ].map((prompt) => (
           <button
             key={prompt}
             onClick={() => handleSend(prompt)}
@@ -261,7 +269,7 @@ export const DecisionPage: React.FC = () => {
 
       <div className="p-4 bg-[var(--bg-primary)] border-t border-[var(--glass-border)] z-10">
         <form
-          onSubmit={e => {
+          onSubmit={(e) => {
             e.preventDefault();
             handleSend();
           }}
@@ -270,7 +278,7 @@ export const DecisionPage: React.FC = () => {
           <input
             type="text"
             value={inputValue}
-            onChange={e => setInputValue(e.target.value)}
+            onChange={(e) => setInputValue(e.target.value)}
             placeholder="Ask for a grounded recommendation, impact summary, or mitigation plan..."
             className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl py-4 pl-5 pr-14 text-sm text-white placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-inner"
           />
