@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { shallow } from 'zustand/shallow';
 import { Layout } from './components/layout/Layout';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { useApexStore } from './store/useApexStore';
 import { LoadingSkeleton } from './components/common/LoadingSkeleton';
 import { fetchCurrentUser } from './services/authServices';
@@ -10,49 +11,51 @@ import { checkBackendHealth } from './services/apiClient';
 
 // Dashboard Pages
 const DashboardPage = lazy(() =>
-  import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage }))
+  import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage })),
 );
 const DocumentsPage = lazy(() =>
-  import('./pages/DocumentsPage').then(m => ({ default: m.DocumentsPage }))
+  import('./pages/DocumentsPage').then((m) => ({ default: m.DocumentsPage })),
 );
 const KnowledgeGraphPage = lazy(() =>
-  import('./pages/KnowledgeGraphPage').then(m => ({ default: m.KnowledgeGraphPage }))
+  import('./pages/KnowledgeGraphPage').then((m) => ({ default: m.KnowledgeGraphPage })),
 );
 const SimulationPage = lazy(() =>
-  import('./pages/SimulationPage').then(m => ({ default: m.SimulationPage }))
+  import('./pages/SimulationPage').then((m) => ({ default: m.SimulationPage })),
 );
 const DecisionPage = lazy(() =>
-  import('./pages/DecisionPage').then(m => ({ default: m.DecisionPage }))
+  import('./pages/DecisionPage').then((m) => ({ default: m.DecisionPage })),
 );
 const RunbookPage = lazy(() =>
-  import('./pages/RunbookPage').then(m => ({ default: m.RunbookPage }))
+  import('./pages/RunbookPage').then((m) => ({ default: m.RunbookPage })),
 );
-const MemoryPage = lazy(() => import('./pages/MemoryPage').then(m => ({ default: m.MemoryPage })));
+const MemoryPage = lazy(() =>
+  import('./pages/MemoryPage').then((m) => ({ default: m.MemoryPage })),
+);
 const CompliancePage = lazy(() =>
-  import('./pages/CompliancePage').then(m => ({ default: m.CompliancePage }))
+  import('./pages/CompliancePage').then((m) => ({ default: m.CompliancePage })),
 );
 const IncidentHistoryPage = lazy(() =>
-  import('./pages/IncidentHistoryPage').then(m => ({ default: m.IncidentHistoryPage }))
+  import('./pages/IncidentHistoryPage').then((m) => ({ default: m.IncidentHistoryPage })),
 );
 const SettingsPage = lazy(() =>
-  import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage }))
+  import('./pages/SettingsPage').then((m) => ({ default: m.SettingsPage })),
 );
 
 // Public Pages
 const LandingPage = lazy(() =>
   import('./pages/LandingPage')
-    .then(m => ({ default: m.LandingPage }))
-    .catch(() => ({ default: () => <div>Landing Page</div> }))
+    .then((m) => ({ default: m.LandingPage }))
+    .catch(() => ({ default: () => <div>Landing Page</div> })),
 );
 const LoginPage = lazy(() =>
   import('./pages/LoginPage')
-    .then(m => ({ default: m.LoginPage }))
-    .catch(() => ({ default: () => <div>Login Page</div> }))
+    .then((m) => ({ default: m.LoginPage }))
+    .catch(() => ({ default: () => <div>Login Page</div> })),
 );
 const RegisterPage = lazy(() =>
   import('./pages/RegisterPage')
-    .then(m => ({ default: m.RegisterPage }))
-    .catch(() => ({ default: () => <div>Register Page</div> }))
+    .then((m) => ({ default: m.RegisterPage }))
+    .catch(() => ({ default: () => <div>Register Page</div> })),
 );
 
 const ProtectedRoute = ({
@@ -78,7 +81,7 @@ export function App() {
     clearAuthSession,
     setConnectionState,
   } = useApexStore(
-    state => ({
+    (state) => ({
       isDarkMode: state.isDarkMode,
       isAuthenticated: state.isAuthenticated,
       currentUser: state.currentUser,
@@ -86,7 +89,7 @@ export function App() {
       clearAuthSession: state.clearAuthSession,
       setConnectionState: state.setConnectionState,
     }),
-    shallow
+    shallow,
   );
 
   useEffect(() => {
@@ -103,7 +106,7 @@ export function App() {
     }
 
     fetchCurrentUser()
-      .then(profile => {
+      .then((profile) => {
         setCurrentUser(profile);
       })
       .catch(() => {
@@ -113,7 +116,7 @@ export function App() {
 
   useEffect(() => {
     checkBackendHealth()
-      .then(isHealthy => {
+      .then((isHealthy) => {
         setConnectionState(isHealthy ? 'connected' : 'offline');
       })
       .catch(() => {
@@ -130,7 +133,8 @@ export function App() {
           </div>
         }
       >
-        <Routes>
+        <ErrorBoundary>
+          <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -238,6 +242,7 @@ export function App() {
 
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
+        </ErrorBoundary>
       </Suspense>
       <Toaster theme={isDarkMode ? 'dark' : 'light'} position="top-right" />
     </BrowserRouter>
