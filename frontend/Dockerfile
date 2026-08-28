@@ -17,15 +17,8 @@ RUN npm run build
 # Production stage using Nginx
 FROM nginx:alpine
 
-# Custom nginx config to listen on port 3000 (to match docker-compose.yml mapping)
-RUN echo 'server { \
-    listen 3000; \
-    location / { \
-        root /usr/share/nginx/html; \
-        index index.html index.htm; \
-        try_files $uri $uri/ /index.html; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+# Custom nginx config with security headers, gzip, and caching
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
