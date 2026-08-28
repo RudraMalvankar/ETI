@@ -37,7 +37,7 @@ async def upload_document(
     Upload and ingest an industrial document.
     Triggers Validation -> Parser -> OCR (if needed) -> Chunking.
     """
-    if file.content_type not in ["application/pdf", "text/csv", "application/json"]:
+    if file.content_type not in ["application/pdf"]:
         raise HTTPException(status_code=400, detail="Unsupported file type.")
 
     content = await file.read()
@@ -139,9 +139,16 @@ def delete_document(
     db: Session = Depends(get_db),
     current_user: dict = Depends(doc_write_check),
 ):
-    """Delete a document from the system."""
+    """Delete a document and its chunks from the system."""
     doc = db.query(DocumentModel).filter(DocumentModel.document_id == document_id).first()
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
+    try:
+        global_vector_store.client.delete(
+            collection_name=global_vector_store.collection_name,
+            points_selector={"filter": {"must": [{"key": "document_id", "match": {"value": document_id}}]}},
+        )
+    except Exception:
+        logger.warning("Failed to delete vectors for document %s", document_id)
     db.delete(doc)
     db.commit()

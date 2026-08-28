@@ -145,6 +145,14 @@ def login(
         samesite="lax",
         max_age=3600,
     )
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=604800,
+    )
 
     return Token(
         access_token=access_token,
@@ -196,6 +204,14 @@ def refresh_token_rotation(
         secure=True,
         samesite="lax",
         max_age=3600,
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=new_refresh,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=604800,
     )
 
     return Token(

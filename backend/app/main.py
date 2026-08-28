@@ -1,10 +1,12 @@
 import structlog
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Query, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from jose import JWTError, jwt
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app.api.v1.router import api_router
+from app.core.auth import JWT_ALGORITHM, JWT_SECRET
 from app.core.config import settings
 from app.core.error_handlers import register_exception_handlers
 from app.core.rate_limiter import limiter
@@ -121,11 +123,18 @@ def readiness_probe():
 
 
 @app.websocket("/ws/simulation")
-async def ws_simulation_endpoint(websocket: WebSocket):
+async def ws_simulation_endpoint(websocket: WebSocket, token: str = Query(None)):
+    if not token:
+        await websocket.close(code=4001, reason="Authentication required")
+        return
+    try:
+        jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except JWTError:
+        await websocket.close(code=4001, reason="Invalid token")
+        return
     await global_connection_manager.connect(websocket)
     try:
         while True:
-            # Maintain connection alive, listen for messages
             data = await websocket.receive_text()
             await websocket.send_json({"status": "received", "data": data})
     except WebSocketDisconnect:

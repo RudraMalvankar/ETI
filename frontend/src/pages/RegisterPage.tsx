@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { useApexStore } from '../store/useApexStore';
 import { loginUser, registerUser } from '../services/authServices';
-import { getStoredAccessToken, getStoredRefreshToken } from '../services/authStorage';
 import { toast } from 'sonner';
 
 export const RegisterPage: React.FC = () => {
@@ -27,14 +26,7 @@ export const RegisterPage: React.FC = () => {
     try {
       await registerUser({ username: email, password });
       const profile = await loginUser({ username: email, password });
-      const accessToken = getStoredAccessToken();
-      const refreshToken = getStoredRefreshToken();
-
-      if (!accessToken || !refreshToken) {
-        throw new Error('Session tokens were not stored correctly.');
-      }
-
-      setAuthSession({ user: profile, accessToken, refreshToken });
+      setAuthSession({ user: profile });
       setActiveTab('dashboard');
       toast.success('Workspace created and signed in.');
       navigate('/dashboard');
@@ -64,7 +56,7 @@ export const RegisterPage: React.FC = () => {
             <input
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-lg py-2.5 pl-9 pr-3 text-sm text-white placeholder-[var(--text-secondary)] focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all"
               placeholder="jane@acme.com"
               required
@@ -83,7 +75,7 @@ export const RegisterPage: React.FC = () => {
             <input
               type="password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-lg py-2.5 pl-9 pr-3 text-sm text-white placeholder-[var(--text-secondary)] focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all"
               placeholder="••••••••"
               required
@@ -102,7 +94,7 @@ export const RegisterPage: React.FC = () => {
             <input
               type="password"
               value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-lg py-2.5 pl-9 pr-3 text-sm text-white placeholder-[var(--text-secondary)] focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all"
               placeholder="••••••••"
               required

@@ -391,16 +391,18 @@ export const MOCK_COMPLIANCE: ComplianceStandard[] = [
 export const apexApi = {
   getGraphState: async (isRerouted: boolean = false) => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/graph/blast-radius`);
+      const res = await axios.post(`${API_BASE_URL}/graph/blast-radius`, {
+        failed_asset: 'R-101',
+      });
       return res.data;
     } catch {
       return isRerouted ? MOCK_GRAPH_REROUTED : MOCK_GRAPH_INITIAL;
     }
   },
 
-  getRunbook: async (isRerouted: boolean = false) => {
+  getRunbook: async (runbookId: string = 'RB-2026-9042', isRerouted: boolean = false) => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/runbook/current`);
+      const res = await axios.get(`${API_BASE_URL}/runbook/${runbookId}`);
       return res.data;
     } catch {
       return isRerouted ? MOCK_RUNBOOK_REROUTED : MOCK_RUNBOOK_INITIAL;
@@ -418,7 +420,9 @@ export const apexApi = {
 
   searchCopilot: async (query: string) => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/search?q=${encodeURIComponent(query)}`);
+      const res = await axios.post(`${API_BASE_URL}/search`, {
+        query: query,
+      });
       return res.data;
     } catch {
       return {

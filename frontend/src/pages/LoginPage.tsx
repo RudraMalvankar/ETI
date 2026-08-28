@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { useApexStore } from '../store/useApexStore';
 import { loginUser } from '../services/authServices';
-import { getStoredAccessToken, getStoredRefreshToken } from '../services/authStorage';
 import { toast } from 'sonner';
 
 export const LoginPage: React.FC = () => {
@@ -19,14 +18,7 @@ export const LoginPage: React.FC = () => {
     setIsSubmitting(true);
     try {
       const profile = await loginUser({ username: email, password });
-      const accessToken = getStoredAccessToken();
-      const refreshToken = getStoredRefreshToken();
-
-      if (!accessToken || !refreshToken) {
-        throw new Error('Session tokens were not stored correctly.');
-      }
-
-      setAuthSession({ user: profile, accessToken, refreshToken });
+      setAuthSession({ user: profile });
       setActiveTab('dashboard');
       toast.success(`Signed in as ${profile.username}`);
       navigate('/dashboard');
@@ -43,18 +35,18 @@ export const LoginPage: React.FC = () => {
       <form onSubmit={handleLogin} className="space-y-5">
         <div>
           <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
-            Work Email
+            Username
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--text-secondary)]">
               <Mail className="h-5 w-5" />
             </div>
             <input
-              type="email"
+              type="text"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl py-3 pl-10 pr-4 text-white placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
-              placeholder="technician@enterprise.com"
+              placeholder="Enter your username"
               required
             />
           </div>
@@ -76,7 +68,7 @@ export const LoginPage: React.FC = () => {
             <input
               type="password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl py-3 pl-10 pr-4 text-white placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
               placeholder="••••••••"
               required
