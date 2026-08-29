@@ -62,7 +62,7 @@ def run_stress_tests():
     print_test("Blast Radius Unknown Asset", res)
 
     # Rebuild graph to valid state for next tests
-    with open(DATA_FILE, "r") as f:
+    with open(DATA_FILE) as f:
         graph_data = json.load(f)
     requests.post(f"{BASE_URL}/graph/build", json=graph_data)
 
