@@ -1,18 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiClient } from '../services/apiClient';
 import {
   listDocuments,
   uploadDocument,
   getDocumentDetails,
-  deleteDocument,
   getGraph,
   buildGraph,
   vectorSearch,
   getIncidents,
-  getMemoryEntries,
   getComplianceReport,
   getRunbook,
-  triggerSimulation,
-  makeDecision,
+  runSimulation,
+  evaluateDecision,
   type DocumentResponse,
   type GraphData,
   type ComplianceReport,
@@ -50,7 +49,8 @@ export function useUploadDocument() {
 export function useDeleteDocument() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (documentId: string) => deleteDocument(documentId),
+    mutationFn: (documentId: string) =>
+      apiClient.delete(`/documents/${documentId}`).then(() => {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
     },
@@ -99,25 +99,27 @@ export function useIncidents() {
 export function useMemoryEntries() {
   return useQuery({
     queryKey: ['memory'],
-    queryFn: getMemoryEntries,
+    queryFn: getIncidents,
   });
 }
 
 // ── Compliance ────────────────────────────────────────────────
 
-export function useComplianceReport() {
+export function useComplianceReport(reportId: string | null) {
   return useQuery<ComplianceReport>({
-    queryKey: ['compliance'],
-    queryFn: getComplianceReport,
+    queryKey: ['compliance', reportId],
+    queryFn: () => getComplianceReport(reportId!),
+    enabled: !!reportId,
   });
 }
 
 // ── Runbook ───────────────────────────────────────────────────
 
-export function useRunbook() {
+export function useRunbook(runbookId: string | null) {
   return useQuery<Runbook>({
-    queryKey: ['runbook'],
-    queryFn: getRunbook,
+    queryKey: ['runbook', runbookId],
+    queryFn: () => getRunbook(runbookId!),
+    enabled: !!runbookId,
   });
 }
 
@@ -131,7 +133,7 @@ export function useRunSimulation() {
       failure_type: string;
       initial_telemetry: Record<string, number>;
       operating_mode?: string;
-    }) => triggerSimulation(payload),
+    }) => runSimulation(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['graph'] });
     },
@@ -142,11 +144,10 @@ export function useRunSimulation() {
 
 export function useMakeDecision() {
   return useMutation({
-    mutationFn: (context: {
-      query: string;
-      graph_state: GraphData;
-      compliance_report: ComplianceReport;
-      current_mode: string;
-    }) => makeDecision(context),
+    mutationFn: (payload: {
+      failed_asset: string;
+      failure_type: string;
+      simulation_id: string;
+    }) => evaluateDecision(payload.failed_asset, payload.failure_type, payload.simulation_id),
   });
 }
