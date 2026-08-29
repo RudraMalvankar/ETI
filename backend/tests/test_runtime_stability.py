@@ -75,7 +75,7 @@ def test_memory_serializer_and_timeline_builder():
 def test_no_circular_imports_or_missing_classes():
     """Verify every module under app can be dynamically imported without circular imports or AttributeError."""
     app_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "app"))
-    for root, dirs, files in os.walk(app_dir):
+    for root, _dirs, files in os.walk(app_dir):
         for file in files:
             if file.endswith(".py") and not file.startswith("__"):
                 rel_path = os.path.relpath(
