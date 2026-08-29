@@ -66,7 +66,7 @@ def run_e2e_demo():
     print("\n[3/13] Knowledge Graph Build & Blast Radius Topology")
     sample_graph = "tests/samples/industrial_plant.json"
     if os.path.exists(sample_graph):
-        with open(sample_graph, "r") as f:
+        with open(sample_graph) as f:
             graph_data = json.load(f)
         res_graph = client.post("/api/v1/graph/build", json=graph_data)
         print(f"  -> Graph Build Status: HTTP {res_graph.status_code}")

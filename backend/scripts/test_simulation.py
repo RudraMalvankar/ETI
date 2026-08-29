@@ -26,7 +26,7 @@ def run_test():
     print("--- APEX SHADOW SIMULATION ENGINE DEMONSTRATION ---")
 
     # Ensure Graph is built first
-    with open(DATA_FILE, "r") as f:
+    with open(DATA_FILE) as f:
         data = json.load(f)
     requests.post(f"{BASE_URL_GRAPH}/build", json=data)
 
