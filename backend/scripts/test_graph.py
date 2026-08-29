@@ -11,7 +11,7 @@ def main():
 
     # 1. Build a graph from mock industrial assets
     print("\n1. Building Graph...")
-    with open(DATA_FILE, "r") as f:
+    with open(DATA_FILE) as f:
         data = json.load(f)
 
     build_res = requests.post(f"{BASE_URL}/build", json=data)

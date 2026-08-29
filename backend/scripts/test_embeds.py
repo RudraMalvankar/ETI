@@ -6,7 +6,7 @@ import requests
 def load_env():
     env_vars = {}
     if os.path.exists(".env"):
-        with open(".env", "r") as f:
+        with open(".env") as f:
             for line in f:
                 line = line.strip()
                 if line and not line.startswith("#") and "=" in line:

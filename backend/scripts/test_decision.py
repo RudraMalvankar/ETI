@@ -12,7 +12,7 @@ def run_test():
     print("--- APEX DECISION ENGINE DEMONSTRATION ---")
 
     # 1. Build a graph from mock industrial assets
-    with open(DATA_FILE, "r") as f:
+    with open(DATA_FILE) as f:
         data = json.load(f)
     requests.post(f"{BASE_URL_GRAPH}/build", json=data)
     print("Graph built.")

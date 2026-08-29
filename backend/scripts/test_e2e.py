@@ -50,7 +50,7 @@ def run_e2e():
 
     # 8. Build Knowledge Graph
     print("\n[8] Graph Engine...")
-    with open(DATA_FILE, "r") as f:
+    with open(DATA_FILE) as f:
         graph_data = json.load(f)
     res, lat = measure_latency(requests.post, f"{BASE_URL}/graph/build", json=graph_data)
     print(f"  Graph Build Latency: {lat:.2f}ms | Status: {res.status_code}")
