@@ -25,4 +25,7 @@ class SimulationModel(Base):
     failed_asset = Column(String(100), nullable=False)
     failure_type = Column(String(100), nullable=False)
     scenarios = Column(JSON, default=list)
+    initial_telemetry = Column(JSON, default=dict)
+    operating_mode = Column(String(50), default="normal")
+    request_timestamp = Column(String(100), nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(UTC))
