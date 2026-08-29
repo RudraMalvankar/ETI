@@ -50,7 +50,7 @@ export async function vectorSearch(query: string, top_k: number = 5): Promise<Se
 // --- KNOWLEDGE GRAPH ---
 export async function buildGraph(
   graphData: any
-): Promise<{ status: string; node_count: number; edge_count: number }> {
+): Promise<{ message: string; nodes: number; edges: number }> {
   const res = await apiClient.post('/graph/build', graphData);
   return res.data;
 }
