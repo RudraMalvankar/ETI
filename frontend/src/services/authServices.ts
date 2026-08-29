@@ -1,9 +1,6 @@
 import { apiClient } from './apiClient';
-import {
-  clearStoredAuth,
-  storeAuthSession,
-} from './authStorage';
-import { AuthProfile, AuthTokens } from '../types/apex';
+import { clearStoredAuth, storeUser } from './authStorage';
+import { AuthProfile } from '../types/apex';
 
 interface RegisterPayload {
   username: string;
@@ -18,13 +15,13 @@ export async function registerUser(payload: RegisterPayload): Promise<AuthProfil
 }
 
 export async function loginUser(payload: LoginPayload): Promise<AuthProfile> {
-  const tokenRes = await apiClient.post<AuthTokens>('/auth/login', payload);
+  const tokenRes = await apiClient.post('/auth/login', payload);
   const profile: AuthProfile = {
     username: payload.username,
     role: tokenRes.data.role,
   };
 
-  storeAuthSession(tokenRes.data, profile);
+  storeUser(profile);
   return profile;
 }
 
