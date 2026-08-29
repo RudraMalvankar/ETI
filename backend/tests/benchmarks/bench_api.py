@@ -12,7 +12,7 @@ Requirements: pytest-benchmark (optional), falls back to timeit.
 
 import statistics
 import time
-from typing import Callable
+from collections.abc import Callable
 
 # ---------------------------------------------------------------------------
 # Benchmark Harness (does not require pytest-benchmark)
