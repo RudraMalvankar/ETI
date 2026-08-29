@@ -176,9 +176,11 @@ export const KnowledgeGraphPage: React.FC = () => {
       return;
     }
 
+    let cancelled = false;
     setActiveAssetId(selectedNode.id);
 
     Promise.allSettled([getGraphNode(selectedNode.id), getBlastRadius(selectedNode.id)]).then(results => {
+      if (cancelled) return;
       const [nodeResult, blastResult] = results;
       if (nodeResult.status === 'fulfilled') {
         setSelectedNodeDetails(nodeResult.value as GraphNodeDetails);
@@ -196,6 +198,8 @@ export const KnowledgeGraphPage: React.FC = () => {
         setBlastRadius(null);
       }
     });
+
+    return () => { cancelled = true; };
   }, [selectedNode, setActiveAssetId]);
 
   const onNodesChange = useCallback(

@@ -42,18 +42,25 @@ export const CompliancePage: React.FC = () => {
       return;
     }
 
+    let cancelled = false;
     setIsLoading(true);
     generateComplianceReport(currentMemory.incident_id)
       .then(res => {
-        setReport(res);
-        setCurrentReport(res);
+        if (!cancelled) {
+          setReport(res);
+          setCurrentReport(res);
+        }
       })
       .catch((error: any) => {
-        const message =
-          error?.response?.data?.detail || error?.message || 'Failed to generate compliance report.';
-        toast.error(message);
+        if (!cancelled) {
+          const message =
+            error?.response?.data?.detail || error?.message || 'Failed to generate compliance report.';
+          toast.error(message);
+        }
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => { if (!cancelled) setIsLoading(false); });
+
+    return () => { cancelled = true; };
   }, [canAccessCompliance, currentMemory?.incident_id, setCurrentReport]);
 
   const completedChecks = useMemo(
