@@ -11,7 +11,6 @@ class SimulationSerializer:
 
     def save(self, simulation_id: str, data: Any):
         with get_db_context() as db:
-            # data can be a SimulationResponse model or dict
             data_dict = data.model_dump() if hasattr(data, "model_dump") else dict(data)
             req_data = data_dict.get("request", {})
             failed_asset = req_data.get("failed_asset") or data_dict.get("failed_asset", "Unknown")
@@ -22,6 +21,9 @@ class SimulationSerializer:
                 failed_asset=failed_asset,
                 failure_type=failure_type,
                 scenarios=data_dict.get("scenarios", []),
+                initial_telemetry=req_data.get("initial_telemetry", {}),
+                operating_mode=req_data.get("operating_mode", "normal"),
+                request_timestamp=req_data.get("timestamp"),
             )
             db.merge(db_sim)
 
@@ -38,7 +40,11 @@ class SimulationSerializer:
 
             sc_list = [ScenarioResult(**s) for s in row.scenarios] if row.scenarios else []
             sim_req = SimulationRequest(
-                failed_asset=row.failed_asset, failure_type=row.failure_type
+                failed_asset=row.failed_asset,
+                failure_type=row.failure_type,
+                initial_telemetry=row.initial_telemetry or {},
+                operating_mode=row.operating_mode or "normal",
+                timestamp=row.request_timestamp,
             )
             return SimulationResponse(
                 simulation_id=row.simulation_id, request=sim_req, scenarios=sc_list
@@ -53,7 +59,11 @@ class SimulationSerializer:
             for row in rows:
                 sc_list = [ScenarioResult(**s) for s in row.scenarios] if row.scenarios else []
                 sim_req = SimulationRequest(
-                    failed_asset=row.failed_asset, failure_type=row.failure_type
+                    failed_asset=row.failed_asset,
+                    failure_type=row.failure_type,
+                    initial_telemetry=row.initial_telemetry or {},
+                    operating_mode=row.operating_mode or "normal",
+                    timestamp=row.request_timestamp,
                 )
                 res.append(
                     SimulationResponse(
