@@ -39,19 +39,19 @@ _qdrant_client_mock.get_collection.return_value = _mock.MagicMock(
 )
 
 # Patch QdrantClient in the qdrant_client module
-import qdrant_client
+import qdrant_client  # noqa: E402
 
 qdrant_client.QdrantClient = _mock.MagicMock(return_value=_qdrant_client_mock)
 
-import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
+import pytest  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy import create_engine  # noqa: E402
+from sqlalchemy.orm import sessionmaker  # noqa: E402
+from sqlalchemy.pool import StaticPool  # noqa: E402
 
-from app.core.rate_limiter import limiter
-from app.database.session import Base, engine, get_db
-from app.main import app
+from app.core.rate_limiter import limiter  # noqa: E402
+from app.database.session import Base, engine, get_db  # noqa: E402
+from app.main import app  # noqa: E402
 
 # ──────────────────────────────────────────────────────────────
 # In-memory SQLite database for isolated tests

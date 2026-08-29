@@ -4,7 +4,6 @@ Tests: Settings API
 Covers platform settings GET/PUT with RBAC checks.
 """
 
-import pytest
 
 FULL_SETTINGS_PAYLOAD = {
     "ai_provider": "mock",
