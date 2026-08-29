@@ -34,16 +34,13 @@ _qdrant_client_mock.create_collection.return_value = True
 _qdrant_client_mock.upsert.return_value = True
 _qdrant_client_mock.delete.return_value = True
 _qdrant_client_mock.get_collection.return_value = _mock.MagicMock(
-    config=_mock.MagicMock(
-        params=_mock.MagicMock(
-            vectors=_mock.MagicMock(size=4096)
-        )
-    ),
-    points_count=0
+    config=_mock.MagicMock(params=_mock.MagicMock(vectors=_mock.MagicMock(size=4096))),
+    points_count=0,
 )
 
 # Patch QdrantClient in the qdrant_client module
 import qdrant_client
+
 qdrant_client.QdrantClient = _mock.MagicMock(return_value=_qdrant_client_mock)
 
 import pytest

@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { useApexStore } from '../store/useApexStore';
 import { loginUser, registerUser } from '../services/authServices';
-import { getStoredAccessToken, getStoredRefreshToken } from '../services/authStorage';
 import { toast } from 'sonner';
 
 export const RegisterPage: React.FC = () => {
@@ -27,14 +26,7 @@ export const RegisterPage: React.FC = () => {
     try {
       await registerUser({ username: email, password });
       const profile = await loginUser({ username: email, password });
-      const accessToken = getStoredAccessToken();
-      const refreshToken = getStoredRefreshToken();
-
-      if (!accessToken || !refreshToken) {
-        throw new Error('Session tokens were not stored correctly.');
-      }
-
-      setAuthSession({ user: profile, accessToken, refreshToken });
+      setAuthSession({ user: profile });
       setActiveTab('dashboard');
       toast.success('Workspace created and signed in.');
       navigate('/dashboard');

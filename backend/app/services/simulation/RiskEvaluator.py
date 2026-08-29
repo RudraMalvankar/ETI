@@ -27,9 +27,7 @@ class RiskEvaluator:
         mod = (
             0.5
             if scenario_type == "Best Case"
-            else 1.0
-            if scenario_type == "Expected Case"
-            else 2.0
+            else 1.0 if scenario_type == "Expected Case" else 2.0
         )
 
         safety = min(100.0, safety * mod)

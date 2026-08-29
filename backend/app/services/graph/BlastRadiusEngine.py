@@ -32,9 +32,7 @@ class BlastRadiusEngine:
         severity = (
             "CRITICAL"
             if len(affected_nodes) > 3
-            else "HIGH"
-            if len(affected_nodes) > 1
-            else "MEDIUM"
+            else "HIGH" if len(affected_nodes) > 1 else "MEDIUM"
         )
 
         return BlastRadiusResponse(

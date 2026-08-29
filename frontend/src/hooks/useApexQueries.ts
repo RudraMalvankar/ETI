@@ -12,12 +12,14 @@ import {
   getRunbook,
   runSimulation,
   evaluateDecision,
-  type DocumentResponse,
-  type GraphData,
-  type ComplianceReport,
-  type Runbook,
-  type IncidentMemory,
 } from '../services/apexServices';
+import type {
+  DocumentResponse,
+  GraphData,
+  ComplianceReport,
+  Runbook,
+  IncidentMemory,
+} from '../types/apex';
 
 // ── Documents ─────────────────────────────────────────────────
 
@@ -131,9 +133,7 @@ export function useRunSimulation() {
     mutationFn: (payload: {
       failed_asset: string;
       failure_type: string;
-      initial_telemetry: Record<string, number>;
-      operating_mode?: string;
-    }) => runSimulation(payload),
+    }) => runSimulation(payload.failed_asset, payload.failure_type),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['graph'] });
     },
