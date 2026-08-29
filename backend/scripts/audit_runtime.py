@@ -54,7 +54,7 @@ try:
                 res = client.delete(url, headers=headers)
 
             exp_list = (
-                expected_status if isinstance(expected_status, (list, tuple)) else [expected_status]
+                expected_status if isinstance(expected_status, list | tuple) else [expected_status]
             )
             if res.status_code not in exp_list:
                 endpoint_errors.append(
