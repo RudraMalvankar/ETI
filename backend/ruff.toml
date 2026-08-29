@@ -30,7 +30,7 @@ ignore = [
 known-first-party = ["app"]
 
 [lint.per-file-ignores]
-"tests/**" = ["B011", "SIM"]  # allow assert False in tests
+"tests/**" = ["B011", "SIM", "E402"]  # allow assert False in tests, allow late imports
 "scripts/**" = ["B"]          # relax bugbear in scripts
 
 [format]
