@@ -75,8 +75,8 @@ export const DecisionPage: React.FC = () => {
     setIsTyping(true);
     try {
       const res = await evaluateDecision(
-        activeAssetId,
-        activeFailureType,
+        currentSimulation.request.failed_asset,
+        currentSimulation.request.failure_type,
         currentSimulation.simulation_id,
       );
       setCurrentDecision(res);
@@ -85,7 +85,7 @@ export const DecisionPage: React.FC = () => {
         {
           id: `bot-${Date.now()}`,
           type: 'bot',
-          content: `Recommendation for ${activeAssetId}: **${res.recommended_strategy}**`,
+          content: `Recommendation for ${currentSimulation.request.failed_asset}: **${res.recommended_strategy}**`,
           decisionContext: res,
         },
       ]);

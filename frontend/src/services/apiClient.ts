@@ -32,8 +32,10 @@ async function refreshAccessToken(): Promise<string | null> {
     updateStoredAccessToken(res.data.access_token);
     updateStoredRefreshToken(res.data.refresh_token);
     return res.data.access_token as string;
-  } catch {
-    clearStoredAuth();
+  } catch (err: any) {
+    if (err.response?.status === 401) {
+      clearStoredAuth();
+    }
     return null;
   }
 }

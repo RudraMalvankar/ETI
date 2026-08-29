@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import Request, Response
 from jose import jwt
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -58,7 +60,8 @@ class EnterpriseAuditMiddleware(BaseHTTPMiddleware):
             elif "memory" in path:
                 action = "Incident Creation" if method == "POST" else "Incident Update"
 
-            AuditLogService.log(
+            await asyncio.to_thread(
+                AuditLogService.log,
                 username=username,
                 ip_address=client_ip,
                 action=action,

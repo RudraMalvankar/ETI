@@ -21,12 +21,14 @@ class ConnectionManager:
         await websocket.send_text(message)
 
     async def broadcast(self, message: dict):
+        disconnected = []
         for connection in self.active_connections:
             try:
                 await connection.send_json(message)
             except Exception:
-                # Connection might be dead, handle cleanup gracefully
-                pass
+                disconnected.append(connection)
+        for conn in disconnected:
+            self.active_connections.remove(conn)
 
 
 global_connection_manager = ConnectionManager()

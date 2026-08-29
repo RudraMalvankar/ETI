@@ -2,9 +2,10 @@ import React, { useEffect } from 'react';
 import { Wifi, WifiOff, Server, PlayCircle, RefreshCw } from 'lucide-react';
 import { useApexStore } from '../../store/useApexStore';
 import { checkBackendHealth } from '../../services/apiClient';
+import { API_BASE_URL } from '../../services/apiBase';
 
 export const BackendStatusBanner: React.FC = () => {
-  const { connectionState, setConnectionState, apiBaseUrl } = useApexStore();
+  const { connectionState, setConnectionState } = useApexStore();
 
   const pollHealth = async () => {
     const isHealthy = await checkBackendHealth();
@@ -57,7 +58,7 @@ export const BackendStatusBanner: React.FC = () => {
         </span>
         <span className="hidden sm:inline-flex items-center gap-1.5 text-slate-400 font-mono text-[11px]">
           <Server className="w-3 h-3 text-slate-500" />
-          <span>{apiBaseUrl}</span>
+          <span>{API_BASE_URL}</span>
         </span>
       </div>
       <button

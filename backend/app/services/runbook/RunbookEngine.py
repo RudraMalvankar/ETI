@@ -81,7 +81,7 @@ class RunbookEngine:
             return self.regenerate(rb_id)
 
         # Check completion
-        if all(s.status == "completed" for s in rb.steps):
+        if all(s.status == "completed" for s in rb.steps) and rb.status != "completed":
             rb.status = "completed"
 
             with get_db_context() as db:
