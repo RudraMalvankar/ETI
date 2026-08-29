@@ -23,7 +23,7 @@ export interface PlantSlice {
   setSelectedNode: (node: PlantNode | null) => void;
   toggleStepCompletion: (stepId: string) => void;
   toggleLotoStatus: (stepId: string) => void;
-  markStepFailedAndReroute: () => Promise<void>;
+  markStepFailedAndReroute: (stepId: string) => Promise<void>;
 }
 
 export const createPlantSlice: StateCreator<PlantSlice> = (set) => ({
@@ -99,7 +99,7 @@ export const createPlantSlice: StateCreator<PlantSlice> = (set) => ({
     });
   },
 
-  markStepFailedAndReroute: async () => {
+  markStepFailedAndReroute: async (_stepId: string) => {
     const reroutedRunbook = await apexApi.triggerStepReroute();
     set({
       isRerouted: true,
