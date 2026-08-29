@@ -15,19 +15,19 @@ class BlastRadiusEngine:
         if not self.graph.has_node(failed_node_id):
             raise ValueError(f"Node {failed_node_id} not found in graph.")
 
-        # Traverse downstream to find affected components up to max_depth
         affected_nodes = set()
         propagation_path = []
+        actual_max_depth = 0
 
         edges = nx.bfs_edges(self.graph, source=failed_node_id, depth_limit=max_depth)
 
-        distance = 0
         for u, v in edges:
             affected_nodes.add(v)
             edge_data = self.graph.get_edge_data(u, v)
             rel = edge_data.get("relationship", "CONNECTED_TO") if edge_data else "CONNECTED_TO"
             propagation_path.append({"from": u, "to": v, "relationship": rel})
-            distance += 1  # simplistic distance tracking for demo
+            depth = nx.shortest_path_length(self.graph, source=failed_node_id, target=v)
+            actual_max_depth = max(actual_max_depth, depth)
 
         severity = (
             "CRITICAL"
@@ -41,6 +41,6 @@ class BlastRadiusEngine:
             failed_asset=failed_node_id,
             affected_assets=list(affected_nodes),
             propagation_path=propagation_path,
-            max_distance=max_depth,
+            max_distance=actual_max_depth,
             severity=severity,
         )
