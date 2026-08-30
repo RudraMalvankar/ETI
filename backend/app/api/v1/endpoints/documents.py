@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.core.auth import RoleChecker
+from app.core.config import settings
 from app.core.rate_limiter import limiter
 from app.database.session import get_db
 from app.models.models import DocumentModel
@@ -39,6 +40,13 @@ async def upload_document(
     """
     if file.content_type not in ["application/pdf", "text/csv", "application/json"]:
         raise HTTPException(status_code=400, detail="Unsupported file type.")
+
+    max_bytes = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
+    if file.size and file.size > max_bytes:
+        raise HTTPException(
+            status_code=413,
+            detail=f"File too large. Maximum size is {settings.MAX_UPLOAD_SIZE_MB}MB.",
+        )
 
     content = await file.read()
 
