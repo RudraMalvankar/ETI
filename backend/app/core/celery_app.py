@@ -35,11 +35,11 @@ def process_document_async(document_id: str):
             if chunks_list:
                 global_vector_store.index_chunks(chunks_list)
                 doc.status = "completed"
+                return f"Successfully processed and indexed document {document_id}"
             else:
                 doc.status = "failed"
                 doc.error_message = "No chunks found in parsed document"
-
-            return f"Successfully processed and indexed document {document_id}"
+                return f"Failed: No chunks found for document {document_id}"
     except Exception as e:
         with get_db_context() as db:
             doc = db.query(DocumentModel).filter(DocumentModel.document_id == document_id).first()
