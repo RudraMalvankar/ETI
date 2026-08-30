@@ -15,8 +15,8 @@ class MockEmbeddingProvider(EmbeddingProvider):
     def embed_text(self, text: str) -> list[float]:
         # Pseudo-random but deterministic based on hash for testing similarity
         seed = abs(hash(text)) % (2**32)
-        np.random.seed(seed)
-        vec = np.random.randn(self._dim)
+        rng = np.random.default_rng(seed)
+        vec = rng.standard_normal(self._dim)
         vec = vec / np.linalg.norm(vec)
         return vec.tolist()
 
