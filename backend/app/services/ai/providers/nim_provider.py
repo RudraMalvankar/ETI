@@ -25,6 +25,12 @@ class NIMProvider(AIProvider):
             headers={"Authorization": f"Bearer {self.api_key}"}, timeout=30.0
         )
 
+    def close(self):
+        self.client.close()
+
+    def __del__(self):
+        self.close()
+
     @staticmethod
     def _normalize_model_name(model_name: str) -> str:
         if "/" in model_name:
