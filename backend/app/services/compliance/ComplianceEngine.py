@@ -1,7 +1,11 @@
+from collections import OrderedDict
+
 from app.schemas.compliance import ComplianceReport, ComplianceReportRequest
 from app.services.compliance.AuditTrail import AuditTrail
 from app.services.compliance.ReportGenerator import ReportGenerator
 from app.services.memory.OperationalMemoryEngine import OperationalMemoryEngine
+
+MAX_REPORT_CACHE_SIZE = 200
 
 
 class ComplianceEngine:
@@ -9,7 +13,7 @@ class ComplianceEngine:
     Main orchestrator for Compliance & Audit Engine.
     """
 
-    _report_cache: dict[str, ComplianceReport] = {}
+    _report_cache: OrderedDict[str, ComplianceReport] = OrderedDict()
 
     def __init__(self):
         self.generator = ReportGenerator()
@@ -23,6 +27,8 @@ class ComplianceEngine:
 
         report = self.generator.generate(memory)
         ComplianceEngine._report_cache[report.report_id] = report
+        if len(ComplianceEngine._report_cache) > MAX_REPORT_CACHE_SIZE:
+            ComplianceEngine._report_cache.popitem(last=False)
         return report
 
     def get_report(self, report_id: str) -> ComplianceReport | None:
