@@ -15,7 +15,7 @@ class SearchResultChunk(BaseModel):
     document_id: str
     page_number: int | None
     asset_id: str | None
-    text: str
+    text_snippet: str
     metadata: dict[str, Any]
     score: float
 

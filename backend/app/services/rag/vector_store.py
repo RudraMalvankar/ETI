@@ -156,7 +156,7 @@ class VectorStoreService:
                     document_id=payload.get("document_id", ""),
                     page_number=payload.get("page_number"),
                     asset_id=payload.get("asset_id"),
-                    text=payload.get("text", ""),
+                    text_snippet=payload.get("text", ""),
                     metadata=payload.get("metadata", {}),
                     score=hit.score,
                 )
