@@ -197,5 +197,19 @@ class VectorStoreService:
             return 0
 
 
-# Export singleton instance
-global_vector_store = VectorStoreService()
+class _LazyVectorStore:
+    """Lazy proxy that defers VectorStoreService initialization to first use."""
+
+    def __init__(self):
+        self._instance = None
+
+    def _get(self) -> VectorStoreService:
+        if self._instance is None:
+            self._instance = VectorStoreService()
+        return self._instance
+
+    def __getattr__(self, name):
+        return getattr(self._get(), name)
+
+
+global_vector_store = _LazyVectorStore()
