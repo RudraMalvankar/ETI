@@ -1,6 +1,7 @@
 import structlog
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
+from qdrant_client.http.exceptions import UnexpectedResponse
 
 from app.core.config import settings
 from app.schemas.document import DocumentChunk
@@ -39,7 +40,7 @@ class VectorStoreService:
     def _init_collection(self):
         try:
             collection = self.client.get_collection(self.collection_name)
-        except Exception:
+        except UnexpectedResponse:
             self.client.create_collection(
                 collection_name=self.collection_name,
                 vectors_config=models.VectorParams(
