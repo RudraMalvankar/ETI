@@ -151,5 +151,9 @@ def delete_document(
     doc = db.query(DocumentModel).filter(DocumentModel.document_id == document_id).first()
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
+    try:
+        global_vector_store.delete_by_document_id(document_id)
+    except Exception:
+        logger.warning("vector_delete_failed", document_id=document_id, exc_info=True)
     db.delete(doc)
     db.commit()
