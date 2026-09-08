@@ -17,17 +17,15 @@ class BlastRadiusEngine:
 
         affected_nodes = set()
         propagation_path = []
-        actual_max_depth = 0
+        depths = nx.single_source_shortest_path_length(self.graph, failed_node_id, cutoff=max_depth)
 
-        edges = nx.bfs_edges(self.graph, source=failed_node_id, depth_limit=max_depth)
-
-        for u, v in edges:
+        for u, v in nx.bfs_edges(self.graph, source=failed_node_id, depth_limit=max_depth):
             affected_nodes.add(v)
             edge_data = self.graph.get_edge_data(u, v)
             rel = edge_data.get("relationship", "CONNECTED_TO") if edge_data else "CONNECTED_TO"
             propagation_path.append({"from": u, "to": v, "relationship": rel})
-            depth = nx.shortest_path_length(self.graph, source=failed_node_id, target=v)
-            actual_max_depth = max(actual_max_depth, depth)
+
+        actual_max_depth = max(depths.values()) if depths else 0
 
         severity = (
             "CRITICAL"
