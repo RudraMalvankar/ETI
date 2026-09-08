@@ -1,7 +1,7 @@
 import uuid
 from datetime import UTC, datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -48,7 +48,7 @@ class UserProfile(BaseModel):
 
 
 class RefreshRequest(BaseModel):
-    refresh_token: str
+    refresh_token: str | None = None
 
 
 class PasswordResetRequest(BaseModel):
@@ -145,6 +145,14 @@ def login(
         samesite="lax",
         max_age=3600,
     )
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=604800,  # 7 days
+    )
 
     return Token(
         access_token=access_token,
@@ -156,10 +164,15 @@ def login(
 
 @router.post("/refresh", response_model=Token)
 def refresh_token_rotation(
-    request: RefreshRequest, response: Response, db: Session = Depends(get_db)
+    request: RefreshRequest,
+    response: Response,
+    db: Session = Depends(get_db),
+    refresh_token_cookie: str | None = Cookie(default=None, alias="refresh_token"),
 ):
     """Token Rotation endpoint."""
-    token = request.refresh_token
+    token = request.refresh_token or refresh_token_cookie
+    if not token:
+        raise HTTPException(status_code=401, detail="No refresh token provided")
     if is_token_blacklisted(token):
         raise HTTPException(status_code=401, detail="Refresh token has been blacklisted")
 
@@ -197,6 +210,14 @@ def refresh_token_rotation(
         samesite="lax",
         max_age=3600,
     )
+    response.set_cookie(
+        key="refresh_token",
+        value=new_refresh,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=604800,  # 7 days
+    )
 
     return Token(
         access_token=new_access,
@@ -225,6 +246,7 @@ def logout(
         db.commit()
 
     response.delete_cookie("access_token")
+    response.delete_cookie("refresh_token")
     return {"message": "Logged out successfully"}
 
 
