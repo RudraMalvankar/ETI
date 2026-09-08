@@ -1,3 +1,4 @@
+import threading
 from typing import Any
 
 import networkx as nx
@@ -38,11 +39,14 @@ class GraphFactory:
     """
 
     _instance: APEXGraph = None
+    _lock = threading.Lock()
 
     @classmethod
     def get_graph(cls) -> APEXGraph:
         if cls._instance is None:
-            cls._instance = APEXGraph()
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = APEXGraph()
         return cls._instance
 
     @classmethod
