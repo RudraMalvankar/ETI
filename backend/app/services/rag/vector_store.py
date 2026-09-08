@@ -164,6 +164,38 @@ class VectorStoreService:
 
         return parsed_results
 
+    def delete_by_document_id(self, document_id: str) -> int:
+        """Delete all vectors for a given document. Returns count of deleted points."""
+        try:
+            results = self.client.query_points(
+                collection_name=self.collection_name,
+                query_filter=models.Filter(
+                    must=[
+                        models.FieldCondition(
+                            key="document_id", match=models.MatchValue(value=document_id)
+                        )
+                    ]
+                ),
+                with_payload=False,
+                limit=10000,
+            ).points
+            if not results:
+                return 0
+            point_ids = [r.id for r in results]
+            self.client.delete(
+                collection_name=self.collection_name,
+                points_selector=models.PointIdsList(points=point_ids),
+            )
+            return len(point_ids)
+        except Exception as exc:
+            logger.warning(
+                "qdrant_delete_failed",
+                collection=self.collection_name,
+                document_id=document_id,
+                error=str(exc),
+            )
+            return 0
+
 
 # Export singleton instance
 global_vector_store = VectorStoreService()
