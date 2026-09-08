@@ -1,3 +1,5 @@
+import threading
+
 from app.database.session import get_db_context
 from app.models.simulation_runbook import RunbookModel
 from app.schemas.runbook import FeedbackRequest, Runbook, RunbookRequest
@@ -13,6 +15,7 @@ class RunbookEngine:
     """
 
     _stats = {"total": 0, "active": 0, "completed": 0, "regenerations": 0}
+    _stats_lock = threading.Lock()
 
     def __init__(self):
         self.generator = RunbookGenerator()
@@ -36,8 +39,9 @@ class RunbookEngine:
                 )
                 db.add(db_rb)
 
-            RunbookEngine._stats["total"] += 1
-            RunbookEngine._stats["active"] += 1
+            with RunbookEngine._stats_lock:
+                RunbookEngine._stats["total"] += 1
+                RunbookEngine._stats["active"] += 1
             return rb
         raise ValueError("Generated runbook is invalid.")
 
@@ -89,8 +93,9 @@ class RunbookEngine:
                 if db_row:
                     db_row.status = "completed"
 
-            RunbookEngine._stats["active"] -= 1
-            RunbookEngine._stats["completed"] += 1
+            with RunbookEngine._stats_lock:
+                RunbookEngine._stats["active"] -= 1
+                RunbookEngine._stats["completed"] += 1
 
         return rb
 
@@ -109,7 +114,8 @@ class RunbookEngine:
                 db_row.is_regenerated = rb.is_regenerated
                 db_row.status = rb.status
 
-        RunbookEngine._stats["regenerations"] += 1
+        with RunbookEngine._stats_lock:
+            RunbookEngine._stats["regenerations"] += 1
         return rb
 
     def get_statistics(self) -> dict:
