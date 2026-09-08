@@ -37,10 +37,13 @@ class RiskEvaluator:
 
         overall = (safety * 0.4) + (operational * 0.3) + (financial * 0.2) + (environmental * 0.1)
 
+        # Normalize to 0-10 scale (each component is 0-100, so divide by 10)
+        overall = overall / 10.0
+
         return RiskProfile(
-            safety_risk=round(safety, 2),
-            operational_risk=round(operational, 2),
-            financial_risk=round(financial, 2),
-            environmental_risk=round(environmental, 2),
+            safety_risk=round(safety / 10.0, 2),
+            operational_risk=round(operational / 10.0, 2),
+            financial_risk=round(financial / 10.0, 2),
+            environmental_risk=round(environmental / 10.0, 2),
             overall_score=round(overall, 2),
         )
